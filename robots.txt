@@ -1,0 +1,10 @@
+# Allow full crawling for all search engines
+User-agent: *
+Allow: /
+
+# Disallow internal scripts or system folders if any
+Disallow: /css/
+Disallow: /js/
+
+# Sitemap Link
+Sitemap: https://corpofitnesspremium.com.br/sitemap.xml

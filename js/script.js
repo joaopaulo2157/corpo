@@ -25,6 +25,12 @@ function runSplitTitle() {
     });
 }
 
+function buildHeroTitle(line1, line2) {
+    if (!line1 || !line1.trim() || !line2 || !line2.trim()) return null;
+    const formatLine = (text) => text.trim().split(/\s+/).filter(Boolean).map((word) => `<span class="word">${word}</span>`).join(' ');
+    return `<span class="hero-line">${formatLine(line1)}</span><span class="hero-line">${formatLine(line2)}</span>`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 
     /*==================================================
@@ -247,37 +253,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /*==================================================
-    8. FAQ ACCORDION (COMPATÍVEL COM CSS .active)
+    8. FAQ — respostas sempre abertas
     ==================================================*/
-    const itensFaq = document.querySelectorAll(".item-faq");
+    const faqCards = document.querySelectorAll('#faq .faq-card');
 
-    itensFaq.forEach(item => {
-        const pergunta = item.querySelector(".pergunta");
-        const resposta = item.querySelector(".resposta");
-
-        if (!pergunta || !resposta) return;
-
-        pergunta.addEventListener("click", () => {
-            const estaAberto = item.classList.contains("active");
-
-            itensFaq.forEach(outro => {
-                if (outro !== item) {
-                    outro.classList.remove("active");
-                    const outraResposta = outro.querySelector(".resposta");
-                    if (outraResposta) {
-                        outraResposta.style.display = "none";
-                    }
-                }
-            });
-
-            if (estaAberto) {
-                item.classList.remove("active");
-                resposta.style.display = "none";
-            } else {
-                item.classList.add("active");
-                resposta.style.display = "block";
-            }
-        });
+    faqCards.forEach(card => {
+        const body = card.querySelector('.faq-card-body');
+        if (!body) return;
+        body.classList.add('open');
+        body.style.maxHeight = 'none';
     });
 
     /*==================================================
@@ -525,11 +509,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const p = document.querySelector(".hero p");
         const videoSource = document.querySelector(".hero video source");
 
-        if (h1 && heroSaved.t1 && heroSaved.t2) {
-            const line1 = heroSaved.t1.split(' ').map(w => `<span class="word">${w}</span>`).join(' ');
-            const line2 = heroSaved.t2.split(' ').map(w => `<span class="word">${w}</span>`).join(' ');
-            const newHTML = `<span class="hero-line">${line1}</span><span class="hero-line">${line2}</span>`;
-            if (h1.innerHTML.trim() !== newHTML.trim()) {
+        if (h1 && heroSaved.t1) {
+            const newHTML = buildHeroTitle(heroSaved.t1, heroSaved.t2);
+            if (newHTML && h1.innerHTML.trim() !== newHTML.trim()) {
+                h1.classList.add('split-title');
                 h1.innerHTML = newHTML;
                 runSplitTitle();
             }
@@ -1078,29 +1061,6 @@ if ('serviceWorker' in navigator) {
 // ACESSIBILIDADE E NAVEGAÇÃO POR TECLADO
 // ==================================================
 document.addEventListener('DOMContentLoaded', () => {
-    const faqButtons = document.querySelectorAll('.item-faq .pergunta');
-
-    faqButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-            const targetId = btn.getAttribute('aria-controls');
-            const targetContent = document.getElementById(targetId);
-
-            faqButtons.forEach(b => {
-                b.setAttribute('aria-expanded', 'false');
-                const otherContent = document.getElementById(b.getAttribute('aria-controls'));
-                if (otherContent) otherContent.hidden = true;
-                b.parentElement.classList.remove('active');
-            });
-
-            if (!isExpanded) {
-                btn.setAttribute('aria-expanded', 'true');
-                if (targetContent) targetContent.hidden = false;
-                btn.parentElement.classList.add('active');
-            }
-        });
-    });
-
     const btnMenuMobile = document.getElementById('btnMenuMobile');
     const navMenu = document.getElementById('navMenu');
 
@@ -1563,15 +1523,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const subTitle = document.querySelector('.hero-content p') || document.querySelector('#hero p');
             const heroVideo = document.querySelector('#hero video') || document.querySelector('.hero-video');
 
-                if (h1Title) {
-                    const line1 = hero.t1.split(' ').map(w => `<span class="word">${w}</span>`).join(' ');
-                    const line2 = hero.t2.split(' ').map(w => `<span class="word">${w}</span>`).join(' ');
-                    const newHTML = `<span class="hero-line">${line1}</span><span class="hero-line">${line2}</span>`;
-                    if (h1Title.innerHTML.trim() !== newHTML.trim()) {
-                        h1Title.innerHTML = newHTML;
-                        runSplitTitle();
-                    }
+                if (h1Title && hero.t1) {
+                const newHTML = buildHeroTitle(hero.t1, hero.t2);
+                if (newHTML && h1Title.innerHTML.trim() !== newHTML.trim()) {
+                    h1Title.classList.add('split-title');
+                    h1Title.innerHTML = newHTML;
+                    runSplitTitle();
                 }
+            }
             if (subTitle) subTitle.textContent = hero.sub;
             if (heroVideo && hero.video) {
                 // set source if element has <source>, otherwise set src and try to play

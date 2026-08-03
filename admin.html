@@ -2144,7 +2144,7 @@ window.showToast = function(mensagem, tipo = 'success') {
         const container = document.getElementById('listaParceirosAdmin');
         if (!container) return;
         try {
-            const { data: parceiros, error } = await _supabase.from('parceiros').select('id,nome,logo,ordem').order('ordem', { ascending: true });
+            const { data: parceiros, error } = await _supabase.from('parceiros').select('id,nome,ordem').order('ordem', { ascending: true });
             container.innerHTML = '';
             if (error) {
                 console.error('Erro ao carregar parceiros admin:', error);
@@ -2158,9 +2158,6 @@ window.showToast = function(mensagem, tipo = 'success') {
             parceiros.forEach((p) => {
                 container.innerHTML += `
                     <div style="background: var(--dark-2); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
-                        <div style="height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; background: rgba(255,255,255,0.03); border-radius: 8px;">
-                            <img src="${p.logo}" alt="${p.nome}" style="max-height: 45px; max-width: 100px; object-fit: contain;">
-                        </div>
                         <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 10px;">${p.nome}</h4>
                         <div style="display: flex; gap: 6px;">
                             <button type="button" onclick="editarParceiro('${p.id}')" class="btn-action-bar" style="flex:1;">✏️ Editar</button>

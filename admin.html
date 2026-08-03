@@ -4,6 +4,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="img/favicon.png" type="image/png">
     <title>Painel Administrativo | Corpofitness Premium</title>
     <!-- GOOGLE FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1736,19 +1737,65 @@ window.showToast = function(mensagem, tipo = 'success') {
         }
     };
 
-    window.previewUploadImage = function(input, previewImgId, hiddenInputId) {
+    window.compressImageFile = function(file, maxWidth = 1200, maxHeight = 1200, quality = 0.78) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+                width = Math.round(width * ratio);
+                height = Math.round(height * ratio);
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const type = file.type.toLowerCase();
+                let outputType = 'image/jpeg';
+                let encoderOptions = quality;
+
+                if (type === 'image/png') {
+                    outputType = 'image/png';
+                    encoderOptions = undefined;
+                } else if (type === 'image/webp') {
+                    outputType = 'image/webp';
+                }
+
+                const dataUrl = canvas.toDataURL(outputType, encoderOptions);
+                resolve(dataUrl);
+                URL.revokeObjectURL(img.src);
+            };
+            img.onerror = (err) => reject(err);
+            img.src = URL.createObjectURL(file);
+        });
+    };
+
+    window.previewUploadImage = async function(input, previewImgId, hiddenInputId) {
         const file = input.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById(hiddenInputId).value = e.target.result;
+            try {
+                const compressedDataUrl = await window.compressImageFile(file, 1200, 1200, 0.78);
+                document.getElementById(hiddenInputId).value = compressedDataUrl;
                 const preview = document.getElementById(previewImgId);
                 if (preview) {
-                    preview.src = e.target.result;
+                    preview.src = compressedDataUrl;
                     preview.parentElement.style.display = 'flex';
                 }
-            };
-            reader.readAsDataURL(file);
+            } catch (err) {
+                console.error('Erro ao comprimir imagem:', err);
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById(hiddenInputId).value = e.target.result;
+                    const preview = document.getElementById(previewImgId);
+                    if (preview) {
+                        preview.src = e.target.result;
+                        preview.parentElement.style.display = 'flex';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
         }
     };
 
@@ -2097,8 +2144,13 @@ window.showToast = function(mensagem, tipo = 'success') {
         const container = document.getElementById('listaParceirosAdmin');
         if (!container) return;
         try {
-            const { data: parceiros } = await _supabase.from('parceiros').select('*').order('ordem', { ascending: true });
+            const { data: parceiros, error } = await _supabase.from('parceiros').select('id,nome,logo,ordem').order('ordem', { ascending: true });
             container.innerHTML = '';
+            if (error) {
+                console.error('Erro ao carregar parceiros admin:', error);
+                container.innerHTML = `<p style="color:var(--warning); grid-column: 1/-1;">Erro ao carregar parceiros. Veja o console do navegador.</p>`;
+                return;
+            }
             if (!parceiros || parceiros.length === 0) {
                 container.innerHTML = `<p style="color:var(--gray); grid-column: 1/-1;">Nenhum parceiro cadastrado ainda.</p>`;
                 return;
@@ -2117,7 +2169,10 @@ window.showToast = function(mensagem, tipo = 'success') {
                     </div>
                 `;
             });
-        } catch (err) {}
+        } catch (err) {
+            console.error('Erro ao carregar parceiros admin:', err);
+            container.innerHTML = `<p style="color:var(--warning); grid-column: 1/-1;">Erro ao carregar parceiros. Veja o console do navegador.</p>`;
+        }
     };
 
     window.abrirFormParceiro = function() {

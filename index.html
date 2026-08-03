@@ -165,7 +165,9 @@
 
     <!-- BOTÃO RETORNAR AO TOPO -->
     <button id="topo" aria-label="Voltar ao topo da página">
-        <i class="fas fa-arrow-up" aria-hidden="true"></i>
+        <svg class="icon-svg icon-arrow-up" role="img" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5l-7 7h4v7h6v-7h4l-7-7z" fill="#ffffff" opacity="0.95"/>
+        </svg>
     </button>
 
     <!-- 2. HEADER & NAVIGATION BAR -->
@@ -190,11 +192,15 @@
             <div style="display: flex; align-items: center; gap: 12px;">
                 <div id="userNavArea"></div>
                 <a href="#contato" class="btn-header">
-                    Matricule-se <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                        Matricule-se <svg class="icon-svg icon-chevron" role="img" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
             </div>
             <button class="menu-mobile" id="btnMenuMobile" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="navMenu">
-                <i class="fas fa-bars" aria-hidden="true"></i>
+                <svg class="icon-svg icon-bars" role="img" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="5" width="18" height="2" rx="1" fill="#fff" opacity="0.95"/>
+                    <rect x="3" y="11" width="18" height="2" rx="1" fill="#fff" opacity="0.85"/>
+                    <rect x="3" y="17" width="18" height="2" rx="1" fill="#fff" opacity="0.75"/>
+                </svg>
             </button>
         </div>
     </header>
@@ -204,9 +210,10 @@
 
         <!-- 3. HERO SECTION (CORRIGIDO PARA PREENCHIMENTO COMPLETO DA TELA E VÍDEO SEM FAIXA) -->
         <section class="hero" id="inicio" aria-label="Apresentação da Corpofitness">
-            <video class="hero-video-parallax" autoplay muted loop playsinline poster="img/hero-poster.jpg" aria-hidden="true">
+            <video id="heroVideo" class="hero-video-parallax" autoplay muted loop playsinline preload="metadata" poster="img/hero-poster.jpg" aria-hidden="true">
                 <source src="videos/academia.mp4" type="video/mp4">
             </video>
+            <div class="hero-poster" aria-hidden="true"></div>
             
             <div class="overlay hero-overlay-parallax" aria-hidden="true"></div>
             <canvas id="heroParticlesCanvas" class="hero-particles-canvas" aria-hidden="true"></canvas>
@@ -222,8 +229,8 @@
                         <span class="word">SEUS</span>
                     </span>
                     <span class="hero-line">
-                        <span class="word gradient-text">LIMITES</span>
-                        <span class="word gradient-text">HOJE</span>
+                        <span class="word">LIMITES</span>
+                        <span class="word">HOJE</span>
                     </span>
                 </h1>
 
@@ -242,21 +249,48 @@
                 
                 <div class="hero-info">
                     <div class="hero-box">
-                        <i class="fas fa-dumbbell" aria-hidden="true"></i>
+                        <svg class="icon-svg icon-dumbbell" role="img" aria-hidden="true" width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="dbGrad" x1="0" x2="1">
+                                    <stop offset="0" stop-color="#9AA7FF"/>
+                                    <stop offset="1" stop-color="#4D7BFF"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="22" width="12" height="20" rx="3" fill="#2f2f2f" opacity="0.9"/>
+                            <rect x="50" y="22" width="12" height="20" rx="3" fill="#2f2f2f" opacity="0.9"/>
+                            <rect x="18" y="26" width="28" height="12" rx="6" fill="url(#dbGrad)"/>
+                            <circle cx="12" cy="32" r="8" fill="#222" opacity="0.9"/>
+                            <circle cx="52" cy="32" r="8" fill="#222" opacity="0.9"/>
+                        </svg>
                         <div>
                             <h3 class="counter-number" data-target="450" data-suffix="+">0</h3>
                             <span>Equipamentos</span>
                         </div>
                     </div>
                     <div class="hero-box">
-                        <i class="fas fa-users" aria-hidden="true"></i>
+                        <svg class="icon-svg icon-users" role="img" aria-hidden="true" width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="usGrad" x1="0" x2="1">
+                                    <stop offset="0" stop-color="#ffd27a"/>
+                                    <stop offset="1" stop-color="#ff8a5b"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="24" cy="22" r="8" fill="url(#usGrad)"/>
+                            <circle cx="44" cy="22" r="6" fill="#e6a86b"/>
+                            <path d="M10 44c0-6 6-10 14-10s14 4 14 10v4H10v-4z" fill="#2b2b2b"/>
+                            <path d="M34 44c0-5 4-8 10-8s10 3 10 8v4H34v-4z" fill="#242424"/>
+                        </svg>
                         <div>
                             <h3 class="counter-number" data-target="2500" data-suffix="+">0</h3>
                             <span>Alunos Ativos</span>
                         </div>
                     </div>
                     <div class="hero-box">
-                        <i class="fas fa-clock" aria-hidden="true"></i>
+                        <svg class="icon-svg icon-clock" role="img" aria-hidden="true" width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="32" cy="32" r="28" fill="#fff" opacity="0.06"/>
+                            <circle cx="32" cy="32" r="22" fill="#2b2b2b"/>
+                            <path d="M32 18v14l10 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        </svg>
                         <div>
                             <h3>05h - 22h</h3>
                             <span>Atendimento</span>
@@ -307,7 +341,19 @@
                 </div>
                 <div class="cards">
                     <div class="card" tabindex="0" data-aos="fade-up">
-                        <div class="icon-box"><i class="fas fa-dumbbell" aria-hidden="true"></i></div>
+                        <div class="icon-box">
+                            <svg class="icon-svg" role="img" aria-hidden="true" width="44" height="44" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="cardDb" x1="0" x2="1">
+                                        <stop offset="0" stop-color="#9AA7FF"/>
+                                        <stop offset="1" stop-color="#4D7BFF"/>
+                                    </linearGradient>
+                                </defs>
+                                <rect x="2" y="22" width="12" height="20" rx="3" fill="#2f2f2f" opacity="0.9"/>
+                                <rect x="50" y="22" width="12" height="20" rx="3" fill="#2f2f2f" opacity="0.9"/>
+                                <rect x="18" y="26" width="28" height="12" rx="6" fill="url(#cardDb)"/>
+                            </svg>
+                        </div>
                         <h3>Musculação Integrada</h3>
                         <p>Espaço amplo com maquetes biomecânicas focadas na otimização de hipertrofia e definição rápida.</p>
                     </div>
@@ -339,7 +385,17 @@
                 </div>
                 <div class="modalidades-grid">
                     <div class="modalidade" tabindex="0" data-aos="zoom-in">
-                        <i class="fas fa-dumbbell" aria-hidden="true"></i>
+                        <svg class="icon-svg" role="img" aria-hidden="true" width="38" height="38" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="modDb" x1="0" x2="1">
+                                    <stop offset="0" stop-color="#9AA7FF"/>
+                                    <stop offset="1" stop-color="#4D7BFF"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="22" width="10" height="18" rx="3" fill="#2f2f2f" opacity="0.9"/>
+                            <rect x="52" y="22" width="10" height="18" rx="3" fill="#2f2f2f" opacity="0.9"/>
+                            <rect x="18" y="26" width="28" height="10" rx="6" fill="url(#modDb)"/>
+                        </svg>
                         <h3>Musculação</h3>
                         <p>Foco em ganho muscular e força estrutural com halteres e anilhas de peso livre.</p>
                     </div>
@@ -735,19 +791,47 @@
             async function carregarParceirosSite() {
                 const container = document.querySelector('#containerParceirosSite');
                 if (!container) return;
-                const { data: parceiros } = await _supabase.from('parceiros').select('*').order('ordem', { ascending: true });
-                if (parceiros && parceiros.length > 0) {
-                    container.innerHTML = '';
-                    parceiros.forEach(p => {
-                        container.innerHTML += `<div class="swiper-slide" style="display:flex; justify-content:center; align-items:center;"><div class="parceiro-logo-box" style="width:150px; height:70px; background:rgba(255,255,255,0.03); border-radius:8px; display:flex; align-items:center; justify-content:center; padding:10px; border:1px solid var(--border);"><img src="${p.logo}" alt="${p.nome}" style="max-height:100%; max-width:100%; object-fit:contain;"></div></div>`;
+                const cacheKey = 'corpofitness_parceiros';
+
+                const renderParceiros = (parceiros) => {
+                    const parent = document.querySelector('.swiper-parceiros');
+                    if (!parent) return;
+                    parent.innerHTML = `<div class="parceiros-band"><div class="parceiros-track" id="containerParceirosTrack"></div></div>`;
+                    const track = document.getElementById('containerParceirosTrack');
+                    const minSlides = 8;
+                    let items = parceiros.slice();
+                    while (items.length < minSlides) items = items.concat(parceiros);
+                    const html = items.map(p => `<div class="parceiro"><img src="${p.logo}" alt="${p.nome}" loading="lazy" decoding="async" width="180" height="78"></div>`).join('');
+                    track.innerHTML = items.length < 6 ? html.repeat(4) : html + html;
+                    requestAnimationFrame(() => {
+                        const trackItems = track.querySelectorAll('.parceiro').length;
+                        const estimatedWidth = Math.max(trackItems * 220, window.innerWidth * 2);
+                        const speed = 90;
+                        const duration = Math.max(18, Math.round(estimatedWidth / speed));
+                        track.style.setProperty('--marquee-duration', duration + 's');
                     });
-                    if (typeof Swiper !== 'undefined') {
-                        new Swiper('.swiper-parceiros', {
-                            slidesPerView: 2, spaceBetween: 20, loop: true,
-                            autoplay: { delay: 2500, disableOnInteraction: false },
-                            breakpoints: { 640: { slidesPerView: 3 }, 768: { slidesPerView: 4 }, 1024: { slidesPerView: 5 } }
-                        });
+                };
+
+                const cached = localStorage.getItem(cacheKey);
+                if (cached) {
+                    try {
+                        const cachedParceiros = JSON.parse(cached);
+                        if (Array.isArray(cachedParceiros) && cachedParceiros.length > 0) {
+                            renderParceiros(cachedParceiros);
+                        }
+                    } catch (err) {
+                        console.warn('Cache de parceiros inválido:', err);
+                        localStorage.removeItem(cacheKey);
                     }
+                }
+
+                const { data: parceiros, error } = await _supabase.from('parceiros').select('id,nome,logo,ordem').order('ordem', { ascending: true });
+                if (error) {
+                    console.error('Erro ao carregar parceiros do site:', error);
+                }
+                if (parceiros && parceiros.length > 0) {
+                    localStorage.setItem(cacheKey, JSON.stringify(parceiros));
+                    renderParceiros(parceiros);
                 }
             }
 

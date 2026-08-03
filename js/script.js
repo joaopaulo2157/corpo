@@ -3,6 +3,28 @@ CORPOFITNESS PREMIUM 2026
 SCRIPT PRINCIPAL — REFORMULADO (FRAMER-LEVEL + HIGH-END)
 ==================================================*/
 
+// Global helper: split `.word` nodes into per-character spans for animated titles
+function runSplitTitle() {
+    const splitTitleEl = document.querySelector('.split-title');
+    if (!splitTitleEl) return;
+    const words = splitTitleEl.querySelectorAll('.word');
+    let totalCharIndex = 0;
+
+    words.forEach((word) => {
+        const text = word.textContent.trim();
+        word.innerHTML = '';
+
+        [...text].forEach((char) => {
+            const span = document.createElement('span');
+            span.classList.add('char');
+            span.textContent = char;
+            span.style.animationDelay = `${(totalCharIndex * 0.035) + 0.1}s`;
+            word.appendChild(span);
+            totalCharIndex++;
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 
     /*==================================================
@@ -504,7 +526,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const videoSource = document.querySelector(".hero video source");
 
         if (h1 && heroSaved.t1 && heroSaved.t2) {
-            h1.innerHTML = `${heroSaved.t1}<br><span class="gradient-text">${heroSaved.t2}</span>`;
+            const line1 = heroSaved.t1.split(' ').map(w => `<span class="word">${w}</span>`).join(' ');
+            const line2 = heroSaved.t2.split(' ').map(w => `<span class="word">${w}</span>`).join(' ');
+            const newHTML = `<span class="hero-line">${line1}</span><span class="hero-line">${line2}</span>`;
+            if (h1.innerHTML.trim() !== newHTML.trim()) {
+                h1.innerHTML = newHTML;
+                runSplitTitle();
+            }
         }
 
         if (p && heroSaved.sub) {
@@ -515,7 +543,7 @@ document.addEventListener("DOMContentLoaded", () => {
             videoSource.src = heroSaved.video;
             const videoEl = videoSource.parentElement;
             if (videoEl) {
-                videoEl.load();
+                try { videoEl.load(); videoEl.play().catch(()=>{}); } catch(e){}
             }
         }
     }
@@ -1222,25 +1250,8 @@ ${inputMsg.value.trim()}`;
 // MÓDULO HERO: PARALLAX, SPLIT TEXT, COUNTERS & CANVAS PARTICLES
 // ==================================================
 document.addEventListener('DOMContentLoaded', () => {
-    const splitTitle = document.querySelector('.split-title');
-    if (splitTitle) {
-        const words = splitTitle.querySelectorAll('.word');
-        let totalCharIndex = 0;
-
-        words.forEach((word) => {
-            const text = word.textContent.trim();
-            word.innerHTML = '';
-            
-            [...text].forEach((char) => {
-                const span = document.createElement('span');
-                span.classList.add('char');
-                span.textContent = char;
-                span.style.animationDelay = `${(totalCharIndex * 0.035) + 0.1}s`;
-                word.appendChild(span);
-                totalCharIndex++;
-            });
-        });
-    }
+    // initial run for hero split title animation
+    runSplitTitle();
 
     const counterElements = document.querySelectorAll('.counter-number');
 
@@ -1298,6 +1309,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 ticking = true;
             }
         });
+
+        // Ensure looping on browsers that sometimes break loop; provide mobile/slow fallback
+        const heroPoster = document.querySelector('.hero-poster');
+        if (heroVideo) {
+            try {
+                heroVideo.addEventListener('ended', () => {
+                    try { heroVideo.currentTime = 0; heroVideo.play(); } catch (e) {}
+                });
+
+                heroVideo.addEventListener('error', () => {
+                    heroVideo.style.display = 'none';
+                    if (heroPoster) heroPoster.style.display = 'block';
+                });
+
+                const isMobile = window.matchMedia('(max-width: 768px)').matches || /Mobi|Android/i.test(navigator.userAgent || '');
+                // only treat as mobile to avoid removing sources on some desktops
+                if (isMobile) {
+                    if (heroPoster) heroPoster.style.display = 'block';
+                    try { heroVideo.pause(); } catch (e) {}
+                    // remove sources to avoid heavy download on mobile
+                    heroVideo.removeAttribute('src');
+                    heroVideo.querySelectorAll && heroVideo.querySelectorAll('source').forEach(s => s.removeAttribute('src'));
+                    try { heroVideo.load(); } catch (e) {}
+                }
+            } catch (e) {
+                console.error('Hero video handling error', e);
+            }
+        }
     }
 
     const canvas = document.getElementById('heroParticlesCanvas');
@@ -1425,7 +1464,8 @@ function mostrarProvaSocial() {
     }, 4500);
 }
 
-setInterval(mostrarProvaSocial, 25000);
+// Desativado: prova social automática (solicitado pelo usuário)
+// setInterval(mostrarProvaSocial, 25000);
 
 // ==================================================
 // LÓGICA DO CLIENTE - INTEGRADA AO SUPABASE
@@ -1523,11 +1563,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const subTitle = document.querySelector('.hero-content p') || document.querySelector('#hero p');
             const heroVideo = document.querySelector('#hero video') || document.querySelector('.hero-video');
 
-            if (h1Title) {
-                h1Title.innerHTML = `${hero.t1} <span class="text-gradient">${hero.t2}</span>`;
-            }
+                if (h1Title) {
+                    const line1 = hero.t1.split(' ').map(w => `<span class="word">${w}</span>`).join(' ');
+                    const line2 = hero.t2.split(' ').map(w => `<span class="word">${w}</span>`).join(' ');
+                    const newHTML = `<span class="hero-line">${line1}</span><span class="hero-line">${line2}</span>`;
+                    if (h1Title.innerHTML.trim() !== newHTML.trim()) {
+                        h1Title.innerHTML = newHTML;
+                        runSplitTitle();
+                    }
+                }
             if (subTitle) subTitle.textContent = hero.sub;
-            if (heroVideo && hero.video) heroVideo.src = hero.video;
+            if (heroVideo && hero.video) {
+                // set source if element has <source>, otherwise set src and try to play
+                const sourceEl = heroVideo.querySelector && heroVideo.querySelector('source');
+                if (sourceEl) {
+                    sourceEl.src = hero.video;
+                } else {
+                    try { heroVideo.src = hero.video; } catch(e){}
+                }
+                try { heroVideo.load(); heroVideo.play().catch(()=>{}); } catch(e){}
+            }
         }
     }
 

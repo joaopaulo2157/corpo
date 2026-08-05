@@ -7,7 +7,7 @@
     <title>Portal do Aluno | Corpofitness Premium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
@@ -39,7 +39,7 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         
         body {
             background-color: var(--bg-main);
@@ -367,6 +367,36 @@
     </style>
 </head>
 <body>
+
+    <div class="toast" id="systemToast">✅ Ação realizada com sucesso!</div>
+
+    <!-- MODAL DE PIN PRIVADO PARA FOTOS DE EVOLUÇÃO -->
+    <div id="modalPinFotos" class="modal-overlay" style="display: flex;">
+        <div class="modal-content">
+            <div style="font-size: 2.5rem; color: var(--primary-light); margin-bottom: 15px;"><i class="fa-solid fa-lock"></i></div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Galeria de Evolução Protegida</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Insira seu PIN de 4 dígitos ou senha para visualizar suas fotos de progresso com total privacidade.</p>
+            <div class="form-group">
+                <input type="password" id="inputPinSeguranca" class="form-control" maxlength="4" placeholder="••••" style="text-align: center; font-size: 1.5rem; letter-spacing: 8px;">
+            </div>
+            <button class="btn-primary" onclick="verificarPinFotos()">Desbloquear Galeria</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE PAGAMENTO / PIX -->
+    <div id="modalPagamento" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="font-size: 1.2rem; margin-bottom: 10px;" id="modalTitulo">Pagamento via Pix</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Escaneie o QR Code abaixo ou copie o código Pix para efetuar a quitação instantânea.</p>
+            <div style="background: #ffffff; padding: 15px; border-radius: 12px; display: inline-block; margin-bottom: 15px;">
+                <i class="fa-solid fa-qrcode" style="font-size: 120px; color: #000000;"></i>
+            </div>
+            <input type="text" id="inputPixCopiaCola" class="form-control" readonly value="00020126580014br.gov.bcb.pix..." style="font-size: 0.8rem; margin-bottom: 15px; text-align: center;">
+            <button class="btn-primary" onclick="copiarPix()" style="margin-bottom: 10px;"><i class="fa-solid fa-copy"></i> Copiar Código Pix</button>
+            <button onclick="fecharModalPagamento()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85rem;">Fechar janela</button>
+        </div>
+    </div>
+
     <!-- TELA DE LOGIN -->
     <div id="alunoLoginOverlay">
         <div class="login-card">
@@ -386,13 +416,31 @@
     <!-- PORTAL PRINCIPAL -->
     <div id="alunoAppContainer">
         <header>
-            
-            <div class="brand-title"></span>
-                    <img src="../img/logo.png" alt="Corpofitness Premium" class="logo-img" decoding="async" width="170" height="78" onerror="this.src='https://via.placeholder.com/200x60?text=CORPOFITNESS';">
-            </div>
+            <div class="brand-title">CORPOFITNESS <span>PORTAL</span></div>
             
             <div class="header-actions">
                 <!-- NOTIFICAÇÕES -->
+                <div class="notification-bell-wrapper" onclick="toggleNotificacoes()">
+                    <i class="fa-solid fa-bell" style="color: var(--text-main); font-size: 1.1rem;"></i>
+                    <span class="notification-badge" id="notifBadge">2</span>
+                </div>
+
+                <div id="notificationDropdown">
+                    <div class="notif-header">
+                        <span>Central de Avisos</span>
+                        <span style="font-size: 0.7rem; color: var(--primary-light); cursor: pointer;" onclick="marcarLidas()">Marcar lidas</span>
+                    </div>
+                    <div class="notif-body" id="listaNotificacoes">
+                        <div class="notif-item">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <div><strong>Fatura Próxima</strong><br>Sua mensalidade vence em breve. Evite bloqueios na catraca.</div>
+                        </div>
+                        <div class="notif-item">
+                            <i class="fa-solid fa-trophy"></i>
+                            <div><strong>Desafio Ativo</strong><br>Você está progredindo muito bem no desafio mensal de treinos!</div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="user-pill">
                     <div class="user-avatar" id="headerAvatar">AL</div>
@@ -411,15 +459,77 @@
                 </div>
             </div>
 
+            <!-- CARTEIRINHA DIGITAL DE MEMBRO COM QR CODE -->
+            <div class="digital-id-card">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span class="status-badge status-ativo" style="font-size: 0.68rem;"><i class="fa-solid fa-shield-check"></i> Membro Verificado</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);" id="lblCarteirinhaPlano">Plano Premium</span>
+                    </div>
+                    <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 4px;" id="lblCarteirinhaNome">Nome do Aluno</h2>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px;">Apresente este QR Code na recepção ou catraca de acesso.</p>
+                    <div style="display: flex; gap: 10px;">
+                        <span style="font-size: 0.75rem; background: rgba(255,255,255,0.06); padding: 4px 10px; border-radius: 6px; color: var(--text-muted);">ID: <strong id="lblCarteirinhaId" style="color: var(--text-main);">--</strong></span>
+                        <span style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 6px; color: var(--accent-success);">Acesso Liberado</span>
+                    </div>
+                </div>
+                <div style="background: #ffffff; padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                    <i class="fa-solid fa-qrcode" style="font-size: 90px; color: #000000; display: block;"></i>
+                    <span style="font-size: 0.65rem; color: #666; font-weight: 700; margin-top: 4px; display: block;">CATRACA CORPÓFITNESS</span>
+                </div>
+            </div>
+
             <!-- BOAS-VINDAS E BOTÃO DE ACESSO AO TREINO -->
             <div class="welcome-card-header">
                 <div class="welcome-banner" style="margin-bottom: 0;">
                     <h1 id="tituloBoasVindas">Bem-vindo de volta! 💪</h1>
-                    <p>Acompanhe seu Treino por aqui.</p>
+                    <p>Acompanhe seu progresso, frequência e gestão financeira por aqui.</p>
                 </div>
                 <a href="treinos.html" class="btn-treino-portal">
                     <i class="fa-solid fa-dumbbell"></i> Acessar Meu Plano de Treino ↗
                 </a>
+            </div>
+
+            <!-- CHECK-IN -->
+            <div class="checkin-card">
+                <h2 style="font-size: 1.3rem; margin-bottom: 6px; font-weight: 700;">Presença na Academia</h2>
+                <p style="color: var(--text-muted); font-size: 0.88rem;">Chegou para treinar? Confirme sua presença com um toque.</p>
+                <button class="btn-checkin" onclick="realizarCheckin()"><i class="fa-solid fa-circle-check"></i> Treinei Hoje!</button>
+            </div>
+
+            <!-- STATS GRID -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Frequência no Mês</span>
+                    <span class="stat-value" id="statFrequencia">0 dias</span>
+                    <span class="stat-sub">Presenças computadas</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Status do Plano</span>
+                    <span class="stat-value" id="statStatusPlano" style="font-size: 1.2rem; color: var(--accent-success);">Ativo</span>
+                    <span class="stat-sub" id="statValidadePlano">Verificando...</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Engajamento</span>
+                    <span class="stat-value" style="font-size: 1.1rem; color: var(--accent-warning);">Modo Ativo</span>
+                    <span class="stat-sub">Parabéns pela constância!</span>
+                </div>
+            </div>
+
+            <!-- DESAFIO MENSAL -->
+            <div class="challenge-card">
+                <div class="card-header" style="margin-bottom: 12px;">
+                    <div class="card-title" style="color: var(--accent-warning);"><i class="fa-solid fa-trophy"></i> Desafio Mensal: Foco Total</div>
+                    <span class="status-badge status-pendente" style="background: rgba(245, 158, 11, 0.2);">Em Andamento</span>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px;">Treine <strong>12 vezes</strong> neste mês para desbloquear o selo de dedicação Corpofitness.</p>
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 700;">
+                    <span id="txtProgressoDesafio">Progresso: 0 / 12 dias</span>
+                    <span id="txtPorcentagemDesafio">0%</span>
+                </div>
+                <div class="challenge-progress-bar">
+                    <div class="challenge-progress-fill" id="fillBarraDesafio"></div>
+                </div>
             </div>
 
             <div class="dashboard-grid">
@@ -468,6 +578,75 @@
                     </div>
                 </div>
             </div>
+
+            <!-- GALERIA DE EVOLUÇÃO FÍSICA COM PRIVACIDADE -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-camera-retro"></i> Galeria de Evolução Privada</div>
+                    <button class="btn-action-outline" onclick="bloquearNovamente()"><i class="fa-solid fa-lock"></i> Bloquear PIN</button>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Seus registros fotográficos mensais protegidos com criptografia local e senha.</p>
+                
+                <div id="conteudoGaleriaBloqueado" style="text-align: center; padding: 30px; background: var(--bg-card); border-radius: var(--radius-md);">
+                    <i class="fa-solid fa-shield-halved" style="font-size: 2.5rem; color: var(--accent-warning); margin-bottom: 10px;"></i>
+                    <p style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;">Conteúdo Protegido por PIN</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Insira sua senha para visualizar ou enviar novas fotos.</p>
+                </div>
+
+                <div id="conteudoGaleriaLiberado" style="display: none;">
+                    <div class="evolution-gallery-grid">
+                        <div class="evolution-slot" onclick="enviarFotoEvolucao('Frente')">
+                            <i class="fa-solid fa-user" style="font-size: 1.8rem; color: var(--primary-light); margin-bottom: 8px;"></i>
+                            <span style="display: block; font-size: 0.85rem; font-weight: 700;">Foto de Frente</span>
+                            <span style="font-size: 0.72rem; color: var(--text-muted);">Clique para enviar</span>
+                        </div>
+                        <div class="evolution-slot" onclick="enviarFotoEvolucao('Perfil')">
+                            <i class="fa-solid fa-child-reaching" style="font-size: 1.8rem; color: var(--primary-light); margin-bottom: 8px;"></i>
+                            <span style="display: block; font-size: 0.85rem; font-weight: 700;">Foto de Perfil</span>
+                            <span style="font-size: 0.72rem; color: var(--text-muted);">Clique para enviar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PLANO & RENOVAÇÃO -->
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-id-card-clip"></i> Plano Contratado</div>
+                        <span id="lblAlunoStatus" class="status-badge status-ativo">Ativo</span>
+                    </div>
+                    <div style="font-size: 1.4rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;" id="lblAlunoPlano">--</div>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Deseja estender seu plano atual ou migrar para o plano anual com desconto?</p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn-action-outline" onclick="abrirRenovacao()"><i class="fa-solid fa-arrow-up-right-dots"></i> Renovar / Upgrade</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HISTÓRICO FINANCEIRO -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-receipt"></i> Mensalidades & Faturas</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Referência</th>
+                                <th>Valor</th>
+                                <th>Vencimento</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaFaturasAluno">
+                            <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Carregando faturas...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <footer>
             <p>© 2026 Corpofitness. Todos os direitos reservados.</p>

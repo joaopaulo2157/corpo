@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700;800&display=swap">
 
     <!-- PRELOAD DO VÍDEO DO HERO -->
-    <link rel="preload" as="video" href="videos/academia.mp4" type="video/mp4">
+    <link rel="preload" as="fetch" href="videos/academia.mp4" type="video/mp4" crossorigin>
 
     <!-- FAVICON -->
     <link rel="icon" href="img/favicon.png" type="image/png">
@@ -56,7 +56,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
     <!-- CSS PRINCIPAL -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=3.0">
 
     <!-- ESTRUTURA SCHEMA.ORG (JSON-LD LOCALBUSINESS + GYM) -->
     <script type="application/ld+json">
@@ -207,7 +207,7 @@
     <!-- MAIN CONTENT CONTAINER -->
     <main id="main-content">
 
-        <!-- 3. HERO SECTION -->
+        <!-- 3. HERO SECTION (CORRIGIDO PARA PREENCHIMENTO COMPLETO DA TELA E VÍDEO SEM FAIXA) -->
         <section class="hero" id="inicio" aria-label="Apresentação da Corpofitness">
             <video id="heroVideo" class="hero-video-parallax" autoplay muted loop playsinline preload="metadata" poster="img/hero-poster.jpg" aria-hidden="true">
                 <source src="videos/academia.mp4" type="video/mp4">
@@ -234,7 +234,7 @@
                 </h1>
 
                 <p class="hero-description">
-                    Equipamentos de alta tecnologia, biometria facial, ambiente 100% arejado e professores especialistas dedicados à sua evolução diária.
+                    Equipamentos de alta tecnologia, biometria facial, ambiente 100% arrejado e professores especialistas dedicados à sua evolução diária.
                 </p>
 
                 <div class="hero-buttons">
@@ -247,6 +247,43 @@
                 </div>
                 
                 <div class="hero-info">
+                    <div class="hero-box">
+                        <svg class="icon-svg icon-dumbbell" role="img" aria-hidden="true" width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="dbGrad" x1="0" x2="1">
+                                    <stop offset="0" stop-color="#9AA7FF"/>
+                                    <stop offset="1" stop-color="#4D7BFF"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="22" width="12" height="20" rx="3" fill="#2f2f2f" opacity="0.9"/>
+                            <rect x="50" y="22" width="12" height="20" rx="3" fill="#2f2f2f" opacity="0.9"/>
+                            <rect x="18" y="26" width="28" height="12" rx="6" fill="url(#dbGrad)"/>
+                            <circle cx="12" cy="32" r="8" fill="#222" opacity="0.9"/>
+                            <circle cx="52" cy="32" r="8" fill="#222" opacity="0.9"/>
+                        </svg>
+                        <div>
+                            <h3 class="counter-number" data-target="450" data-suffix="+">0</h3>
+                            <span>Equipamentos</span>
+                        </div>
+                    </div>
+                    <div class="hero-box">
+                        <svg class="icon-svg icon-users" role="img" aria-hidden="true" width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="usGrad" x1="0" x2="1">
+                                    <stop offset="0" stop-color="#ffd27a"/>
+                                    <stop offset="1" stop-color="#ff8a5b"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="24" cy="22" r="8" fill="url(#usGrad)"/>
+                            <circle cx="44" cy="22" r="6" fill="#e6a86b"/>
+                            <path d="M10 44c0-6 6-10 14-10s14 4 14 10v4H10v-4z" fill="#2b2b2b"/>
+                            <path d="M34 44c0-5 4-8 10-8s10 3 10 8v4H34v-4z" fill="#242424"/>
+                        </svg>
+                        <div>
+                            <h3 class="counter-number" data-target="2500" data-suffix="+">0</h3>
+                            <span>Alunos Ativos</span>
+                        </div>
+                    </div>
                     <div class="hero-box">
                         <svg class="icon-svg icon-clock" role="img" aria-hidden="true" width="48" height="48" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="32" cy="32" r="28" fill="#fff" opacity="0.06"/>
@@ -293,7 +330,7 @@
 
         <div id="banner-area-topo" class="container" style="margin-top: 30px;"></div>
 
-        <!-- 5. ESTRUTURA (DINÂMICO DO SUPABASE) -->
+        <!-- 5. ESTRUTURA -->
         <section id="estrutura">
             <div class="container">
                 <div class="titulo" data-aos="fade-up">
@@ -301,28 +338,116 @@
                     <h2>ORGANIZADA A PARTIR DAS MODALIDADES</h2>
                     <p>Cada área foi criada para acomodar perfeitamente o treino que você escolheu, unindo técnica, conforto e performance.</p>
                 </div>
-                <div class="cards" id="containerEstruturaSite">
-                    <!-- Carregado via JS -->
+                <div class="cards">
+                    <div class="card" tabindex="0" data-aos="fade-up">
+                        <div class="icon-box"><i class="fas fa-shield-alt" aria-hidden="true"></i></div>
+                        <h3>Ring e Tatame de Lutas</h3>
+                        <p>Espaço dedicado para Muaythai, Jiu-Jitsu e Boxe Chinês, com tatames acolchoados e ringue profissional para treinos seguros e de alto impacto.</p>
+                    </div>
+                    <div class="card" tabindex="0" data-aos="fade-up" data-aos-delay="100">
+                        <div class="icon-box"><i class="fas fa-dumbbell" aria-hidden="true"></i></div>
+                        <h3>Arena Funcional e Musculação</h3>
+                        <p>Área híbrida com equipamentos livres, halteres e estações funcionais voltadas para força, resistência e condicionamento metabólico.</p>
+                    </div>
+                    <div class="card" tabindex="0" data-aos="fade-up" data-aos-delay="200">
+                        <div class="icon-box"><i class="fas fa-music" aria-hidden="true"></i></div>
+                        <h3>Estúdio Cardio e Dança</h3>
+                        <p>Ambiente climatizado para aulas de dança, fitdance e coletivas com som profissional e iluminação que mantém o ritmo e a energia lá em cima.</p>
+                    </div>
+                    <div class="card" tabindex="0" data-aos="fade-up" data-aos-delay="300">
+                        <div class="icon-box"><i class="fas fa-user-check" aria-hidden="true"></i></div>
+                        <h3>Assessoria & Planejamento</h3>
+                        <p>Consultoria individualizada com avaliação e montagem de treinos que conectam sua rotina aos objetivos específicos de cada modalidade.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- 6. MODALIDADES (DINÂMICO DO SUPABASE) -->
+        <!-- 6. MODALIDADES -->
         <section id="modalidades">
             <div class="container">
                 <div class="titulo" data-aos="fade-up">
                     <span>MODALIDADES</span>
                     <h2>TREINE CONFORME O SEU OBJETIVO</h2>
-                    <p>Deslize e conheça todas as nossas opções de alta performance estruturadas para o seu desenvolvimento completo.</p>
                 </div>
-                
-                <div class="swiper swiper-modalidades-auto" data-aos="fade-up">
-                    <div class="swiper-wrapper" id="containerModalidadesSite">
-                        <!-- Carregado via JS -->
+                <div class="modalidades-grid">
+                    <div class="modalidade" tabindex="0" data-aos="zoom-in">
+                        <i class="fas fa-fist-raised" aria-hidden="true"></i>
+                        <h3>🥊 MUAYTHAI</h3>
+                        <p>"Arte marcial tailandesa conhecida como a 'ciência dos oito membros'. Desenvolva força, agilidade e autoconfiança enquanto aprende técnicas poderosas de defesa pessoal."</p>
+                        <p><strong>Níveis:</strong> Intermediário a Avançado</p>
+                        <p><strong>Duração:</strong> 60 min</p>
+                        <p><strong>Equipamento:</strong> Luvas e protetor bucal (fornecemos)</p>
+                        <p><strong>Benefícios:</strong> Condicionamento físico, disciplina, defesa pessoal</p>
+                    </div>
+                    <div class="modalidade" tabindex="0" data-aos="zoom-in" data-aos-delay="100">
+                        <i class="fas fa-hand-rock" aria-hidden="true"></i>
+                        <h3>🥋 JIU-JITSU</h3>
+                        <p>"Arte marcial focada em técnicas de solo e finalizações. Aprenda a se defender contra oponentes maiores usando alavancas e estratégia."</p>
+                        <p><strong>Níveis:</strong> Iniciante a Avançado</p>
+                        <p><strong>Duração:</strong> 75 min</p>
+                        <p><strong>Equipamento:</strong> Kimono (pode ser alugado)</p>
+                        <p><strong>Benefícios:</strong> Resolução de problemas, força funcional, autoconfiança</p>
+                    </div>
+                    <div class="modalidade" tabindex="0" data-aos="zoom-in" data-aos-delay="200">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                        <h3>🥊 BOXE CHINÊS (Sanda)</h3>
+                        <p>"Arte marcial chinesa que combina golpes, chutes e quedas. Treino completo que desenvolve reflexos, potência e coordenação."</p>
+                        <p><strong>Níveis:</strong> Todos os níveis</p>
+                        <p><strong>Duração:</strong> 60 min</p>
+                        <p><strong>Equipamento:</strong> Luvas e protetor (fornecemos)</p>
+                        <p><strong>Benefícios:</strong> Condicionamento cardiovascular, agilidade, autodefesa</p>
+                    </div>
+                    <div class="modalidade" tabindex="0" data-aos="zoom-in" data-aos-delay="300">
+                        <i class="fas fa-music" aria-hidden="true"></i>
+                        <h3>💃 DANÇA</h3>
+                        <p>"Liberte seu corpo ao ritmo da música! Aulas dinâmicas que combinam coreografias, expressão corporal e muito movimento."</p>
+                        <p><strong>Níveis:</strong> Todos os níveis</p>
+                        <p><strong>Duração:</strong> 55 min</p>
+                        <p><strong>Equipamento:</strong> Roupa confortável e tênis</p>
+                        <p><strong>Benefícios:</strong> Coordenação, flexibilidade, bem-estar mental</p>
+                    </div>
+                    <div class="modalidade" tabindex="0" data-aos="zoom-in" data-aos-delay="400">
+                        <i class="fas fa-dumbbell" aria-hidden="true"></i>
+                        <h3>🏋️ MUSCULAÇÃO (Atualizada)</h3>
+                        <p>"Treino de força estrutural com halteres, barras e anilhas. Ideal para quem busca ganho de massa muscular e definição."</p>
+                        <p><strong>Níveis:</strong> Iniciante a Elite</p>
+                        <p><strong>Duração:</strong> 50-60 min</p>
+                        <p><strong>Equipamento:</strong> Roupas confortáveis, tênis fechado</p>
+                        <p><strong>Benefícios:</strong> Hipertrofia, força, saúde óssea</p>
+                    </div>
+                    <div class="modalidade" tabindex="0" data-aos="zoom-in" data-aos-delay="500">
+                        <i class="fas fa-bolt" aria-hidden="true"></i>
+                        <h3>🏃 CARDIO HI-IT</h3>
+                        <p>"Treino intervalado de alta intensidade para máxima queima calórica em mínimo tempo. Resultados rápidos!"</p>
+                        <p><strong>Níveis:</strong> Intermediário a Avançado</p>
+                        <p><strong>Duração:</strong> 30-40 min</p>
+                        <p><strong>Equipamento:</strong> Tênis adequado, toalha</p>
+                        <p><strong>Benefícios:</strong> Perda de gordura, condicionamento, metabolismo acelerado</p>
+                    </div>
+                    <div class="modalidade" tabindex="0" data-aos="zoom-in" data-aos-delay="600">
+                        <i class="fas fa-person-running" aria-hidden="true"></i>
+                        <h3>🏋️ TREINO FUNCIONAL</h3>
+                        <p>"Exercícios multiarticulares que simulam movimentos do dia a dia. Perfeito para melhorar coordenação, equilíbrio e tônus muscular."</p>
+                        <p><strong>Níveis:</strong> Iniciante a Avançado</p>
+                        <p><strong>Duração:</strong> 50 min</p>
+                        <p><strong>Equipamento:</strong> Roupas confortáveis</p>
+                        <p><strong>Benefícios:</strong> Mobilidade, prevenção de lesões, força funcional</p>
+                    </div>
+                    <div class="modalidade" tabindex="0" data-aos="zoom-in" data-aos-delay="700">
+                        <i class="fas fa-users" aria-hidden="true"></i>
+                        <h3>👥 AULAS COLETIVAS</h3>
+                        <p>"Fitdance, spinning e ritmos com energia contagiante e instrutores motivacionais. Treine em grupo e se divirta!"</p>
+                        <p><strong>Níveis:</strong> Todos os níveis</p>
+                        <p><strong>Duração:</strong> 45-60 min</p>
+                        <p><strong>Equipamento:</strong> Roupa confortável</p>
+                        <p><strong>Benefícios:</strong> Socialização, condicionamento, motivação</p>
                     </div>
                 </div>
             </div>
         </section>
+
+        <div id="banner-area-meio" class="container" style="margin-top: 30px;"></div>
 
         <!-- 7. GALERIA -->
         <section id="galeria">
@@ -330,35 +455,33 @@
                 <div class="titulo" data-aos="fade-up">
                     <span>GALERIA DE FOTOS</span>
                     <h2>CONHEÇA O ESPAÇO DA ACADEMIA CORPO FITNESS</h2>
-                    <p>Ambiente moderno, totalmente arejado e planejado em cada detalhe.</p>
+                    <p>Ambiente moderno, totalmente arrejado e planejado em cada detalhe.</p>
                 </div>
                 <div class="galeria-grid" id="containerGaleriaSite" role="region" aria-live="polite"></div>
             </div>
         </section>
 
+        <!-- 8. PLANOS -->
         <section id="planos">
-            <div class="container container-planos-anexo">
-                <div class="bg-planos-anexo">
-                    <div class="bg-planos-anexo" aria-hidden="true"></div>
-                    <img src="img/bg-planos.jpg" alt="Imagem de fundo para a seção de planos" aria-hidden="false" style="display: none;"></div>
-                <div class="titulo-anexo">
-                    <h2 class="planos-main-title-anexo">CONHEÇA NOSSOS <span>PLANOS</span></h2>
-                    <p class="planos-subtitle-desc-anexo">Comece a cuidar da sua saúde hoje mesmo! Na Corpo Fitness, temos o pacote de serviços ideal para que você alcance seus objetivos de saúde e bem-estar. É só comparar e escolher o plano com o melhor custo-benefício.</p>
+            <div class="container">
+                <div class="titulo" data-aos="fade-up">
+                    <span>PLANOS DE ASSINATURA</span>
+                    <h2>ENCONTRE A SUA MELHOR OPÇÃO</h2>
+                    <p>Garanta acesso irrestrito e transformações reais sem letrinhas miúdas.</p>
                 </div>
-
-                <div class="planos-grid-anexo" id="containerPlanosSite">
-                    <!-- Planos dinâmicos do Supabase -->
-                </div>
-
-                <!-- CAIXA DE AVISOS -->
-                <div class="planos-avisos-anexo">
-                    <div class="aviso-icon-anexo"><i class="fas fa-exclamation-circle"></i></div>
-                    <div class="aviso-text-anexo">
-                        <strong>AVISOS:</strong>
+                <div class="planos">
+                    <div class="plano" data-aos="fade-up">
+                        <h3>Plano Fit</h3>
+                        <p class="plano-desc">Ideal para quem busca rotina e flexibilidade diária.</p>
+                        <div class="valor">
+                            <small>R$</small> <span>99</span> <small>/mês</small>
+                        </div>
                         <ul>
-                            <li>Menores entre 12 e 18 anos incompletos devem estar acompanhados de seu representante legal no primeiro, munidos de documento comprobatório.</li>
-                            <li>Para pagamento em moeda corrente, favor consultar o balcão de atendimento da Unidade escolhida.</li>
+                            <li>Acesso à Musculação</li>
+                            <li>Horário Livre Comercial</li>
+                            <li>Avaliação Física Básica</li>
                         </ul>
+                        <a href="#contato" class="btn-plano">Matricular Agora</a>
                     </div>
                 </div>
             </div>
@@ -376,71 +499,196 @@
             </div>
         </section>
 
-        <!-- 9. PROFESSORES -->
-        <section id="professores" class="section-nossa-equipe">
+        <!-- 9. PROFESSORES / NOSSA EQUIPE -->
+        <section id="professores" class="team-section" aria-label="Nossa Equipe">
             <div class="container">
-                <div class="equipe-header-wrapper" data-aos="fade-up">
-                    <div class="titulo" style="text-align: left; margin-bottom: 0;">
-                        <span class="subtitulo-badge">— NOSSA EQUIPE</span>
-                        <h2 class="equipe-title">PROFISSIONAIS QUE ESTÃO <span class="text-highlight-blue">DO SEU LADO.</span></h2>
+                <!-- HEADER DA EQUIPE IGUAL AO ANEXO -->
+                <div class="team-header" data-aos="fade-up">
+                    <div class="team-header-left">
+                        <span class="team-tag">
+                            <span class="team-tag-dash"></span> NOSSA EQUIPE
+                        </span>
+                        <h2 class="team-title">
+                            PROFISSIONAIS QUE<br>
+                            <span class="team-title-white">ESTÃO </span><span class="team-title-accent">DO SEU LADO.</span>
+                        </h2>
                     </div>
-                    <div class="equipe-header-action">
-                        <p>Na Corpo Fitness tem uma equipe qualificada pronta pra te orientar — do aquecimento à série final.</p>
-                        <a href="#contato" class="btn-quero-matricular">QUERO ME MATRICULAR <i class="fas fa-arrow-right"></i></a>
+                    <div class="team-header-right">
+                        <p class="team-desc">
+                            Cada unidade Corpofitness tem uma equipe qualificada pronta pra te orientar — do aquecimento à série final.
+                        </p>
+                        <a href="#contato" class="btn-team-cta">
+                            QUERO ME MATRICULAR <i class="fas fa-angles-right" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </div>
 
-                <div class="swiper swiper-professores" data-aos="fade-up" data-aos-delay="150">
-                    <div class="swiper-wrapper" id="containerProfessoresSite"></div>
+                <!-- CAROUSEL SWIPER DA EQUIPE -->
+                <div class="swiper team-swiper" data-aos="fade-up" data-aos-delay="100">
+                    <div class="swiper-wrapper" id="containerProfessoresSite">
+                        <!-- SLIDE 1 -->
+                        <div class="swiper-slide">
+                            <div class="team-card">
+                                <div class="team-card-img-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1548690312-e3b507d8c110?auto=format&fit=crop&w=600&q=80" alt="Foto de Camila Torres" loading="lazy">
+                                </div>
+                                <div class="team-card-body">
+                                    <span class="team-card-role">PROFESSORA DE AULAS COLETIVAS</span>
+                                    <h3 class="team-card-name">CAMILA TORRES</h3>
+                                    <div class="team-card-divider"></div>
+                                    <p class="team-card-desc">Formada em Educação Física com especialização em dança e ritmo. Ministra spinning, funcional e zumba. A aula que você não consegue faltar.</p>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="equipe-swiper-nav">
-                        <div class="swiper-button-prev-custom equipe-prev"><i class="fas fa-chevron-left"></i></div>
-                        <div class="swiper-button-next-custom equipe-next"><i class="fas fa-chevron-right"></i></div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                        <!-- SLIDE 2 -->
+                        <div class="swiper-slide">
+                            <div class="team-card">
+                                <div class="team-card-img-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=600&q=80" alt="Foto de Rafael Mendes" loading="lazy">
+                                </div>
+                                <div class="team-card-body">
+                                    <span class="team-card-role">INSTRUTOR DE MUSCULAÇÃO</span>
+                                    <h3 class="team-card-name">RAFAEL MENDES</h3>
+                                    <div class="team-card-divider"></div>
+                                    <p class="team-card-desc">Especialista em hipertrofia e recomposição corporal. Mais de 8 anos orientando alunos de todos os níveis do primeiro treino à periodização avançada.</p>
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- 10. DEPOIMENTOS / QUEM JÁ TREINA (DINÂMICO DO SUPABASE) -->
-        <section id="resultados" class="section-depoimentos-marques" aria-label="Depoimentos de Alunos">
-            <div class="container-depo-anexo">
-                
-                <div class="depo-header-anexo" data-aos="fade-up">
-                    <span class="subtitulo-tag-anexo">— QUEM JÁ TREINA</span>
-                    <div class="depo-title-row">
-                        <h2 class="depo-main-title-anexo">O QUE DIZEM <span class="text-highlight-blue">NOSSOS ALUNOS</span></h2>
-                        <div class="depo-avatars-stack">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100" alt="Aluno" loading="lazy">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100" alt="Aluno" loading="lazy">
-                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100" alt="Aluno" loading="lazy">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100" alt="Aluno" loading="lazy">
-                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100" alt="Aluno" loading="lazy">
+                        <!-- SLIDE 3 -->
+                        <div class="swiper-slide">
+                            <div class="team-card">
+                                <div class="team-card-img-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80" alt="Foto de Juliana Costa" loading="lazy">
+                                </div>
+                                <div class="team-card-body">
+                                    <span class="team-card-role">INSTRUTORA DE YOGA E MOBILIDADE</span>
+                                    <h3 class="team-card-name">JULIANA COSTA</h3>
+                                    <div class="team-card-divider"></div>
+                                    <p class="team-card-desc">Instrutora certificada em yoga e mobilidade funcional. Trabalha o equilíbrio entre corpo e mente, essencial para quem treina pesado.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SLIDE 4 -->
+                        <div class="swiper-slide">
+                            <div class="team-card">
+                                <div class="team-card-img-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80" alt="Foto de Diego Souza" loading="lazy">
+                                </div>
+                                <div class="team-card-body">
+                                    <span class="team-card-role">INSTRUTOR DE TREINO FUNCIONAL</span>
+                                    <h3 class="team-card-name">DIEGO SOUZA</h3>
+                                    <div class="team-card-divider"></div>
+                                    <p class="team-card-desc">Certificado em CrossFit e treino funcional de alta intensidade. Criador de treinos que desafiam sem desmotivar para quem quer resultado.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SLIDE 5 -->
+                        <div class="swiper-slide">
+                            <div class="team-card">
+                                <div class="team-card-img-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?auto=format&fit=crop&w=600&q=80" alt="Foto de André Torres" loading="lazy">
+                                </div>
+                                <div class="team-card-body">
+                                    <span class="team-card-role">INSTRUTOR DE CARDIO E CORRIDA</span>
+                                    <h3 class="team-card-name">ANDRÉ TORRES</h3>
+                                    <div class="team-card-divider"></div>
+                                    <p class="team-card-desc">Especialista em condicionamento aeróbico e corridas de longa distância. Metodologia que respeita o ritmo de cada aluno.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <p class="depo-desc-anexo">Aqui na Corpofitness, tratamos cada aluno com atenção, proporcionando um ambiente acolhedor para que todos possam cuidar da saúde sem preocupações.</p>
                 </div>
 
-                <div class="depo-columns-wrapper" data-aos="fade-up" data-aos-delay="100">
-                    <div class="depo-gradient-overlay-top" aria-hidden="true"></div>
-                    <div class="depo-gradient-overlay-bottom" aria-hidden="true"></div>
-
-                    <div class="depo-col-grid" id="containerFeedbacksSite">
-                        <!-- Carregado via JS em colunas dinâmicas -->
-                    </div>
+                <!-- BOTÕES DE NAVEGAÇÃO CENTRALIZADOS EMBITO -->
+                <div class="team-swiper-nav">
+                    <button class="team-nav-btn team-nav-prev" aria-label="Anterior">
+                        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <button class="team-nav-btn team-nav-next" aria-label="Próximo">
+                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                    </button>
                 </div>
-
             </div>
         </section>
 
-        <!-- 11. FAQ / DÚVIDAS FREQUENTES (DINÂMICO DO SUPABASE) -->
+        <!-- 10. DEPOIMENTOS -->
+        <section id="resultados" aria-label="Depoimentos de Alunos">
+            <div class="container">
+                <div class="titulo" data-aos="fade-up">
+                    <span>DEPOIMENTOS</span>
+                    <h2>HISTÓRIAS DE SUPERAÇÃO</h2>
+                </div>
+                <div class="depoimentos">
+                    <div class="swiper">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="depoimento" tabindex="0">
+                                    <div class="estrelas" aria-label="Avaliação 5 de 5 estrelas">★★★★★</div>
+                                <p>"Em poucos meses conquistei um condicionamento que nunca imaginei alcançar. O suporte dos treinadores no ambiente é incomparável."</p>
+                                <div class="cliente">
+                                    <img src="img/aluno1.jpg" alt="Foto de Carolina Mendes" loading="lazy" decoding="async" width="64" height="64" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100';">
+                                    <div>
+                                        <h4>Carolina Mendes</h4>
+                                        <span>Aluna Plano Premium</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="depoimento" tabindex="0">
+                                <div class="estrelas" aria-label="Avaliação 5 de 5 estrelas">★★★★★</div>
+                                <p>"Melhor infraestrutura de São José da Tapera! Maquinários modernos, vestiários limpos e o atendimento é espetacular."</p>
+                                <div class="cliente">
+                                    <img src="img/aluno2.jpg" alt="Foto de Renato Silva" loading="lazy" decoding="async" width="64" height="64" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100';">
+                                    <div>
+                                        <h4>Renato Silva</h4>
+                                        <span>Aluno Plano Black</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11. FAQ -->
         <section id="faq" aria-label="Perguntas Frequentes">
             <div class="container">
                 <div class="titulo" data-aos="fade-up">
                     <span>DÚVIDAS FREQUENTES</span>
                     <h2>O QUE VOCÊ PRECISA SABER</h2>
                 </div>
-                <div class="faq-grid" id="containerFaqSite">
-                    <!-- Carregado via JS -->
+                <div class="faq-grid">
+                    <div class="faq-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="faq-card-header">
+                            <strong>Preciso ter experiência para começar na academia?</strong>
+                        </div>
+                        <div class="faq-card-body">
+                            <p>Não! Nossos instrutores montam seu treino individualizado e acompanham cada série desde o primeiro dia, com foco em segurança e evolução.</p>
+                        </div>
+                    </div>
+                    <div class="faq-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="faq-card-header">
+                            <strong>A academia funciona em feriados e finais de semana?</strong>
+                        </div>
+                        <div class="faq-card-body">
+                            <p>Sim. Atendemos aos sábados das 15:00 às 19:00 e aos domingos das 06:00 às 11:00. Seu treino não para.</p>
+                        </div>
+                    </div>
+                    <div class="faq-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="faq-card-header">
+                            <strong>Como faço para agendar uma aula experimental grátis?</strong>
+                        </div>
+                        <div class="faq-card-body">
+                            <p>Basta preencher o formulário no final da página ou clicar no botão do WhatsApp para garantir seu passe cortesia e começar com energia total.</p>
+                        </div>
+                    </div>
                 </div>
             </div>        
         </section>
@@ -587,7 +835,7 @@
     <!-- SCRIPTS -->
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/script.js?v=2.0"></script>
 
     <script>
         const FALLBACK_IMG = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600';
@@ -601,162 +849,23 @@
                 });
             });
 
-            // 1. CARREGAR ESTRUTURA DINÂMICA
-            async function carregarEstruturaSite() {
-                const container = document.querySelector('#containerEstruturaSite');
-                if (!container) return;
-                const { data: itens } = await _supabase.from('estrutura').select('*').order('ordem', { ascending: true });
-                if (itens && itens.length > 0) {
-                    container.innerHTML = '';
-                    itens.forEach((e, idx) => {
-                        container.innerHTML += `
-                            <div class="card" tabindex="0" data-aos="fade-up" data-aos-delay="${idx * 100}">
-                                <div class="icon-box"><i class="${e.icone || 'fas fa-dumbbell'}" aria-hidden="true"></i></div>
-                                <h3>${e.titulo}</h3>
-                                <p>${e.descricao}</p>
-                            </div>
-                        `;
-                    });
-                }
-            }
-
-            // 2. CARREGAR MODALIDADES DINÂMICAS
-            async function carregarModalidadesSite() {
-                const container = document.querySelector('#containerModalidadesSite');
-                if (!container) return;
-                const { data: mods } = await _supabase.from('modalidades').select('*').order('ordem', { ascending: true });
-                if (mods && mods.length > 0) {
-                    container.innerHTML = '';
-                    mods.forEach(m => {
-                        container.innerHTML += `
-                            <div class="swiper-slide">
-                                <div class="modalidade" tabindex="0">
-                                    <i class="${m.icone || 'fas fa-dumbbell'}" aria-hidden="true"></i>
-                                    <h3>${m.nome}</h3>
-                                    <p>"${m.descricao}"</p>
-                                    <p><strong>Níveis:</strong> ${m.nivel}</p>
-                                    <p><strong>Duração:</strong> ${m.duracao}</p>
-                                    <p><strong>Equipamento:</strong> ${m.equipamento}</p>
-                                    <p><strong>Benefícios:</strong> ${m.beneficios}</p>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-            }
-
-            // 3. CARREGAR FEEDBACKS / QUEM JÁ TREINA DINÂMICO
-            async function carregarFeedbacksSite() {
-                const container = document.querySelector('#containerFeedbacksSite');
-                if (!container) return;
-                const { data: feeds } = await _supabase.from('feedbacks').select('*').order('ordem', { ascending: true });
-                if (feeds && feeds.length > 0) {
-                    container.innerHTML = '';
-                    // Monta 3 colunas simulando o carrossel vertical infinito
-                    let col1 = '<div class="depo-track-vertical track-up">';
-                    let col2 = '<div class="depo-track-vertical track-down">';
-                    let col3 = '<div class="depo-track-vertical track-up-slow">';
-
-                    feeds.forEach((f, index) => {
-                        const cardHtml = `
-                            <div class="depo-card-item">
-                                <div class="depo-card-user">
-                                    <img src="${f.foto || FALLBACK_IMG}" alt="${f.nome}">
-                                    <div>
-                                        <h4>${f.nome}</h4>
-                                        <div class="depo-estrelas">${f.estrelas || '★★★★★'}</div>
-                                        <span>${f.unidade}</span>
-                                    </div>
-                                </div>
-                                <p>"${f.texto}"</p>
-                            </div>
-                        `;
-                        if (index % 3 === 0) col1 += cardHtml;
-                        else if (index % 3 === 1) col2 += cardHtml;
-                        else col3 += cardHtml;
-                    });
-
-                    // Duplica os itens para garantir o efeito loop infinito suave
-                    feeds.forEach((f) => {
-                        const cardHtml = `
-                            <div class="depo-card-item">
-                                <div class="depo-card-user">
-                                    <img src="${f.foto || FALLBACK_IMG}" alt="${f.nome}">
-                                    <div>
-                                        <h4>${f.nome}</h4>
-                                        <div class="depo-estrelas">${f.estrelas || '★★★★★'}</div>
-                                        <span>${f.unidade}</span>
-                                    </div>
-                                </div>
-                                <p>"${f.texto}"</p>
-                            </div>
-                        `;
-                        if (index % 3 === 0) col1 += cardHtml;
-                        else if (index % 3 === 1) col2 += cardHtml;
-                        else col3 += cardHtml;
-                    });
-
-                    col1 += '</div>';
-                    col2 += '</div>';
-                    col3 += '</div>';
-
-                    container.innerHTML = col1 + col2 + col3;
-                }
-            }
-
-            // 4. CARREGAR FAQ DINÂMICO
-            async function carregarFaqSite() {
-                const container = document.querySelector('#containerFaqSite');
-                if (!container) return;
-                const { data: faqs } = await _supabase.from('faq').select('*').order('ordem', { ascending: true });
-                if (faqs && faqs.length > 0) {
-                    container.innerHTML = '';
-                    faqs.forEach((f, idx) => {
-                        container.innerHTML += `
-                            <div class="faq-card" data-aos="fade-up" data-aos-delay="${(idx + 1) * 100}">
-                                <div class="faq-card-header">
-                                    <strong>${f.pergunta}</strong>
-                                </div>
-                                <div class="faq-card-body">
-                                    <p>${f.resposta}</p>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-            }
-
-            // 5. CARREGAR PLANOS DINÂMICOS
-            async function carregarPlanosSite() {
-                const container = document.querySelector('#containerPlanosSite');
+            async function carregarPlanos() {
+                const container = document.querySelector('#planos .planos');
                 if (!container) return;
                 const { data: planos } = await _supabase.from('planos').select('*').order('ordem', { ascending: true });
                 if (planos && planos.length > 0) {
                     container.innerHTML = '';
                     planos.forEach(p => {
-                        const isDestaque = p.destaque === 'sim' ? 'plano-card-anexo destaque-central-anexo' : 'plano-card-anexo';
-                        const badgeHtml = p.badge ? `<div class="badge-custo-beneficio-anexo">${p.badge}</div>` : '';
-                        const itensLi = (p.itens || []).map(i => `<li><i>✓</i> ${i}</li>`).join('');
-
+                        const itensHTML = Array.isArray(p.itens) ? p.itens.map(item => `<li>${item}</li>`).join('') : '';
+                        const destaqueClass = p.destaque === 'sim' ? 'plano destaque pulse-glow' : 'plano';
                         container.innerHTML += `
-                            <div class="${isDestaque}">
-                                ${badgeHtml}
-                                <div class="plano-header-info-anexo">
-                                    <h3 class="plano-card-title-anexo">${p.nome}</h3>
-                                    <span class="plano-periodo-anexo">A partir de</span>
-                                    <div class="plano-valor-box-anexo">
-                                        <small>R$</small>
-                                        <span class="valor-num-anexo">${p.valor}</span>
-                                        <span class="asterisco-anexo">*</span>
-                                    </div>
-                                    <span class="sub-valor-texto-anexo">${p.sufixo || 'por mês'}</span>
-                                </div>
-                                <ul class="plano-beneficios-list-anexo">
-                                    ${itensLi}
-                                </ul>
-                                <div class="plano-btn-wrapper-anexo">
-                                    <a href="#contato" class="btn-plano-anexo">MATRICULE-SE!</a>
-                                </div>
+                            <div class="${destaqueClass}" data-aos="fade-up">
+                                ${p.badge ? `<div class="badge-shimmer"><i class="fas fa-fire"></i> ${p.badge}</div>` : ''}
+                                <h3>${p.nome || ''}</h3>
+                                <p class="plano-desc">Garantia de resultados reais.</p>
+                                <div class="valor"><small>R$</small> <span>${p.valor ? p.valor.replace('R$', '').trim() : ''}</span> <small>${p.sufixo || '/mês'}</small></div>
+                                <ul>${itensHTML}</ul>
+                                <a href="#contato" class="btn-plano">Matricular Agora</a>
                             </div>
                         `;
                     });
@@ -770,63 +879,94 @@
                 if (fotos && fotos.length > 0) {
                     container.innerHTML = '';
                     fotos.forEach(f => {
-                        const highQualityUrl = f.img || FALLBACK_IMG;
-                        const lowQualityUrl = highQualityUrl.includes('?') 
-                            ? `${highQualityUrl}&width=40&quality=30` 
-                            : `${highQualityUrl}?width=40&quality=30`;
-                        const altText = f.titulo || 'Foto da galeria da academia';
-
-                        container.innerHTML += `
-                            <div class="galeria-item" data-aos="zoom-in">
-                                <img src="${lowQualityUrl}" class="galeria-img-placeholder" alt="${altText}" loading="eager">
-                                <img src="${highQualityUrl}" class="galeria-img-hq" alt="${altText}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded'); this.src='${FALLBACK_IMG}'">
-                            </div>
-                        `;
+                        container.innerHTML += `<div class="galeria-item" data-aos="zoom-in"><img src="${f.img || FALLBACK_IMG}" alt="${f.titulo || 'Galeria'}" loading="lazy"></div>`;
                     });
                 }
+            }
+
+            let teamSwiperInstance = null;
+
+            function initTeamSwiper() {
+                const teamSwiperEl = document.querySelector('.team-swiper');
+                if (!teamSwiperEl || typeof Swiper === 'undefined') return;
+                const slideCount = teamSwiperEl.querySelectorAll('.swiper-slide').length;
+                if (slideCount === 0) return;
+
+                if (teamSwiperInstance) {
+                    try { teamSwiperInstance.destroy(true, true); } catch(e) {}
+                }
+                teamSwiperInstance = new Swiper('.team-swiper', {
+                    slidesPerView: 1,
+                    spaceBetween: 24,
+                    loop: slideCount >= 3,
+                    autoplay: {
+                        delay: 4500,
+                        disableOnInteraction: false,
+                        pauseOnMouseEnter: true,
+                    },
+                    navigation: {
+                        nextEl: '.team-nav-next',
+                        prevEl: '.team-nav-prev',
+                    },
+                    breakpoints: {
+                        576: { slidesPerView: Math.min(2, slideCount), spaceBetween: 20 },
+                        992: { slidesPerView: Math.min(3, slideCount), spaceBetween: 24 },
+                        1200: { slidesPerView: Math.min(4, slideCount), spaceBetween: 24 }
+                    }
+                });
             }
 
             async function carregarProfessores() {
                 const container = document.querySelector('#containerProfessoresSite');
                 if (!container) return;
-                const { data: professores } = await _supabase.from('professores').select('*').order('created_at', { ascending: false });
-                if (professores && professores.length > 0) {
-                    container.innerHTML = ''; 
-                    professores.forEach((p, index) => {
-                        const activeClass = index === 1 ? 'active-card' : '';
-                        container.innerHTML += `
-                            <div class="swiper-slide">
-                                <div class="professor-card-lux ${activeClass}" tabindex="0" data-aos="fade-up">
-                                    <div class="prof-img-wrapper">
-                                        <img src="${p.foto || FALLBACK_IMG}" alt="Foto de ${p.nome}" loading="lazy" width="400" height="500">
-                                    </div>
-                                    <div class="prof-content-box">
-                                        <span class="prof-role">${p.esp || 'INSTRUTOR DE FITNESS'}</span>
-                                        <h3 class="prof-name">${p.nome || 'Instrutor'}</h3>
-                                        <p class="prof-bio">${p.bio || 'Profissional altamente qualificado para garantir o seu melhor rendimento físico.'}</p>
+                try {
+                    const { data: professores } = await _supabase.from('professores').select('*').order('created_at', { ascending: false });
+                    if (professores && professores.length > 0) {
+                        const defaultPhotos = [
+                            'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80',
+                            'https://images.unsplash.com/photo-1548690312-e3b507d8c110?auto=format&fit=crop&w=600&q=80',
+                            'https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=600&q=80',
+                            'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80',
+                            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80'
+                        ];
+
+                        container.innerHTML = ''; 
+                        professores.forEach((p, index) => {
+                            const cargo = (p.cargo || p.esp || 'INSTRUTOR DE MUSCULAÇÃO').toUpperCase();
+                            const nome = (p.nome || 'Instrutor').toUpperCase();
+                            const bio = (p.bio && p.bio.length > 5) ? p.bio : (p.descricao || (p.esp ? `Especialista em ${p.esp}. Foco em evolução e acompanhamento de resultados.` : 'Especialista em musculação e acompanhamento profissional.'));
+                            let foto = p.foto;
+                            if (!foto || foto.includes('via.placeholder') || foto.includes('placeholder') || foto.includes('prof1.jpg') || foto.length < 5) {
+                                foto = defaultPhotos[index % defaultPhotos.length];
+                            }
+
+                            container.innerHTML += `
+                                <div class="swiper-slide">
+                                    <div class="team-card">
+                                        <div class="team-card-img-wrapper">
+                                            <img src="${foto}" alt="Foto de ${nome}" loading="lazy">
+                                        </div>
+                                        <div class="team-card-body">
+                                            <span class="team-card-role">${cargo}</span>
+                                            <h3 class="team-card-name">${nome}</h3>
+                                            <div class="team-card-divider"></div>
+                                            <p class="team-card-desc">${bio}</p>
+                                            ${(p.instagram || p.facebook) ? `
+                                                <div class="team-card-social">
+                                                    ${p.instagram ? `<a href="${p.instagram}" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>` : ''}
+                                                    ${p.facebook ? `<a href="${p.facebook}" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>` : ''}
+                                                </div>
+                                            ` : ''}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `;
-                    });
-                }
-
-                if (typeof Swiper !== 'undefined') {
-                    new Swiper('.swiper-professores', {
-                        slidesPerView: 1,
-                        spaceBetween: 20,
-                        loop: true,
-                        grabCursor: true,
-                        navigation: {
-                            nextEl: '.equipe-next',
-                            prevEl: '.equipe-prev',
-                        },
-                        breakpoints: {
-                            576: { slidesPerView: 2, spaceBetween: 20 },
-                            992: { slidesPerView: 3, spaceBetween: 24 },
-                            1200: { slidesPerView: 4, spaceBetween: 30 }
-                        }
-                    });
+                            `;
+                        });
+                    }
+                } catch (err) {
+                    console.warn('Erro ao carregar professores:', err);
+                } finally {
+                    initTeamSwiper();
                 }
             }
 
@@ -867,7 +1007,7 @@
                         }
 
                         const originalWidth = track.scrollWidth / 2;
-                        const speed = 90;
+                        const speed = 90; // px per second
                         const duration = Math.max(18, Math.round(originalWidth / speed));
                         track.style.setProperty('--marquee-duration', duration + 's');
                     });
@@ -892,23 +1032,23 @@
                 });
             }
 
-            carregarEstruturaSite();
-            carregarModalidadesSite();
-            carregarFeedbacksSite();
-            carregarFaqSite();
-            carregarPlanosSite();
+            carregarPlanos();
             carregarGaleria();
             carregarProfessores();
             carregarBanners();
             carregarParceirosSite();
         });
 
+<!-- SCRIPT DE INTEGRAÇÃO DA SESSÃO DO ALUNO NO HEADER -->
+
         document.addEventListener('DOMContentLoaded', async () => {
             const userArea = document.getElementById('userNavArea');
             if (!userArea) return;
 
-            const paginaAluno = 'aluno/index.html';
+            // Defina aqui o nome exato do arquivo HTML do painel do aluno (ex: 'index.html' ou 'aluno.html')
+            const paginaAluno = 'aluno/index.html'; // Substitua pelo nome real se for diferente
 
+            // 1. Verifica se há usuário na sessão unificada ou no Supabase Auth
             let usuario = JSON.parse(sessionStorage.getItem('corpofitness_usuario')) || 
                           JSON.parse(sessionStorage.getItem('corpofitness_cliente_logado'));
 
@@ -922,6 +1062,7 @@
                 }
             }
 
+            // 2. Renderiza o botão na barra superior dependendo do status de login
             if (usuario) {
                 const primeiroNome = (usuario.nome || 'Aluno').split(' ')[0];
                 userArea.innerHTML = `
@@ -943,41 +1084,16 @@
             }
         });
 
+        // Função global de encerramento de sessão a partir da home
         window.logoutSitePrincipal = async function() {
             sessionStorage.removeItem('corpofitness_usuario');
             sessionStorage.removeItem('corpofitness_cliente_logado');
             await _supabase.auth.signOut();
             window.location.reload();
+
+            // Ajuste o caminho abaixo conforme a localização do seu arquivo login-cliente.html
             window.location.href = 'login-cliente.html';
         };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                if (typeof Swiper !== 'undefined') {
-                    new Swiper('.swiper-modalidades-auto', {
-                        slidesPerView: 1,
-                        spaceBetween: 25,
-                        loop: true,
-                        grabCursor: true,
-                        speed: 5000,
-                        autoplay: {
-                            delay: 0,
-                            disableOnInteraction: false,
-                            pauseOnMouseEnter: true
-                        },
-                        freeMode: {
-                            enabled: true,
-                            momentum: false
-                        },
-                        breakpoints: {
-                            640: { slidesPerView: 2, spaceBetween: 25 },
-                            1024: { slidesPerView: 3, spaceBetween: 30 },
-                            1280: { slidesPerView: 4, spaceBetween: 30 }
-                        }
-                    });
-                }
-            }, 1000);
-        });
     </script>
 </body>
 </html>

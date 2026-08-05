@@ -265,12 +265,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /*==================================================
-    9. SWIPER DEPOIMENTOS E MODALIDADES
+    9. SWIPER DEPOIMENTOS (CONFIGURAÇÃO REFINADA)
     ==================================================*/
     if (typeof Swiper !== "undefined") {
-        const swiperDepoimentos = document.querySelector(".swiper-depoimentos");
-        if (swiperDepoimentos) {
-            new Swiper(".swiper-depoimentos", {
+        const swiperEl = document.querySelector(".swiper");
+
+        if (swiperEl) {
+            new Swiper(".swiper", {
                 slidesPerView: 1,
                 spaceBetween: 28,
                 loop: false,
@@ -281,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     pauseOnMouseEnter: true
                 },
                 pagination: {
-                    el: ".swiper-depoimentos .swiper-pagination",
+                    el: ".swiper-pagination",
                     clickable: true,
                     dynamicBullets: true
                 },
@@ -297,40 +298,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     1100: {
                         slidesPerView: 3,
                         spaceBetween: 32
-                    }
-                }
-            });
-        }
-
-        const swiperModalidades = document.querySelector(".swiper-modalidades");
-        if (swiperModalidades) {
-            new Swiper(".swiper-modalidades", {
-                slidesPerView: 1,
-                spaceBetween: 24,
-                loop: false,
-                grabCursor: true,
-                autoplay: {
-                    delay: 6500,
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: true
-                },
-                pagination: {
-                    el: ".swiper-modalidades .swiper-pagination",
-                    clickable: true,
-                    dynamicBullets: true
-                },
-                breakpoints: {
-                    640: {
-                        slidesPerView: 1.05,
-                        spaceBetween: 20
-                    },
-                    768: {
-                        slidesPerView: 2,
-                        spaceBetween: 24
-                    },
-                    1100: {
-                        slidesPerView: 3,
-                        spaceBetween: 28
                     }
                 }
             });
@@ -1627,29 +1594,96 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function carregarProfessores() {
-        const { data: professores } = await _supabase.from('professores').select('*').order('created_at', { ascending: false });
-        const container = document.querySelector('#professores .team-grid') || document.querySelector('.professores-container');
+    let teamSwiperInstance = null;
 
-        if (container && professores && professores.length > 0) {
-            container.innerHTML = '';
-            professores.forEach(p => {
-                container.innerHTML += `
-                    <div class="team-card" data-aos="fade-up">
-                        <div class="team-img">
-                            <img src="${p.foto}" alt="${p.nome}">
-                        </div>
-                        <div class="team-info">
-                            <h4>${p.nome}</h4>
-                            <p>${p.esp}</p>
-                            <div class="social-links">
-                                ${p.instagram ? `<a href="${p.instagram}" target="_blank"><i class="fab fa-instagram"></i></a>` : ''}
-                                ${p.facebook ? `<a href="${p.facebook}" target="_blank"><i class="fab fa-facebook"></i></a>` : ''}
+    window.initTeamSwiper = function() {
+        const teamSwiperEl = document.querySelector('.team-swiper');
+        if (!teamSwiperEl || typeof Swiper === 'undefined') return;
+        const slideCount = teamSwiperEl.querySelectorAll('.swiper-slide').length;
+        if (slideCount === 0) return;
+
+        if (teamSwiperInstance) {
+            try { teamSwiperInstance.destroy(true, true); } catch(e) {}
+        }
+        teamSwiperInstance = new Swiper('.team-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 16,
+            loop: slideCount >= 3,
+            autoplay: {
+                delay: 4500,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
+            navigation: {
+                nextEl: '.team-nav-next',
+                prevEl: '.team-nav-prev',
+            },
+            breakpoints: {
+                576:  { slidesPerView: Math.min(2, slideCount), spaceBetween: 14 },
+                992:  { slidesPerView: Math.min(3, slideCount), spaceBetween: 16 },
+                1200: { slidesPerView: Math.min(4, slideCount), spaceBetween: 16 },
+                1400: { slidesPerView: Math.min(5, slideCount), spaceBetween: 16 }
+            }
+        });
+    };
+
+    async function carregarProfessores() {
+        const container = document.querySelector('#containerProfessoresSite') || document.querySelector('.team-swiper .swiper-wrapper');
+        if (!container) return;
+
+        try {
+            if (typeof _supabase !== 'undefined') {
+                const { data: professores } = await _supabase.from('professores').select('*').order('created_at', { ascending: false });
+
+                if (professores && professores.length > 0) {
+                    const defaultPhotos = [
+                        'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80',
+                        'https://images.unsplash.com/photo-1548690312-e3b507d8c110?auto=format&fit=crop&w=600&q=80',
+                        'https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=600&q=80',
+                        'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80',
+                        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80'
+                    ];
+
+                    container.innerHTML = '';
+                    professores.forEach((p, index) => {
+                        const cargo = (p.cargo || p.esp || 'INSTRUTOR DE MUSCULAÇÃO').toUpperCase();
+                        const nome = (p.nome || 'Instrutor').toUpperCase();
+                        const bio = (p.bio && p.bio.length > 5) ? p.bio : (p.descricao || (p.esp ? `Especialista em ${p.esp}. Foco em evolução e acompanhamento de resultados.` : 'Especialista em musculação e acompanhamento profissional.'));
+                        let foto = p.foto;
+                        if (!foto || foto.includes('via.placeholder') || foto.includes('placeholder') || foto.includes('prof1.jpg') || foto.length < 5) {
+                            foto = defaultPhotos[index % defaultPhotos.length];
+                        }
+
+                        container.innerHTML += `
+                            <div class="swiper-slide">
+                                <div class="team-card">
+                                    <div class="team-card-img-wrapper">
+                                        <img src="${foto}" alt="Foto de ${nome}" loading="lazy">
+                                    </div>
+                                    <div class="team-card-body">
+                                        <span class="team-card-role">${cargo}</span>
+                                        <h3 class="team-card-name">${nome}</h3>
+                                        <div class="team-card-divider"></div>
+                                        <p class="team-card-desc">${bio}</p>
+                                        ${(p.instagram || p.facebook) ? `
+                                            <div class="team-card-social">
+                                                ${p.instagram ? `<a href="${p.instagram}" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>` : ''}
+                                                ${p.facebook ? `<a href="${p.facebook}" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>` : ''}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                `;
-            });
+                        `;
+                    });
+                }
+            }
+        } catch (err) {
+            console.warn('Erro ao carregar professores no script.js:', err);
+        } finally {
+            if (typeof initTeamSwiper === 'function') {
+                initTeamSwiper();
+            }
         }
     }
 

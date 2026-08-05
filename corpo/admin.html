@@ -585,7 +585,7 @@
         <aside id="appSidebar">
             <div class="brand-box">
                 <div>
-                    <img src="img/logo.png" alt="Corpofitness" class="logo-img" whidth="150" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x50?text=CORPOFITNESS';">
+                    <img src="img/logo.png" alt="Corpofitness" class="logo-img" whidth="110" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x50?text=CORPOFITNESS';">
                     <span class="sub" id="cargoSubLabel">Painel de Gestão Integrado</span>
                 </div>
             </div>
@@ -800,194 +800,6 @@
                             </div>
                             <button type="submit" class="btn">Salvar Alterações no Supabase</button>
                         </form>
-                    </div>
-                </div>
-
-                <!-- NOVA ABA: 1 - NOSSA ESTRUTURA -->
-                <div id="tab-estruturasecao" class="tab-content">
-                    <div class="page-header">
-                        <h1>Gerenciar Seção "Nossa Estrutura"</h1>
-                        <p>Adicione, edite ou remova os cards informativos da estrutura exibidos na página inicial.</p>
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <button type="button" class="btn" onclick="abrirFormEstrutura()">➕ Adicionar Item de Estrutura</button>
-                    </div>
-                    <div class="card" id="cardFormEstrutura" style="display: none; margin-bottom: 30px;">
-                        <div class="card-header">
-                            <h3 id="tituloFormEstrutura">Cadastrar Item de Estrutura</h3>
-                            <button type="button" class="btn-action-bar" onclick="fecharFormEstrutura()">✕ Fechar</button>
-                        </div>
-                        <form id="formEstruturaDinamico">
-                            <input type="hidden" id="estId" value="-1">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label class="form-label">Título da Área</label>
-                                    <input type="text" id="estTitulo" class="form-control" placeholder="Ex: Ring e Tatame de Lutas" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Ícone FontAwesome (Ex: fas fa-shield-alt, fas fa-dumbbell)</label>
-                                    <input type="text" id="estIcone" class="form-control" placeholder="fas fa-shield-alt" required>
-                                </div>
-                                <div class="form-group full">
-                                    <label class="form-label">Descrição da Estrutura</label>
-                                    <textarea id="estDesc" class="form-control" rows="3" placeholder="Explique os detalhes do espaço..." required></textarea>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn">Salvar Item no Supabase</button>
-                        </form>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Itens de Estrutura Cadastrados (Arraste para Reordenar)</h3>
-                        </div>
-                        <div id="listaEstruturaAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
-                    </div>
-                </div>
-
-                <!-- NOVA ABA: 2 - MODALIDADES -->
-                <div id="tab-modalidadessecao" class="tab-content">
-                    <div class="page-header">
-                        <h1>Gerenciar Modalidades do Site</h1>
-                        <p>Cadastre, edite ou remova as modalidades exibidas no carrossel automático da página inicial.</p>
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <button type="button" class="btn" onclick="abrirFormModalidade()">➕ Cadastrar Nova Modalidade</button>
-                    </div>
-                    <div class="card" id="cardFormModalidade" style="display: none; margin-bottom: 30px;">
-                        <div class="card-header">
-                            <h3 id="tituloFormModalidade">Cadastrar Modalidade</h3>
-                            <button type="button" class="btn-action-bar" onclick="fecharFormModalidade()">✕ Fechar</button>
-                        </div>
-                        <form id="formModalidadeDinamico">
-                            <input type="hidden" id="modId" value="-1">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label class="form-label">Nome da Modalidade (Ex: 🥊 MUAYTHAI)</label>
-                                    <input type="text" id="modNome" class="form-control" placeholder="🥊 MUAYTHAI" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Ícone FontAwesome (Ex: fas fa-fist-raised)</label>
-                                    <input type="text" id="modIcone" class="form-control" placeholder="fas fa-fist-raised" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Nível Indicado</label>
-                                    <input type="text" id="modNivel" class="form-control" placeholder="Ex: Intermediário a Avançado" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Duração da Aula</label>
-                                    <input type="text" id="modDuracao" class="form-control" placeholder="Ex: 60 min" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Equipamento Necessário</label>
-                                    <input type="text" id="modEquip" class="form-control" placeholder="Ex: Luvas e protetor bucal" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Principais Benefícios</label>
-                                    <input type="text" id="modBeneficios" class="form-control" placeholder="Ex: Condicionamento, disciplina" required>
-                                </div>
-                                <div class="form-group full">
-                                    <label class="form-label">Texto / Descrição Detalhada</label>
-                                    <textarea id="modDesc" class="form-control" rows="3" placeholder="Descrição completa da modalidade..." required></textarea>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn">Salvar Modalidade no Supabase</button>
-                        </form>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Modalidades Cadastradas (Arraste para Reordenar)</h3>
-                        </div>
-                        <div id="listaModalidadesAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
-                    </div>
-                </div>
-
-                <!-- NOVA ABA: 3 - QUEM JÁ TREINA (FEEDBACK) -->
-                <div id="tab-feedbacksecao" class="tab-content">
-                    <div class="page-header">
-                        <h1>Gerenciar Seção "Quem já treina" (Depoimentos)</h1>
-                        <p>Adicione, edite ou remova os depoimentos de alunos exibidos na rolagem vertical do site.</p>
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <button type="button" class="btn" onclick="abrirFormFeedback()">➕ Adicionar Depoimento</button>
-                    </div>
-                    <div class="card" id="cardFormFeedback" style="display: none; margin-bottom: 30px;">
-                        <div class="card-header">
-                            <h3 id="tituloFormFeedback">Cadastrar Depoimento</h3>
-                            <button type="button" class="btn-action-bar" onclick="fecharFormFeedback()">✕ Fechar</button>
-                        </div>
-                        <form id="formFeedbackDinamico">
-                            <input type="hidden" id="feedId" value="-1">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label class="form-label">Nome do Aluno</label>
-                                    <input type="text" id="feedNome" class="form-control" placeholder="Ex: Raquel Sampaio" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Unidade / Local</label>
-                                    <input type="text" id="feedUnidade" class="form-control" placeholder="Ex: Unidade Centro" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Avaliação em Estrelas (1 a 5)</label>
-                                    <select id="feedEstrelas" class="form-control" required>
-                                        <option value="★★★★★">★★★★★ (5 Estrelas)</option>
-                                        <option value="★★★★☆">★★★★☆ (4 Estrelas)</option>
-                                        <option value="★★★☆☆">★★★☆☆ (3 Estrelas)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Foto do Aluno (URL ou Upload)</label>
-                                    <input type="url" id="feedFoto" class="form-control" placeholder="https://images.unsplash.com/..." required>
-                                </div>
-                                <div class="form-group full">
-                                    <label class="form-label">Comentário / Depoimento</label>
-                                    <textarea id="feedTexto" class="form-control" rows="3" placeholder="O que o aluno disse sobre a academia..." required></textarea>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn">Salvar Depoimento no Supabase</button>
-                        </form>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Depoimentos Cadastrados (Arraste para Reordenar)</h3>
-                        </div>
-                        <div id="listaFeedbackAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
-                    </div>
-                </div>
-
-                <!-- NOVA ABA: 4 - DÚVIDAS FREQUENTES (FAQ) -->
-                <div id="tab-faqsecao" class="tab-content">
-                    <div class="page-header">
-                        <h1>Gerenciar "Dúvidas Frequentes" (FAQ)</h1>
-                        <p>Adicione, edite ou remova as perguntas e respostas exibidas na seção de FAQ do site.</p>
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <button type="button" class="btn" onclick="abrirFormFaq()">➕ Adicionar Pergunta FAQ</button>
-                    </div>
-                    <div class="card" id="cardFormFaq" style="display: none; margin-bottom: 30px;">
-                        <div class="card-header">
-                            <h3 id="tituloFormFaq">Cadastrar Pergunta FAQ</h3>
-                            <button type="button" class="btn-action-bar" onclick="fecharFormFaq()">✕ Fechar</button>
-                        </div>
-                        <form id="formFaqDinamico">
-                            <input type="hidden" id="faqId" value="-1">
-                            <div class="form-grid">
-                                <div class="form-group full">
-                                    <label class="form-label">Pergunta</label>
-                                    <input type="text" id="faqPergunta" class="form-control" placeholder="Ex: Preciso ter experiência para começar?" required>
-                                </div>
-                                <div class="form-group full">
-                                    <label class="form-label">Resposta</label>
-                                    <textarea id="faqResposta" class="form-control" rows="3" placeholder="Explicação detalhada para o aluno..." required></textarea>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn">Salvar Pergunta no Supabase</button>
-                        </form>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Perguntas Cadastradas (Arraste para Reordenar)</h3>
-                        </div>
-                        <div id="listaFaqAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
                     </div>
                 </div>
 
@@ -1770,6 +1582,7 @@ window.showToast = function(mensagem, tipo = 'success') {
         const elTrData = document.getElementById('tr_data');
         if (elTrData) elTrData.value = `${dia}/${mes}/${ano}`;
 
+        // Tentar carregar bioimpedância e treino salvo do Supabase se houver
         try {
             const { data: aval } = await _supabase.from('avaliacoes_fisicas').select('*').eq('aluno_id', alunoId).single();
             if (aval) {
@@ -1848,6 +1661,7 @@ window.showToast = function(mensagem, tipo = 'success') {
     window.salvarTreinoAnexo = async function() {
         const alunoId = document.getElementById('tr_aluno_id').value;
         const objetivo = document.getElementById('tr_objetivo').value;
+        const nomeAluno = document.getElementById('tr_nome').value;
 
         if (!alunoId) {
             window.showToast("Erro: Nenhum aluno selecionado.", "error");
@@ -2275,290 +2089,6 @@ window.showToast = function(mensagem, tipo = 'success') {
         if (modalEl) modalEl.style.display = 'none';
     };
 
-    // GERENCIAMENTO 1: NOSSA ESTRUTURA
-    window.carregarEstruturaAdmin = async function() {
-        const { data: itens, error } = await _supabase.from('estrutura').select('*').order('ordem', { ascending: true });
-        if (error) return;
-        const container = document.getElementById('listaEstruturaAdmin');
-        if (!container) return;
-        container.innerHTML = '';
-        (itens || []).forEach(e => {
-            container.innerHTML += `
-                <div class="draggable-card" draggable="true" data-id="${e.id}" style="background: var(--dark-2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-                    <div style="font-size:0.75rem; color:var(--primary-light); margin-bottom:6px; cursor:grab;">☰ Arraste para mover</div>
-                    <div style="font-size: 1.5rem; margin-bottom: 10px; color:var(--primary-light);"><i class="${e.icone}"></i></div>
-                    <h3 style="font-size: 1.1rem; color: var(--text-color); margin-bottom: 6px;">${e.titulo}</h3>
-                    <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 15px;">${e.descricao}</p>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" onclick="editarEstrutura('${e.id}')" class="btn-action-bar" style="flex:1;">✏️ Editar</button>
-                        <button type="button" onclick="removerEstrutura('${e.id}')" class="btn-action-bar btn-danger">🗑️ Excluir</button>
-                    </div>
-                </div>
-            `;
-        });
-        iniciarDragAndDrop('listaEstruturaAdmin', 'estrutura', window.carregarEstruturaAdmin);
-    };
-
-    window.abrirFormEstrutura = function() {
-        document.getElementById('formEstruturaDinamico').reset();
-        document.getElementById('estId').value = "-1";
-        document.getElementById('tituloFormEstrutura').textContent = "Cadastrar Item de Estrutura";
-        document.getElementById('cardFormEstrutura').style.display = "block";
-    };
-
-    window.fecharFormEstrutura = function() { document.getElementById('cardFormEstrutura').style.display = "none"; };
-
-    window.editarEstrutura = async function(id) {
-        const { data: e } = await _supabase.from('estrutura').select('*').eq('id', id).single();
-        if(!e) return;
-        document.getElementById('estId').value = e.id;
-        document.getElementById('estTitulo').value = e.titulo;
-        document.getElementById('estIcone').value = e.icone;
-        document.getElementById('estDesc').value = e.descricao;
-        document.getElementById('tituloFormEstrutura').textContent = "Editar Item de Estrutura";
-        document.getElementById('cardFormEstrutura').style.display = "block";
-    };
-
-    window.removerEstrutura = async function(id) {
-        if (confirm('Deseja excluir este item?')) {
-            await _supabase.from('estrutura').delete().eq('id', id);
-            window.carregarEstruturaAdmin();
-            window.showToast("Item excluído!");
-        }
-    };
-
-    document.getElementById('formEstruturaDinamico')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('estId').value;
-        const dados = {
-            titulo: document.getElementById('estTitulo').value,
-            icone: document.getElementById('estIcone').value,
-            descricao: document.getElementById('estDesc').value
-        };
-        if (id !== "-1") await _supabase.from('estrutura').update(dados).eq('id', id);
-        else await _supabase.from('estrutura').insert([{ ...dados, ordem: 0 }]);
-        fecharFormEstrutura();
-        window.carregarEstruturaAdmin();
-        window.showToast("Item de estrutura salvo com sucesso!");
-    });
-
-    // GERENCIAMENTO 2: MODALIDADES
-    window.carregarModalidadesAdmin = async function() {
-        const { data: mods, error } = await _supabase.from('modalidades').select('*').order('ordem', { ascending: true });
-        if (error) return;
-        const container = document.getElementById('listaModalidadesAdmin');
-        if (!container) return;
-        container.innerHTML = '';
-        (mods || []).forEach(m => {
-            container.innerHTML += `
-                <div class="draggable-card" draggable="true" data-id="${m.id}" style="background: var(--dark-2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-                    <div style="font-size:0.75rem; color:var(--primary-light); margin-bottom:6px; cursor:grab;">☰ Arraste para mover</div>
-                    <div style="font-size: 1.5rem; margin-bottom: 10px; color:var(--primary-light);"><i class="${m.icone}"></i></div>
-                    <h3 style="font-size: 1.1rem; color: var(--text-color); margin-bottom: 6px;">${m.nome}</h3>
-                    <p style="font-size: 0.82rem; color: var(--gray); margin-bottom: 4px;"><strong>Nível:</strong> ${m.nivel}</p>
-                    <p style="font-size: 0.82rem; color: var(--gray); margin-bottom: 15px;"><strong>Duração:</strong> ${m.duracao}</p>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" onclick="editarModalidade('${m.id}')" class="btn-action-bar" style="flex:1;">✏️ Editar</button>
-                        <button type="button" onclick="removerModalidade('${m.id}')" class="btn-action-bar btn-danger">🗑️ Excluir</button>
-                    </div>
-                </div>
-            `;
-        });
-        iniciarDragAndDrop('listaModalidadesAdmin', 'modalidades', window.carregarModalidadesAdmin);
-    };
-
-    window.abrirFormModalidade = function() {
-        document.getElementById('formModalidadeDinamico').reset();
-        document.getElementById('modId').value = "-1";
-        document.getElementById('tituloFormModalidade').textContent = "Cadastrar Modalidade";
-        document.getElementById('cardFormModalidade').style.display = "block";
-    };
-
-    window.fecharFormModalidade = function() { document.getElementById('cardFormModalidade').style.display = "none"; };
-
-    window.editarModalidade = async function(id) {
-        const { data: m } = await _supabase.from('modalidades').select('*').eq('id', id).single();
-        if(!m) return;
-        document.getElementById('modId').value = m.id;
-        document.getElementById('modNome').value = m.nome;
-        document.getElementById('modIcone').value = m.icone;
-        document.getElementById('modNivel').value = m.nivel;
-        document.getElementById('modDuracao').value = m.duracao;
-        document.getElementById('modEquip').value = m.equipamento;
-        document.getElementById('modBeneficios').value = m.beneficios;
-        document.getElementById('modDesc').value = m.descricao;
-        document.getElementById('tituloFormModalidade').textContent = "Editar Modalidade";
-        document.getElementById('cardFormModalidade').style.display = "block";
-    };
-
-    window.removerModalidade = async function(id) {
-        if (confirm('Deseja excluir esta modalidade?')) {
-            await _supabase.from('modalidades').delete().eq('id', id);
-            window.carregarModalidadesAdmin();
-            window.showToast("Modalidade excluída!");
-        }
-    };
-
-    document.getElementById('formModalidadeDinamico')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('modId').value;
-        const dados = {
-            nome: document.getElementById('modNome').value,
-            icone: document.getElementById('modIcone').value,
-            nivel: document.getElementById('modNivel').value,
-            duracao: document.getElementById('modDuracao').value,
-            equipamento: document.getElementById('modEquip').value,
-            beneficios: document.getElementById('modBeneficios').value,
-            descricao: document.getElementById('modDesc').value
-        };
-        if (id !== "-1") await _supabase.from('modalidades').update(dados).eq('id', id);
-        else await _supabase.from('modalidades').insert([{ ...dados, ordem: 0 }]);
-        fecharFormModalidade();
-        window.carregarModalidadesAdmin();
-        window.showToast("Modalidade salva com sucesso!");
-    });
-
-    // GERENCIAMENTO 3: QUEM JÁ TREINA (FEEDBACK)
-    window.carregarFeedbackAdmin = async function() {
-        const { data: feeds, error } = await _supabase.from('feedbacks').select('*').order('ordem', { ascending: true });
-        if (error) return;
-        const container = document.getElementById('listaFeedbackAdmin');
-        if (!container) return;
-        container.innerHTML = '';
-        (feeds || []).forEach(f => {
-            container.innerHTML += `
-                <div class="draggable-card" draggable="true" data-id="${f.id}" style="background: var(--dark-2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-                    <div style="font-size:0.75rem; color:var(--primary-light); margin-bottom:6px; cursor:grab;">☰ Arraste para mover</div>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                        <img src="${f.foto}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/40';">
-                        <div>
-                            <h4 style="font-size: 0.95rem; color: #fff; margin:0;">${f.nome}</h4>
-                            <span style="font-size: 0.75rem; color: var(--gray);">${f.unidade}</span>
-                        </div>
-                    </div>
-                    <div style="color: #f59e0b; font-size: 0.8rem; margin-bottom: 6px;">${f.estrelas}</div>
-                    <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 15px;">"${f.texto}"</p>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" onclick="editarFeedback('${f.id}')" class="btn-action-bar" style="flex:1;">✏️ Editar</button>
-                        <button type="button" onclick="removerFeedback('${f.id}')" class="btn-action-bar btn-danger">🗑️ Excluir</button>
-                    </div>
-                </div>
-            `;
-        });
-        iniciarDragAndDrop('listaFeedbackAdmin', 'feedbacks', window.carregarFeedbackAdmin);
-    };
-
-    window.abrirFormFeedback = function() {
-        document.getElementById('formFeedbackDinamico').reset();
-        document.getElementById('feedId').value = "-1";
-        document.getElementById('tituloFormFeedback').textContent = "Cadastrar Depoimento";
-        document.getElementById('cardFormFeedback').style.display = "block";
-    };
-
-    window.fecharFormFeedback = function() { document.getElementById('cardFormFeedback').style.display = "none"; };
-
-    window.editarFeedback = async function(id) {
-        const { data: f } = await _supabase.from('feedbacks').select('*').eq('id', id).single();
-        if(!f) return;
-        document.getElementById('feedId').value = f.id;
-        document.getElementById('feedNome').value = f.nome;
-        document.getElementById('feedUnidade').value = f.unidade;
-        document.getElementById('feedEstrelas').value = f.estrelas;
-        document.getElementById('feedFoto').value = f.foto;
-        document.getElementById('feedTexto').value = f.texto;
-        document.getElementById('tituloFormFeedback').textContent = "Editar Depoimento";
-        document.getElementById('cardFormFeedback').style.display = "block";
-    };
-
-    window.removerFeedback = async function(id) {
-        if (confirm('Deseja excluir este depoimento?')) {
-            await _supabase.from('feedbacks').delete().eq('id', id);
-            window.carregarFeedbackAdmin();
-            window.showToast("Depoimento excluído!");
-        }
-    };
-
-    document.getElementById('formFeedbackDinamico')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('feedId').value;
-        const dados = {
-            nome: document.getElementById('feedNome').value,
-            unidade: document.getElementById('feedUnidade').value,
-            estrelas: document.getElementById('feedEstrelas').value,
-            foto: document.getElementById('feedFoto').value,
-            texto: document.getElementById('feedTexto').value
-        };
-        if (id !== "-1") await _supabase.from('feedbacks').update(dados).eq('id', id);
-        else await _supabase.from('feedbacks').insert([{ ...dados, ordem: 0 }]);
-        fecharFormFeedback();
-        window.carregarFeedbackAdmin();
-        window.showToast("Depoimento salvo com sucesso!");
-    });
-
-    // GERENCIAMENTO 4: DÚVIDAS FREQUENTES (FAQ)
-    window.carregarFaqAdmin = async function() {
-        const { data: faqs, error } = await _supabase.from('faq').select('*').order('ordem', { ascending: true });
-        if (error) return;
-        const container = document.getElementById('listaFaqAdmin');
-        if (!container) return;
-        container.innerHTML = '';
-        (faqs || []).forEach(f => {
-            container.innerHTML += `
-                <div class="draggable-card" draggable="true" data-id="${f.id}" style="background: var(--dark-2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
-                    <div style="font-size:0.75rem; color:var(--primary-light); margin-bottom:6px; cursor:grab;">☰ Arraste para mover</div>
-                    <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 6px;">Q: ${f.pergunta}</h4>
-                    <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 15px;">R: ${f.resposta}</p>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" onclick="editarFaq('${f.id}')" class="btn-action-bar" style="flex:1;">✏️ Editar</button>
-                        <button type="button" onclick="removerFaq('${f.id}')" class="btn-action-bar btn-danger">🗑️ Excluir</button>
-                    </div>
-                </div>
-            `;
-        });
-        iniciarDragAndDrop('listaFaqAdmin', 'faq', window.carregarFaqAdmin);
-    };
-
-    window.abrirFormFaq = function() {
-        document.getElementById('formFaqDinamico').reset();
-        document.getElementById('faqId').value = "-1";
-        document.getElementById('tituloFormFaq').textContent = "Cadastrar Pergunta FAQ";
-        document.getElementById('cardFormFaq').style.display = "block";
-    };
-
-    window.fecharFormFaq = function() { document.getElementById('cardFormFaq').style.display = "none"; };
-
-    window.editarFaq = async function(id) {
-        const { data: f } = await _supabase.from('faq').select('*').eq('id', id).single();
-        if(!f) return;
-        document.getElementById('faqId').value = f.id;
-        document.getElementById('faqPergunta').value = f.pergunta;
-        document.getElementById('faqResposta').value = f.resposta;
-        document.getElementById('tituloFormFaq').textContent = "Editar Pergunta FAQ";
-        document.getElementById('cardFormFaq').style.display = "block";
-    };
-
-    window.removerFaq = async function(id) {
-        if (confirm('Deseja excluir esta pergunta?')) {
-            await _supabase.from('faq').delete().eq('id', id);
-            window.carregarFaqAdmin();
-            window.showToast("Pergunta excluída!");
-        }
-    };
-
-    document.getElementById('formFaqDinamico')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('faqId').value;
-        const dados = {
-            pergunta: document.getElementById('faqPergunta').value,
-            resposta: document.getElementById('faqResposta').value
-        };
-        if (id !== "-1") await _supabase.from('faq').update(dados).eq('id', id);
-        else await _supabase.from('faq').insert([{ ...dados, ordem: 0 }]);
-        fecharFormFaq();
-        window.carregarFaqAdmin();
-        window.showToast("Pergunta FAQ salva com sucesso!");
-    });
-
     window.carregarPlanosAdmin = async function() {
         const { data: planos, error } = await _supabase.from('planos').select('*').order('ordem', { ascending: true });
         if (error) return;
@@ -2617,7 +2147,8 @@ window.showToast = function(mensagem, tipo = 'success') {
             const { data: parceiros, error } = await _supabase.from('parceiros').select('id,nome,ordem').order('ordem', { ascending: true });
             container.innerHTML = '';
             if (error) {
-                container.innerHTML = `<p style="color:var(--warning); grid-column: 1/-1;">Erro ao carregar parceiros.</p>`;
+                console.error('Erro ao carregar parceiros admin:', error);
+                container.innerHTML = `<p style="color:var(--warning); grid-column: 1/-1;">Erro ao carregar parceiros. Veja o console do navegador.</p>`;
                 return;
             }
             if (!parceiros || parceiros.length === 0) {
@@ -2636,7 +2167,8 @@ window.showToast = function(mensagem, tipo = 'success') {
                 `;
             });
         } catch (err) {
-            container.innerHTML = `<p style="color:var(--warning); grid-column: 1/-1;">Erro ao carregar parceiros.</p>`;
+            console.error('Erro ao carregar parceiros admin:', err);
+            container.innerHTML = `<p style="color:var(--warning); grid-column: 1/-1;">Erro ao carregar parceiros. Veja o console do navegador.</p>`;
         }
     };
 
@@ -2875,10 +2407,6 @@ window.showToast = function(mensagem, tipo = 'success') {
                     <li><a href="#alunos" class="menu-link" data-target="alunos">💪 Gestão de Alunos & Planos</a></li>
                     <li><a href="#contatos" class="menu-link" data-target="contatos">📩 Mensagens & Logs</a></li>
                     <li><a href="#hero" class="menu-link" data-target="hero">🖼️ Banner Principal (Hero)</a></li>
-                    <li><a href="#estruturasecao" class="menu-link" data-target="estruturasecao">🏢 Nossa Estrutura</a></li>
-                    <li><a href="#modalidadessecao" class="menu-link" data-target="modalidadessecao">🥊 Modalidades</a></li>
-                    <li><a href="#feedbacksecao" class="menu-link" data-target="feedbacksecao">💬 Quem Já Treina</a></li>
-                    <li><a href="#faqsecao" class="menu-link" data-target="faqsecao">❓ Dúvidas Frequentes</a></li>
                     <li><a href="#professores" class="menu-link" data-target="professores">👥 Equipe de Professores</a></li>
                     <li><a href="#planos" class="menu-link" data-target="planos">💳 Planos & Preços</a></li>
                     <li><a href="#parceiros" class="menu-link" data-target="parceiros">🤝 Parceiros & Marcas</a></li>
@@ -3333,10 +2861,6 @@ window.showToast = function(mensagem, tipo = 'success') {
             window.carregarAlunosAdmin();
             window.carregarPlanosAdmin();
             window.carregarParceirosAdmin();
-            window.carregarEstruturaAdmin();
-            window.carregarModalidadesAdmin();
-            window.carregarFeedbackAdmin();
-            window.carregarFaqAdmin();
             window.carregarGaleria();
             window.carregarProfessores();
             window.carregarContatos();

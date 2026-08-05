@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - CorpoFitness</title>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --dark-card: #1e1e1e;
+            --accent: #1e88e5;
+            --accent-hover: #1565c0;
+            --highlight: #ffffff;
+            --text-main: #e0e0e0;
+            --text-muted: #9e9e9e;
+            --border: #2a2a2a;
+            --success: #4caf50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--dark-card);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .btn-voltar {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-voltar:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        main {
+            flex: 1;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .profile-card {
+            background-color: var(--dark-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 70px;
+            height: 70px;
+            background: rgba(30, 136, 229, 0.15);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        .profile-info h3 {
+            color: var(--highlight);
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            background-color: #161616;
+            border: 1px solid var(--border);
+            color: var(--highlight);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent);
+        }
+
+        .btn-save {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-save:hover {
+            background-color: var(--accent-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-area">
+            <i class="fa-solid fa-dumbbell"></i> CORPOFITNESS
+        </a>
+        <a href="index.html" class="btn-voltar">
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao Painel
+        </a>
+    </header>
+
+    <main>
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <h3 id="lblNomePerfil">Carregando...</h3>
+                    <p id="lblEmailPerfil">Carregando e-mail...</p>
+                </div>
+            </div>
+
+            <form id="formPerfil" onsubmit="atualizarPerfil(event)" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="form-group">
+                    <label for="txtNome">Nome Completo</label>
+                    <input type="text" id="txtNome" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtTelefone">Telefone / WhatsApp</label>
+                    <input type="text" id="txtTelefone" placeholder="(00) 00000-0000">
+                </div>
+
+                <div class="form-group">
+                    <label for="selectObjetivo">Objetivo Principal</label>
+                    <select id="selectObjetivo">
+                        <option value="Hipertrofia">Hipertrofia</option>
+                        <option value="Emagrecimento">Emagrecimento</option>
+                        <option value="Condicionamento Físico">Condicionamento Físico</option>
+                        <option value="Saúde e Bem-estar">Saúde e Bem-estar</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-save" id="btnSalvar">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let usuarioAtual = null;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            usuarioAtual = JSON.parse(sessionStorage.getItem('corpofitness_usuario')) ||
+                           JSON.parse(sessionStorage.getItem('corpofitness_cliente_logado'));
+
+            if (!usuarioAtual) {
+                const { data: { session } } = await _supabase.auth.getSession();
+                if (session && session.user) {
+                    usuarioAtual = { id: session.user.id, email: session.user.email, nome: session.user.user_metadata.full_name };
+                }
+            }
+
+            if (!usuarioAtual) {
+                window.location.href = 'login-cliente.html';
+                return;
+            }
+
+            // Preenche os campos com os dados locais ou do banco
+            document.getElementById('lblNomePerfil').textContent = usuarioAtual.nome || 'Aluno(a)';
+            document.getElementById('lblEmailPerfil').textContent = usuarioAtual.email || '';
+            document.getElementById('txtNome').value = usuarioAtual.nome || '';
+            document.getElementById('txtTelefone').value = usuarioAtual.telefone || '';
+            if (usuarioAtual.objetivo) {
+                document.getElementById('selectObjetivo').value = usuarioAtual.objetivo;
+            }
+        });
+
+        async function atualizarPerfil(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btnSalvar');
+            const novoNome = document.getElementById('txtNome').value;
+            const novoTelefone = document.getElementById('txtTelefone').value;
+            const novoObjetivo = document.getElementById('selectObjetivo').value;
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Salvando...`;
+
+            try {
+                // Atualiza na sessão local
+                usuarioAtual.nome = novoNome;
+                usuarioAtual.telefone = novoTelefone;
+                usuarioAtual.objetivo = novoObjetivo;
+                sessionStorage.setItem('corpofitness_usuario', JSON.stringify(usuarioAtual));
+
+                // Se houver tabela de perfis no Supabase, atualiza lá também
+                if (usuarioAtual.id) {
+                    await _supabase
+                        .from('perfis')
+                        .update({ nome: novoNome, telefone: novoTelefone, objetivo: novoObjetivo })
+                        .eq('id', usuarioAtual.id);
+                }
+
+                alert('Perfil atualizado com sucesso!');
+                window.location.reload();
+            } catch (err) {
+                console.error("Erro ao atualizar perfil:", err);
+                alert('Erro ao salvar as alterações.');
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financeiro - CorpoFitness</title>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --dark-card: #1e1e1e;
+            --accent: #1e88e5;
+            --accent-hover: #1565c0;
+            --highlight: #ffffff;
+            --text-main: #e0e0e0;
+            --text-muted: #9e9e9e;
+            --border: #2a2a2a;
+            --success: #4caf50;
+            --warning: #ff9800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--dark-card);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--highlight);
+        }
+
+        .logo-area i {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .logo-area h1 {
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-voltar {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--highlight);
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-voltar:hover {
+            border-color: var(--accent);
+            background: rgba(30, 136, 229, 0.1);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            color: var(--highlight);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-title i {
+            color: var(--accent);
+        }
+
+        .card-destaque {
+            background: linear-gradient(135deg, var(--dark-card), #141f2c);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            padding: 25px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .card-destaque h3 {
+            font-size: 1.3rem;
+            color: var(--highlight);
+            margin-bottom: 5px;
+        }
+
+        .card-destaque p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .btn-pagar {
+            background-color: var(--accent);
+            color: var(--highlight);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-pagar:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .card-table {
+            background-color: var(--dark-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .card-table h3 {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-table h3 i {
+            color: var(--accent);
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            background-color: #181818;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        td {
+            color: var(--text-main);
+        }
+
+        .badge-pago {
+            background: rgba(76, 175, 80, 0.15);
+            color: var(--success);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .badge-pendente {
+            background: rgba(255, 152, 0, 0.15);
+            color: var(--warning);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-area">
+            <i class="fa-solid fa-dumbbell"></i>
+            <h1>CORPOFITNESS</h1>
+        </a>
+        <div>
+            <a href="index.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar ao Painel</a>
+        </div>
+    </header>
+
+    <main>
+        <h2 class="page-title"><i class="fa-solid fa-wallet"></i> Financeiro e Mensalidades</h2>
+
+        <div class="card-destaque">
+            <div>
+                <h3 id="lblProximaMensalidade">Próxima Mensalidade: R$ 100,00</h3>
+                <p id="lblFaturaSub">Carregando vencimento...</p>
+            </div>
+            <div>
+                <button onclick="copiarPix()" class="btn-pagar"><i class="fa-solid fa-qrcode"></i> Pagar com PIX</button>
+            </div>
+        </div>
+
+        <div class="card-table">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Faturas</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Referência</th>
+                            <th>Vencimento</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historicoTable">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted);">Buscando faturas do banco de dados...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        window.copiarPix = function() {
+            const copiaEColaPix = "00020126580014br.gov.bcb.pix... (Chave Pix simulada)";
+            navigator.clipboard.writeText(copiaEColaPix);
+            alert("Código PIX Copia e Cola copiado para a área de transferência!");
+        };
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            let usuario = JSON.parse(sessionStorage.getItem('corpofitness_usuario')) ||
+                          JSON.parse(sessionStorage.getItem('corpofitness_cliente_logado'));
+
+            if (!usuario) {
+                const { data: { session } } = await _supabase.auth.getSession();
+                if (session && session.user) {
+                    usuario = { id: session.user.id, email: session.user.email };
+                }
+            }
+
+            if (!usuario) {
+                window.location.href = 'login-cliente.html';
+                return;
+            }
+
+            await carregarFaturasDoBanco(usuario.id, usuario.email);
+        });
+
+        async function carregarFaturasDoBanco(alunoId, alunoEmail) {
+            const tbody = document.getElementById('historicoTable');
+            const lblSub = document.getElementById('lblFaturaSub');
+
+            try {
+                let query = _supabase.from('faturas_alunos').select('*').order('vencimento', { ascending: false });
+                
+                if (alunoId) {
+                    query = query.eq('aluno_id', alunoId);
+                } else if (alunoEmail) {
+                    query = query.eq('email_aluno', alunoEmail);
+                }
+
+                const { data: faturas, error } = await query;
+
+                if (error) {
+                    console.error("Erro Supabase:", error);
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #ff5252;">Erro ao carregar o histórico financeiro.</td></tr>`;
+                    return;
+                }
+
+                if (!faturas || faturas.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Nenhuma fatura encontrada no banco de dados.</td></tr>`;
+                    lblSub.innerHTML = `Nenhuma fatura em aberto cadastrada.`;
+                    return;
+                }
+
+                let html = '';
+                let proximaEncontrada = false;
+
+                faturas.forEach((fat) => {
+                    const statusLower = (fat.status || '').toLowerCase();
+                    let badgeClass = 'badge-pendente';
+                    if (statusLower === 'pago') badgeClass = 'badge-pago';
+
+                    // Formata a data de AAAA-MM-DD para DD/MM/AAAA
+                    const dataFormatada = fat.vencimento ? fat.vencimento.split('-').reverse().join('/') : '-';
+                    const valorFormatado = Number(fat.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                    html += `
+                        <tr>
+                            <td>${fat.referencia}</td>
+                            <td>${dataFormatada}</td>
+                            <td>${valorFormatado}</td>
+                            <td><span class="${badgeClass}">${fat.status}</span></td>
+                        </tr>
+                    `;
+
+                    // Define a primeira fatura pendente como destaque principal
+                    if (!proximaEncontrada && statusLower !== 'pago') {
+                        lblSub.innerHTML = `Vencimento em <strong>${dataFormatada}</strong> — Valor: ${valorFormatado}`;
+                        proximaEncontrada = true;
+                    }
+                });
+
+                if (!proximaEncontrada && faturas.length > 0) {
+                    lblSub.innerHTML = `Todas as faturas estão em dia! Última referência: ${faturas[0].referencia}`;
+                }
+
+                tbody.innerHTML = html;
+
+            } catch (err) {
+                console.error("Erro inesperado:", err);
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #ff5252;">Erro de conexão com o banco de dados.</td></tr>`;
+            }
+        }
+    </script>
+</body>
+</html>

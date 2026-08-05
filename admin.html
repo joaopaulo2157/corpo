@@ -75,6 +75,7 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
+            padding: 20px;
         }
 
         .login-card {
@@ -89,7 +90,9 @@
         }
 
         .logo-img {
-            width: 200px;
+            max-width: 200px;
+            width: 100%;
+            height: auto;
             margin-bottom: 20px;
         }
 
@@ -103,6 +106,7 @@
             font-size: 0.82rem;
             line-height: 1.6;
             z-index: 10;
+            padding: 0 15px;
         }
 
         #mainAppContainer {
@@ -227,7 +231,7 @@
         topbar {
             background: var(--dark-2);
             height: var(--topbar-height);
-            padding: 0 30px;
+            padding: 0 20px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -235,6 +239,7 @@
             position: sticky;
             top: 0;
             z-index: 900;
+            gap: 10px;
         }
 
         .menu-toggle {
@@ -249,7 +254,8 @@
         .admin-user {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            flex-wrap: nowrap;
         }
 
         .avatar-circle {
@@ -263,10 +269,11 @@
             justify-content: center;
             font-weight: 700;
             font-size: 0.85rem;
+            flex-shrink: 0;
         }
 
         .container {
-            padding: 30px;
+            padding: 20px;
             max-width: 1500px;
             width: 100%;
             margin: 0 auto;
@@ -288,14 +295,14 @@
         .page-header { margin-bottom: 25px; }
 
         .page-header h1 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             color: var(--text-color);
             font-weight: 700;
         }
 
         .page-header p {
             color: var(--gray);
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             margin-top: 4px;
         }
 
@@ -303,7 +310,7 @@
             background: var(--dark-card);
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            padding: 24px;
+            padding: 20px;
             margin-bottom: 24px;
         }
 
@@ -314,18 +321,20 @@
             margin-bottom: 20px;
             padding-bottom: 12px;
             border-bottom: 1px solid var(--border);
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .card-header h3 {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: var(--text-color);
             font-weight: 700;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
             margin-bottom: 16px;
         }
 
@@ -374,7 +383,13 @@
             transition: transform 0.2s;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            width: 100%;
+        }
+
+        @media(min-width: 600px) {
+            .btn { width: auto; }
         }
 
         .btn:hover { transform: translateY(-2px); }
@@ -392,7 +407,8 @@
             align-items: center;
             justify-content: center;
             z-index: 3000;
-            padding: 20px;
+            padding: 15px;
+            overflow-y: auto;
         }
 
         .modal-card {
@@ -403,8 +419,12 @@
             max-width: 900px;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 30px;
+            padding: 20px;
             position: relative;
+        }
+
+        @media(min-width: 768px) {
+            .modal-card { padding: 30px; }
         }
 
         .image-preview-container {
@@ -412,6 +432,7 @@
             display: none;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .image-preview-container img {
@@ -439,6 +460,7 @@
             border-radius: 20px;
             font-weight: bold;
             display: inline-block;
+            white-space: nowrap;
         }
         .status-pendente { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
         .status-respondido { background: rgba(30, 136, 229, 0.15); color: #64b5f6; border: 1px solid rgba(30, 136, 229, 0.3); }
@@ -449,18 +471,20 @@
             overflow-x: auto;
             border: 1px solid var(--border);
             border-radius: 12px;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
+            min-width: 600px;
         }
 
         th, td {
-            padding: 14px 18px;
+            padding: 12px 14px;
             border-bottom: 1px solid var(--border);
-            font-size: 0.87rem;
+            font-size: 0.85rem;
             vertical-align: middle;
         }
 
@@ -469,7 +493,7 @@
             color: var(--gray);
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             letter-spacing: 0.5px;
         }
 
@@ -479,32 +503,41 @@
         .btn-action-bar {
             background: var(--dark-2);
             border: 1px solid var(--border);
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 6px;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             cursor: pointer;
             color: var(--text-color);
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .btn-action-bar:hover { background: var(--primary); color: white; }
 
         .app-footer {
-            padding: 20px 30px;
+            padding: 20px;
             border-top: 1px solid var(--border);
             color: var(--gray);
             font-size: 0.82rem;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
             background: var(--dark-2);
             margin-top: auto;
         }
 
+        @media(min-width: 768px) {
+            .app-footer { flex-direction: row; justify-content: space-between; text-align: left; padding: 20px 30px; }
+        }
+
         .toast {
             position: fixed;
-            bottom: 25px;
-            right: 25px;
+            bottom: 20px;
+            right: 20px;
+            left: 20px;
+            max-width: 400px;
+            margin: 0 auto;
             background: var(--dark-card);
             color: var(--text-color);
             padding: 14px 22px;
@@ -547,7 +580,18 @@
             .wrapper { margin-left: 0; }
             .menu-toggle { display: block; }
             .sidebar-overlay.active { display: block; }
-            .app-footer { flex-direction: column; gap: 8px; text-align: center; }
+        }
+
+        /* AJUSTES RESPONSIVOS EXTRAS PARA GRID DE FICHAS E TREINOS EM MOBILE/TABLET */
+        .modal-card-grid-duplo {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media(min-width: 992px) {
+            .modal-card-grid-duplo {
+                grid-template-columns: 460px 1fr;
+            }
         }
 
         /* ESTILOS DA MODAL DE AVALIAÇÃO CORPORAL */
@@ -623,15 +667,15 @@
 
         <div class="wrapper">
             <topbar>
-                <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
                     <button class="menu-toggle" id="menuToggle">☰</button>
-                    <span style="font-weight: 600; font-size: 0.95rem;">Painel Administrativo com Níveis</span>
+                    <span style="font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Painel Administrativo</span>
                 </div>
                 <div class="admin-user">
-                    <button onclick="exportarRelatorioCSV()" class="btn-action-bar" style="margin-right: 5px;">📥 Exportar CSV</button>
-                    <button id="btnThemeToggle" class="btn-action-bar" style="margin-right: 10px;">🌙 Dark/Light</button>
+                    <button onclick="exportarRelatorioCSV()" class="btn-action-bar" style="display: none; @media(min-width: 600px){display:inline-block;}">📥 CSV</button>
+                    <button id="btnThemeToggle" class="btn-action-bar">🌙 Tema</button>
                     <div class="avatar-circle" id="topbarAvatar">AD</div>
-                    <div style="font-size: 0.85rem;">
+                    <div style="font-size: 0.85rem; display: none; @media(min-width: 768px){display:block;}">
                         <strong id="topbarUserName">Administrador</strong><br>
                         <span style="color: var(--primary-light); font-size: 0.72rem; text-transform:uppercase;" id="topbarUserRole">Master</span>
                     </div>
@@ -646,22 +690,22 @@
                         <h1>Visão Geral em Tempo Real</h1>
                         <p>Estatísticas integradas diretamente com o banco de dados do Supabase.</p>
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px;">
-                        <div class="card" style="margin:0; padding: 20px;">
-                            <span style="color: var(--gray); font-size: 0.75rem; font-weight:700;">TOTAL DE ALUNOS</span>
-                            <h3 style="font-size: 1.8rem; color: var(--success); margin-top: 5px;" id="countAlunos">0</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <div class="card" style="margin:0; padding: 15px;">
+                            <span style="color: var(--gray); font-size: 0.7rem; font-weight:700;">TOTAL DE ALUNOS</span>
+                            <h3 style="font-size: 1.5rem; color: var(--success); margin-top: 5px;" id="countAlunos">0</h3>
                         </div>
-                        <div class="card" style="margin:0; padding: 20px;">
-                            <span style="color: var(--gray); font-size: 0.75rem; font-weight:700;">CONTATOS RECEBIDOS</span>
-                            <h3 style="font-size: 1.8rem; color: var(--primary-light); margin-top: 5px;" id="countContatos">0</h3>
+                        <div class="card" style="margin:0; padding: 15px;">
+                            <span style="color: var(--gray); font-size: 0.7rem; font-weight:700;">CONTATOS RECEBIDOS</span>
+                            <h3 style="font-size: 1.5rem; color: var(--primary-light); margin-top: 5px;" id="countContatos">0</h3>
                         </div>
-                        <div class="card" style="margin:0; padding: 20px;">
-                            <span style="color: var(--gray); font-size: 0.75rem; font-weight:700;">PROFESSORES ATIVOS</span>
-                            <h3 style="font-size: 1.8rem; color: var(--primary-light); margin-top: 5px;" id="countProfessores">0</h3>
+                        <div class="card" style="margin:0; padding: 15px;">
+                            <span style="color: var(--gray); font-size: 0.7rem; font-weight:700;">PROFESSORES ATIVOS</span>
+                            <h3 style="font-size: 1.5rem; color: var(--primary-light); margin-top: 5px;" id="countProfessores">0</h3>
                         </div>
-                        <div class="card" style="margin:0; padding: 20px;">
-                            <span style="color: var(--gray); font-size: 0.75rem; font-weight:700;">FOTOS NA GALERIA</span>
-                            <h3 style="font-size: 1.8rem; color: var(--primary-light); margin-top: 5px;" id="countGaleria">0</h3>
+                        <div class="card" style="margin:0; padding: 15px;">
+                            <span style="color: var(--gray); font-size: 0.7rem; font-weight:700;">FOTOS NA GALERIA</span>
+                            <h3 style="font-size: 1.5rem; color: var(--primary-light); margin-top: 5px;" id="countGaleria">0</h3>
                         </div>
                     </div>
 
@@ -687,15 +731,15 @@
                         </div>
                     </div>
 
-                    <!-- CARD FIXO DE ALERTAS DE 3 MESES (MOVIDO CORRETAMENTE PARA DENTRO DA ABA DASHBOARD) -->
+                    <!-- CARD FIXO DE ALERTAS DE 3 MESES -->
                     <div class="card" style="margin-top: 20px; border: 1px solid var(--warning);">
                         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3 style="color: var(--warning); margin: 0;"><i class="fa-solid fa-clock-rotate-left"></i> Lembretes Fixos: Planos Completando 3 Meses</h3>
+                            <h3 style="color: var(--warning); margin: 0; font-size: 1rem;"><i class="fa-solid fa-clock-rotate-left"></i> Lembretes Fixos: Planos Completando 3 Meses</h3>
                             <span id="badgeTotalAlertasAdmin" class="status-badge" style="background: var(--warning); color: #000; font-weight: bold;">0 Alertas</span>
                         </div>
-                        <div class="card-body" style="padding: 10px 0;">
-                            <p style="color: var(--text-muted); font-size: 0.85rem; padding: 0 15px; margin-bottom: 15px;">
-                                Esta lista exibe de forma fixa os alunos cujos planos de treino atingiram ou estão prestes a atingir o ciclo limite de 3 meses, necessitando de atualização e reavaliação corporal.
+                        <div class="card-body" style="padding: 5px 0;">
+                            <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 15px;">
+                                Esta lista exibe de forma fixa os alunos cujos planos de treino atingiram ou estão prestes a atingir o ciclo limite de 3 meses.
                             </p>
                             <div class="table-container">
                                 <table>
@@ -892,7 +936,7 @@
                         <div class="card-header">
                             <h3>Itens de Estrutura Cadastrados (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="listaEstruturaAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+                        <div id="listaEstruturaAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
                     </div>
                 </div>
 
@@ -949,112 +993,112 @@
                         <div class="card-header">
                             <h3>Modalidades Cadastradas (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="listaModalidadesAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+                        <div id="listaModalidadesAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
                     </div>
                 </div>
 
                 <!-- MODAL DE AVALIAÇÃO CORPORAL COMPLETA (PADRÃO PLANILHA) -->
                 <div id="modalAvaliacaoCorporalCompleta" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 6000; justify-content: center; align-items: center; padding: 15px; overflow-y: auto;">
-                    <div style="width: 100%; max-width: 900px; background: var(--bg-card); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto;">
+                    <div style="width: 100%; max-width: 900px; background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto;">
                         
                         <!-- Cabeçalho do Modal -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; gap: 10px;">
                             <div>
-                                <h3 style="font-size: 1.3rem; color: var(--text-main); margin: 0;">Avaliação Corporal Completa</h3>
-                                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 4px 0 0 0;" id="aval_nome_aluno">Aluno: Carregando...</p>
+                                <h3 style="font-size: 1.1rem; color: var(--text-main); margin: 0;">Avaliação Corporal Completa</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 0 0;" id="aval_nome_aluno">Aluno: Carregando...</p>
                             </div>
-                            <button type="button" onclick="fecharModalAvaliacaoCorporal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;">✕</button>
+                            <button type="button" onclick="fecharModalAvaliacaoCorporal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer;">✕</button>
                         </div>
 
                         <input type="hidden" id="aval_aluno_id">
 
                         <!-- DATA E AVALIAÇÃO -->
-                        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px;">
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; @media(min-width: 600px){grid-template-columns: 1fr 2fr;}">
                             <div style="background: var(--bg-surface); padding: 12px 15px; border-radius: 10px; border: 1px solid var(--border-color);">
                                 <label style="font-size: 0.75rem; color: var(--text-muted); display: block; font-weight: 700;">DATA DA AVALIAÇÃO</label>
-                                <input type="text" id="aval_data" style="background: transparent; border: none; color: var(--text-main); font-weight: 700; width: 100%; font-size: 1rem; outline: none;" readonly>
+                                <input type="text" id="aval_data" style="background: transparent; border: none; color: var(--text-main); font-weight: 700; width: 100%; font-size: 0.95rem; outline: none;" readonly>
                             </div>
-                            <div style="background: var(--bg-surface); padding: 12px 15px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;">
-                                <span style="font-family: 'Anton', sans-serif; font-size: 1.2rem; letter-spacing: 1px; color: var(--primary-light);">AVALIAÇÃO ANTROPOMÉTRICA</span>
+                            <div style="background: var(--bg-surface); padding: 12px 15px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; text-align: center;">
+                                <span style="font-family: 'Anton', sans-serif; font-size: 1.1rem; letter-spacing: 1px; color: var(--primary-light);">AVALIAÇÃO ANTROPOMÉTRICA</span>
                             </div>
                         </div>
 
                         <!-- INFORMAÇÕES GERAIS (PESO, ALTURA, IMC) -->
-                        <div style="background: var(--bg-surface); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-                            <h4 style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; font-weight: 700;">Informações Gerais</h4>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: center;">
+                        <div style="background: var(--bg-surface); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px;">
+                            <h4 style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; font-weight: 700;">Informações Gerais</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; align-items: center;">
                                 <div>
-                                    <label style="font-size: 0.8rem; color: var(--text-muted);">Peso Atual (Kg)</label>
-                                    <input type="number" step="0.1" id="aval_peso" oninput="calcularIMCIMAGEM()" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 1rem; font-weight: 700;">
+                                    <label style="font-size: 0.78rem; color: var(--text-muted);">Peso Atual (Kg)</label>
+                                    <input type="number" step="0.1" id="aval_peso" oninput="calcularIMCIMAGEM()" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.95rem; font-weight: 700;">
                                 </div>
                                 <div>
-                                    <label style="font-size: 0.8rem; color: var(--text-muted);">Altura (m)</label>
-                                    <input type="number" step="0.01" id="aval_altura" oninput="calcularIMCIMAGEM()" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 1rem; font-weight: 700;">
+                                    <label style="font-size: 0.78rem; color: var(--text-muted);">Altura (m)</label>
+                                    <input type="number" step="0.01" id="aval_altura" oninput="calcularIMCIMAGEM()" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.95rem; font-weight: 700;">
                                 </div>
-                                <div style="background: var(--primary-glow); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(37,99,235,0.3); text-align: center;">
-                                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">IMC</span>
-                                    <span id="aval_imc_val" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">0,00</span>
+                                <div style="background: var(--primary-glow); padding: 10px; border-radius: 8px; border: 1px solid rgba(37,99,235,0.3); text-align: center;">
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">IMC</span>
+                                    <span id="aval_imc_val" style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">0,00</span>
                                 </div>
-                                <div style="background: rgba(16,185,129,0.1); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.3); text-align: center;">
-                                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">CLASSIFICAÇÃO IMC</span>
-                                    <span id="aval_imc_class" style="font-size: 1.1rem; font-weight: 800; color: var(--accent-success);">Normal</span>
+                                <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.3); text-align: center;">
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">CLASSIFICAÇÃO</span>
+                                    <span id="aval_imc_class" style="font-size: 1rem; font-weight: 800; color: var(--accent-success);">Normal</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- GRID DOBRAS E PERIMETRIA -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; @media(min-width: 768px){grid-template-columns: 1fr 1fr;}">
                             
                             <!-- DOBRAS CUTÂNEAS -->
-                            <div style="background: var(--bg-surface); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
-                                <h4 style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; font-weight: 700;">Dobras Cutâneas (mm)</h4>
+                            <div style="background: var(--bg-surface); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
+                                <h4 style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; font-weight: 700;">Dobras Cutâneas (mm)</h4>
                                 
                                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;">Subescapular</span><input type="number" class="dobra-input" data-nome="subescapular" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;">Tricipital</span><input type="number" class="dobra-input" data-nome="tricipital" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;">Bicipital</span><input type="number" class="dobra-input" data-nome="bicipital" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;">Peitoral</span><input type="number" class="dobra-input" data-nome="peitoral" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;">Axilar-média</span><input type="number" class="dobra-input" data-nome="axilar_media" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;">Supra-ilíaca</span><input type="number" class="dobra-input" data-nome="supra_iliaca" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;">Abdominal</span><input type="number" class="dobra-input" data-nome="abdominal" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;">Coxa</span><input type="number" class="dobra-input" data-nome="coxa" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;">Panturrilha</span><input type="number" class="dobra-input" data-nome="panturrilha" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.82rem;">Subescapular</span><input type="number" class="dobra-input" data-nome="subescapular" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.82rem;">Tricipital</span><input type="number" class="dobra-input" data-nome="tricipital" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.82rem;">Bicipital</span><input type="number" class="dobra-input" data-nome="bicipital" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.82rem;">Peitoral</span><input type="number" class="dobra-input" data-nome="peitoral" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.82rem;">Axilar-média</span><input type="number" class="dobra-input" data-nome="axilar_media" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.82rem;">Supra-ilíaca</span><input type="number" class="dobra-input" data-nome="supra_iliaca" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.82rem;">Abdominal</span><input type="number" class="dobra-input" data-nome="abdominal" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.82rem;">Coxa</span><input type="number" class="dobra-input" data-nome="coxa" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.82rem;">Panturrilha</span><input type="number" class="dobra-input" data-nome="panturrilha" oninput="somarDobras()" style="width: 70px; background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
                                 </div>
 
                                 <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 0.85rem; font-weight: 700;">Soma das Dobras</span>
-                                    <span id="aval_soma_dobras" style="font-size: 1.1rem; font-weight: 800; color: var(--primary-light);">0</span>
+                                    <span style="font-size: 0.82rem; font-weight: 700;">Soma das Dobras</span>
+                                    <span id="aval_soma_dobras" style="font-size: 1.05rem; font-weight: 800; color: var(--primary-light);">0</span>
                                 </div>
                             </div>
 
                             <!-- PERIMETRIA (CM) -->
-                            <div style="background: var(--bg-surface); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
-                                <h4 style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; font-weight: 700;">Perimetria (cm)</h4>
+                            <div style="background: var(--bg-surface); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
+                                <h4 style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; font-weight: 700;">Perimetria (cm)</h4>
                                 
-                                <div style="display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; margin-bottom: 8px; font-size: 0.75rem; color: var(--text-muted); text-align: center; font-weight: 700;">
+                                <div style="display: grid; grid-template-columns: 1fr 65px 65px; gap: 6px; margin-bottom: 8px; font-size: 0.72rem; color: var(--text-muted); text-align: center; font-weight: 700;">
                                     <div style="text-align: left;">Medida</div>
                                     <div>Direito</div>
                                     <div>Esquerdo</div>
                                 </div>
 
                                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                                    <div style="display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; align-items: center;"><span style="font-size: 0.82rem;">1. Ombro</span><input type="number" step="0.1" class="perim-dir" data-nome="ombro" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" class="perim-esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; text-align: center;" disabled></div>
-                                    <div style="display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; align-items: center;"><span style="font-size: 0.82rem;">2. Torax</span><input type="number" step="0.1" class="perim-dir" data-nome="torax" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" class="perim-esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; text-align: center;" disabled></div>
-                                    <div style="display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; align-items: center;"><span style="font-size: 0.82rem;">3. Cintura</span><input type="number" step="0.1" class="perim-dir" data-nome="cintura" oninput="calcularRCQ()" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" class="perim-esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; text-align: center;" disabled></div>
-                                    <div style="display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; align-items: center;"><span style="font-size: 0.82rem;">4. Abdômen</span><input type="number" step="0.1" class="perim-dir" data-nome="abdomen" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" class="perim-esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; text-align: center;" disabled></div>
-                                    <div style="display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; align-items: center;"><span style="font-size: 0.82rem;">5. Quadril</span><input type="number" step="0.1" class="perim-dir" data-nome="quadril" oninput="calcularRCQ()" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" class="perim-esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; text-align: center;" disabled></div>
-                                    <div style="display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; align-items: center;"><span style="font-size: 0.82rem;">6. Braço</span><input type="number" step="0.1" class="perim-dir" data-nome="braco_dir" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" step="0.1" class="perim-esq" data-nome="braco_esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; align-items: center;"><span style="font-size: 0.82rem;">7. Antebraço</span><input type="number" step="0.1" class="perim-dir" data-nome="antebraco_dir" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" step="0.1" class="perim-esq" data-nome="antebraco_esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; align-items: center;"><span style="font-size: 0.82rem;">8. Coxa</span><input type="number" step="0.1" class="perim-dir" data-nome="coxa_dir" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" step="0.1" class="perim-esq" data-nome="coxa_esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
-                                    <div style="display: grid; grid-template-columns: 1fr 70px 70px; gap: 8px; align-items: center;"><span style="font-size: 0.82rem;">9. Panturrilha</span><input type="number" step="0.1" class="perim-dir" data-nome="panturrilha_dir" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" step="0.1" class="perim-esq" data-nome="panturrilha_esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: grid; grid-template-columns: 1fr 65px 65px; gap: 6px; align-items: center;"><span style="font-size: 0.8rem;">1. Ombro</span><input type="number" step="0.1" class="perim-dir" data-nome="ombro" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" class="perim-esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; text-align: center;" disabled></div>
+                                    <div style="display: grid; grid-template-columns: 1fr 65px 65px; gap: 6px; align-items: center;"><span style="font-size: 0.8rem;">2. Torax</span><input type="number" step="0.1" class="perim-dir" data-nome="torax" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" class="perim-esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; text-align: center;" disabled></div>
+                                    <div style="display: grid; grid-template-columns: 1fr 65px 65px; gap: 6px; align-items: center;"><span style="font-size: 0.8rem;">3. Cintura</span><input type="number" step="0.1" class="perim-dir" data-nome="cintura" oninput="calcularRCQ()" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" class="perim-esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; text-align: center;" disabled></div>
+                                    <div style="display: grid; grid-template-columns: 1fr 65px 65px; gap: 6px; align-items: center;"><span style="font-size: 0.8rem;">4. Abdômen</span><input type="number" step="0.1" class="perim-dir" data-nome="abdomen" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" class="perim-esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; text-align: center;" disabled></div>
+                                    <div style="display: grid; grid-template-columns: 1fr 65px 65px; gap: 6px; align-items: center;"><span style="font-size: 0.8rem;">5. Quadril</span><input type="number" step="0.1" class="perim-dir" data-nome="quadril" oninput="calcularRCQ()" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" class="perim-esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; text-align: center;" disabled></div>
+                                    <div style="display: grid; grid-template-columns: 1fr 65px 65px; gap: 6px; align-items: center;"><span style="font-size: 0.8rem;">6. Braço</span><input type="number" step="0.1" class="perim-dir" data-nome="braco_dir" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" step="0.1" class="perim-esq" data-nome="braco_esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: grid; grid-template-columns: 1fr 65px 65px; gap: 6px; align-items: center;"><span style="font-size: 0.8rem;">7. Antebraço</span><input type="number" step="0.1" class="perim-dir" data-nome="antebraco_dir" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" step="0.1" class="perim-esq" data-nome="antebraco_esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: grid; grid-template-columns: 1fr 65px 65px; gap: 6px; align-items: center;"><span style="font-size: 0.8rem;">8. Coxa</span><input type="number" step="0.1" class="perim-dir" data-nome="coxa_dir" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" step="0.1" class="perim-esq" data-nome="coxa_esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
+                                    <div style="display: grid; grid-template-columns: 1fr 65px 65px; gap: 6px; align-items: center;"><span style="font-size: 0.8rem;">9. Panturrilha</span><input type="number" step="0.1" class="perim-dir" data-nome="panturrilha_dir" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"><input type="number" step="0.1" class="perim-esq" data-nome="panturrilha_esq" style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 6px; border-radius: 6px; text-align: center;"></div>
                                 </div>
 
-                                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px;">
                                     <div>
-                                        <span style="font-size: 0.75rem; color: var(--text-muted);">RCQ: <strong id="aval_rcq_val" style="color: #fff;">0,00</strong></span>
+                                        <span style="font-size: 0.72rem; color: var(--text-muted);">RCQ: <strong id="aval_rcq_val" style="color: #fff;">0,00</strong></span>
                                     </div>
                                     <div>
-                                        <span style="font-size: 0.75rem; color: var(--text-muted);">Classificação: <strong id="aval_rcq_class" style="color: var(--accent-success);">Baixo</strong></span>
+                                        <span style="font-size: 0.72rem; color: var(--text-muted);">Classificação: <strong id="aval_rcq_class" style="color: var(--accent-success);">Baixo</strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -1062,9 +1106,9 @@
                         </div>
 
                         <!-- Botões de Ação -->
-                        <div style="display: flex; justify-content: flex-end; gap: 12px;">
-                            <button type="button" onclick="fecharModalAvaliacaoCorporal()" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">Cancelar</button>
-                            <button type="button" onclick="salvarAvaliacaoCorporalCompleta()" style="background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer;">Salvar Avaliação Corporal</button>
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
+                            <button type="button" onclick="fecharModalAvaliacaoCorporal()" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; flex: 1; min-width: 120px;">Cancelar</button>
+                            <button type="button" onclick="salvarAvaliacaoCorporalCompleta()" style="background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; flex: 1; min-width: 180px;">Salvar Avaliação</button>
                         </div>
 
                     </div>
@@ -1119,7 +1163,7 @@
                         <div class="card-header">
                             <h3>Depoimentos Cadastrados (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="listaFeedbackAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+                        <div id="listaFeedbackAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
                     </div>
                 </div>
 
@@ -1156,7 +1200,7 @@
                         <div class="card-header">
                             <h3>Perguntas Cadastradas (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="listaFaqAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+                        <div id="listaFaqAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
                     </div>
                 </div>
 
@@ -1166,7 +1210,7 @@
                         <h1>💾 Central de Backup e Segurança do Sistema</h1>
                         <p>Realize o backup completo de todo o ecossistema (páginas do sistema e banco de dados completo do Supabase) para o seu computador e para o banco.</p>
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px;">
                         <div class="card" style="margin: 0;">
                             <div class="card-header">
                                 <h3>📦 Backup das Páginas (Código-Fonte)</h3>
@@ -1192,7 +1236,7 @@
                         <div class="card-header">
                             <h3>📊 Status de Integridade do Sistema</h3>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                             <div style="background: var(--dark-2); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
                                 <span style="font-size: 0.75rem; color: var(--gray);">CONEXÃO SUPABASE</span>
                                 <h4 style="color: var(--success); font-size: 1rem; margin-top: 4px;">🟢 Ativa & Online</h4>
@@ -1262,7 +1306,7 @@
                         <div class="card-header">
                             <h3>Professores no Site</h3>
                         </div>
-                        <div id="professoresList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
+                        <div id="professoresList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;"></div>
                     </div>
                 </div>
 
@@ -1321,7 +1365,7 @@
                         <div class="card-header">
                             <h3>Planos Ativos no Site (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="listaPlanosAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+                        <div id="listaPlanosAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
                     </div>
                 </div>
 
@@ -1366,7 +1410,7 @@
                         <div class="card-header">
                             <h3>Parceiros Cadastrados</h3>
                         </div>
-                        <div id="listaParceirosAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;"></div>
+                        <div id="listaParceirosAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;"></div>
                     </div>
                 </div>
 
@@ -1420,7 +1464,7 @@
                         <div class="card-header">
                             <h3>Fotos Publicadas no Site (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="galeriaList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;"></div>
+                        <div id="galeriaList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;"></div>
                     </div>
                 </div>
 
@@ -1613,36 +1657,36 @@
 
 
             <!-- MODAL PLANO DE TREINO PROFISSIONAL EVOLUÍDO -->
-            <div class="modal-overlay" id="modalTreinoFiel" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto; padding: 20px;">
-                <div class="modal-card" style="max-width: 1450px; width: 100%; background: #181818; color: #fff; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.8);">
+            <div class="modal-overlay" id="modalTreinoFiel" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto; padding: 15px;">
+                <div class="modal-card" style="max-width: 1450px; width: 100%; background: #181818; color: #fff; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.8);">
                     
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px;">
-                        <div style="background: rgba(30,136,229,0.15); border: 1px solid var(--primary); padding: 8px 16px; font-weight: bold; font-size: 0.9rem; border-radius: 8px; color: var(--primary-light);">📅 PLANO DE TREINO PROFISSIONAL & AVALIAÇÃO</div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="button" onclick="abrirModalExerciciosCatalogo()" class="btn-action-bar" style="background: var(--dark-2);">🏋️ Biblioteca de Exercícios</button>
-                            <button type="button" onclick="abrirModalMetodosLista()" class="btn-action-bar" style="background: var(--dark-2);">⚙️ Métodos de Treino</button>
-                            <button type="button" onclick="window.print()" class="btn btn-print" style="padding: 6px 14px; font-size: 0.8rem;"><i class="fa-solid fa-print"></i> Imprimir</button>
-                            <button type="button" onclick="salvarTreinoAnexo()" class="btn btn-success" style="padding: 6px 18px; font-size: 0.8rem;">💾 Salvar Plano</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <div style="background: rgba(30,136,229,0.15); border: 1px solid var(--primary); padding: 8px 14px; font-weight: bold; font-size: 0.85rem; border-radius: 8px; color: var(--primary-light);">📅 PLANO DE TREINO PROFISSIONAL & AVALIAÇÃO</div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" onclick="abrirModalExerciciosCatalogo()" class="btn-action-bar">🏋️ Biblioteca</button>
+                            <button type="button" onclick="abrirModalMetodosLista()" class="btn-action-bar">⚙️ Métodos</button>
+                            <button type="button" onclick="window.print()" class="btn btn-print" style="padding: 6px 12px; font-size: 0.8rem;"><i class="fa-solid fa-print"></i></button>
+                            <button type="button" onclick="salvarTreinoAnexo()" class="btn btn-success" style="padding: 6px 16px; font-size: 0.8rem;">💾 Salvar</button>
                             <button type="button" onclick="fecharModal('modalTreinoFiel')" class="btn-action-bar" style="background: var(--danger); color: #fff;">✕</button>
                         </div>
                     </div>
 
                     <input type="hidden" id="tr_aluno_id">
 
-                    <div style="display: grid; grid-template-columns: 80px 80px 160px 1fr; gap: 12px; align-items: center; margin-bottom: 20px; background: var(--dark-card); padding: 15px; border: 1px solid var(--border); border-radius: 12px;">
-                        <div><label style="font-size:0.75rem; color:var(--gray); display:block; font-weight:600;">Cod</label><input type="text" id="tr_cod" value="1" class="form-control" readonly></div>
-                        <div><label style="font-size:0.75rem; color:var(--gray); display:block; font-weight:600;">CodT</label><input type="text" id="tr_codt" value="1" class="form-control" readonly></div>
-                        <div><label style="font-size:0.75rem; color:var(--gray); display:block; font-weight:600;">Data de Aplicação:</label><input type="text" id="tr_data" value="" class="form-control"></div>
-                        <div><label style="font-size:0.75rem; color:var(--gray); display:block; font-weight:600;">Nome do Aluno:</label><input type="text" id="tr_nome" value="" class="form-control" readonly></div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; align-items: center; margin-bottom: 15px; background: var(--dark-card); padding: 12px; border: 1px solid var(--border); border-radius: 12px;">
+                        <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Cod</label><input type="text" id="tr_cod" value="1" class="form-control" readonly></div>
+                        <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">CodT</label><input type="text" id="tr_codt" value="1" class="form-control" readonly></div>
+                        <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Data Aplicação:</label><input type="text" id="tr_data" value="" class="form-control"></div>
+                        <div style="grid-column: 1 / -1; @media(min-width: 768px){grid-column: auto;}"><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Nome do Aluno:</label><input type="text" id="tr_nome" value="" class="form-control" readonly></div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 460px 1fr; gap: 20px;">
+                    <div class="modal-card-grid-duplo">
                         
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                             
                             <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 15px; border-radius: 12px; position: relative;">
-                                <span style="position: absolute; top: -11px; left: 15px; background: var(--dark-card); padding: 0 8px; color: var(--primary-light); font-weight: 700; font-size: 0.8rem;">🎯 OBJETIVO & ESTRUTURA</span>
-                                <div style="display: grid; grid-template-columns: 140px 1fr; gap: 10px; margin-top: 8px;">
+                                <span style="position: absolute; top: -11px; left: 15px; background: var(--dark-card); padding: 0 8px; color: var(--primary-light); font-weight: 700; font-size: 0.78rem;">🎯 OBJETIVO & ESTRUTURA</span>
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 8px; @media(min-width: 500px){grid-template-columns: 130px 1fr;}">
                                     <select id="tr_objetivo" class="form-control">
                                         <option>Hipertrofia</option>
                                         <option>Emagrecimento</option>
@@ -1654,24 +1698,24 @@
                             </div>
 
                             <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 15px; border-radius: 12px; position: relative;">
-                                <span style="position: absolute; top: -11px; left: 15px; background: var(--dark-card); padding: 0 8px; color: var(--gray); font-weight: 600; font-size: 0.78rem;">Principais Grupos Musculares</span>
+                                <span style="position: absolute; top: -11px; left: 15px; background: var(--dark-card); padding: 0 8px; color: var(--gray); font-weight: 600; font-size: 0.75rem;">Principais Grupos Musculares</span>
                                 
-                                <div style="display: grid; grid-template-columns: 130px 1fr 130px; gap: 8px; align-items: center; margin-top: 8px; font-size: 0.76rem;">
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 10px; align-items: center; margin-top: 8px; font-size: 0.75rem; @media(min-width: 500px){grid-template-columns: 110px 1fr 110px;}">
                                     <div style="display: flex; flex-direction: column; gap: 4px;">
                                         <label><input type="checkbox" id="chk_todos" onchange="toggleTodosMusculos(this)"> Todos</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="deltoides" checked onchange="atualizarMapaAnatomico()"> Deltóides</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="peitoral" checked onchange="atualizarMapaAnatomico()"> Peitoral</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="biceps" checked onchange="atualizarMapaAnatomico()"> Bíceps</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="antebraco" checked onchange="atualizarMapaAnatomico()"> Antebraço</label>
-                                        <label><input type="checkbox" class="chk-musculo" data-musculo="abdomen" checked onchange="atualizarMapaAnatomico()"> Reto Abdominal</label>
+                                        <label><input type="checkbox" class="chk-musculo" data-musculo="abdomen" checked onchange="atualizarMapaAnatomico()"> Abdômen</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="obliquos" onchange="atualizarMapaAnatomico()"> Oblíquos</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="quadriceps" checked onchange="atualizarMapaAnatomico()"> Quadríceps</label>
-                                        <label><input type="checkbox" class="chk-musculo" data-musculo="tibial" onchange="atualizarMapaAnatomico()"> Tibiais Anterior</label>
+                                        <label><input type="checkbox" class="chk-musculo" data-musculo="tibial" onchange="atualizarMapaAnatomico()"> Tibiais</label>
                                     </div>
 
                                     <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); padding: 8px; text-align: center; border-radius: 8px;">
-                                        <div style="display: flex; justify-content: center; gap: 12px;">
-                                            <svg width="40" height="120" viewBox="0 0 100 250">
+                                        <div style="display: flex; justify-content: center; gap: 10px;">
+                                            <svg width="35" height="100" viewBox="0 0 100 250">
                                                 <circle cx="50" cy="20" r="15" fill="#4caf50"/>
                                                 <path id="map-deltoides" d="M30 40 Q50 35 70 40 L65 55 L35 55 Z" fill="#4caf50" opacity="0.9"/>
                                                 <path id="map-peitoral" d="M35 58 Q50 55 65 58 L63 85 Q50 90 37 85 Z" fill="#4caf50" opacity="0.9"/>
@@ -1683,7 +1727,7 @@
                                                 <path id="map-quadriceps" d="M40 132 L49 132 L47 185 L38 180 Z" fill="#4caf50" opacity="0.9"/>
                                                 <path id="map-quadriceps-r" d="M60 132 L51 132 L53 185 L62 180 Z" fill="#4caf50" opacity="0.9"/>
                                             </svg>
-                                            <svg width="40" height="120" viewBox="0 0 100 250">
+                                            <svg width="35" height="100" viewBox="0 0 100 250">
                                                 <circle cx="50" cy="20" r="15" fill="#4caf50"/>
                                                 <path id="map-trapezio" d="M35 38 Q50 35 65 38 L72 58 L28 58 Z" fill="#4caf50" opacity="0.3"/>
                                                 <path id="map-dorsal" d="M30 60 L70 60 L62 95 Q50 100 38 95 Z" fill="#4caf50" opacity="0.3"/>
@@ -1697,30 +1741,30 @@
 
                                     <div style="display: flex; flex-direction: column; gap: 4px;">
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="trapezio" onchange="atualizarMapaAnatomico()"> Trapézio</label>
-                                        <label><input type="checkbox" class="chk-musculo" data-musculo="infraespinhal" onchange="atualizarMapaAnatomico()"> Infraespinhal</label>
+                                        <label><input type="checkbox" class="chk-musculo" data-musculo="infraespinhal" onchange="atualizarMapaAnatomico()"> Infra</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="triceps" onchange="atualizarMapaAnatomico()"> Tríceps</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="dorsal" checked onchange="atualizarMapaAnatomico()"> Dorsal</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="lombar" onchange="atualizarMapaAnatomico()"> Lombar</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="gluteos" checked onchange="atualizarMapaAnatomico()"> Glúteos</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="posterior" checked onchange="atualizarMapaAnatomico()"> Posterior</label>
-                                        <label><input type="checkbox" class="chk-musculo" data-musculo="panturrilhas" checked onchange="atualizarMapaAnatomico()"> Panturrilhas</label>
+                                        <label><input type="checkbox" class="chk-musculo" data-musculo="panturrilhas" checked onchange="atualizarMapaAnatomico()"> Panturrilha</label>
                                     </div>
                                 </div>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                                 <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                    <div style="font-weight: 700; font-size: 0.8rem; margin-bottom: 8px; color: var(--primary-light);">⚙️ NÍVEL DO ALUNO</div>
-                                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem;">
+                                    <div style="font-weight: 700; font-size: 0.78rem; margin-bottom: 8px; color: var(--primary-light);">⚙️ NÍVEL</div>
+                                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem;">
                                         <label><input type="radio" name="tr_nivel" checked> Iniciante</label>
                                         <label><input type="radio" name="tr_nivel"> Intermediário</label>
                                         <label><input type="radio" name="tr_nivel"> Avançado</label>
                                     </div>
                                 </div>
                                 <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                    <div style="font-weight: 700; font-size: 0.8rem; margin-bottom: 8px; color: var(--primary-light);">🔤 DIVISÃO DE TREINO</div>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.78rem;">
-                                        <label><input type="radio" name="tr_divisao"> Full Body</label>
+                                    <div style="font-weight: 700; font-size: 0.78rem; margin-bottom: 8px; color: var(--primary-light);">🔤 DIVISÃO</div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.75rem;">
+                                        <label><input type="radio" name="tr_divisao"> Full</label>
                                         <label><input type="radio" name="tr_divisao"> A</label>
                                         <label><input type="radio" name="tr_divisao"> AB</label>
                                         <label><input type="radio" name="tr_divisao" checked> ABC</label>
@@ -1735,13 +1779,13 @@
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                             
                             <!-- MONTAGEM DAS FICHAS DE TREINO (A, B, C...) -->
-                            <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 18px; border-radius: 12px; position: relative;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                    <h4 style="font-size: 1rem; color: var(--text-color);"><i class="fa-solid fa-dumbbell"></i> Montagem de Exercícios por Bloco (A, B, C...)</h4>
-                                    <button type="button" onclick="abrirSeletorExerciciosFicha()" class="btn-action-bar" style="background: var(--primary); color:#fff;">➕ Adicionar Exercício</button>
+                            <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 15px; border-radius: 12px; position: relative;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                                    <h4 style="font-size: 0.92rem; color: var(--text-color);"><i class="fa-solid fa-dumbbell"></i> Montagem de Exercícios</h4>
+                                    <button type="button" onclick="abrirSeletorExerciciosFicha()" class="btn-action-bar" style="background: var(--primary); color:#fff;">➕ Adicionar</button>
                                 </div>
 
-                                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                                <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
                                     <button type="click" onclick="mudarAbaTreinoFicha('A')" class="btn-action-bar btn-treino-aba active" id="tabTreinoA">Treino A</button>
                                     <button type="click" onclick="mudarAbaTreinoFicha('B')" class="btn-action-bar btn-treino-aba" id="tabTreinoB">Treino B</button>
                                     <button type="click" onclick="mudarAbaTreinoFicha('C')" class="btn-action-bar btn-treino-aba" id="tabTreinoC">Treino C</button>
@@ -1770,21 +1814,21 @@
                                                 <th>Exercício</th>
                                                 <th>Séries</th>
                                                 <th>Reps</th>
-                                                <th>Carga (kg)</th>
+                                                <th>Carga</th>
                                                 <th>Método</th>
                                                 <th style="text-align: right;">Ação</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tabelaExerciciosFichaBody">
-                                            <tr><td colspan="6" style="text-align: center; color: var(--gray);">Nenhum exercício adicionado neste treino. Clique em Adicionar.</td></tr>
+                                            <tr><td colspan="6" style="text-align: center; color: var(--gray);">Nenhum exercício adicionado.</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
 
                             <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 15px; border-radius: 12px;">
-                                <h4 style="font-size: 0.95rem; color: var(--text-color); margin-bottom: 12px;"><i class="fa-solid fa-scale-balanced"></i> Avaliação Antropométrica e Bioimpedância</h4>
-                                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                                <h4 style="font-size: 0.9rem; color: var(--text-color); margin-bottom: 12px;"><i class="fa-solid fa-scale-balanced"></i> Avaliação e Bioimpedância</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px;">
                                     <div>
                                         <label class="form-label">Peso (kg)</label>
                                         <input type="number" step="0.1" id="fiel_peso" class="form-control" placeholder="75.5">
@@ -1798,7 +1842,7 @@
                                         <input type="number" step="0.1" id="fiel_gordura" class="form-control" placeholder="14.5">
                                     </div>
                                     <div>
-                                        <label class="form-label">Massa Magra (kg)</label>
+                                        <label class="form-label">Massa (kg)</label>
                                         <input type="number" step="0.1" id="fiel_massa" class="form-control" placeholder="62.0">
                                     </div>
                                 </div>
@@ -1878,12 +1922,16 @@
                 toastDiv.style.position = 'fixed';
                 toastDiv.style.bottom = '20px';
                 toastDiv.style.right = '20px';
+                toastDiv.style.left = '20px';
+                toastDiv.style.maxWidth = '400px';
+                toastDiv.style.margin = '0 auto';
                 toastDiv.style.padding = '12px 20px';
                 toastDiv.style.backgroundColor = tipo === 'error' ? '#e74c3c' : '#2ecc71';
                 toastDiv.style.color = '#fff';
-                toastDiv.style.borderRadius = '5px';
+                toastDiv.style.borderRadius = '8px';
                 toastDiv.style.zIndex = '9999';
                 toastDiv.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                toastDiv.style.textAlign = 'center';
                 toastDiv.innerText = mensagem;
                 
                 document.body.appendChild(toastDiv);
@@ -1955,7 +2003,7 @@
                         
                         exercicios.forEach(ex => {
                             conteudoHTML += `
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border: 1px solid var(--border); background: var(--dark-2); border-radius: 8px; margin-bottom: 6px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border: 1px solid var(--border); background: var(--dark-2); border-radius: 8px; margin-bottom: 6px; gap: 10px; flex-wrap: wrap;">
                                     <div>
                                         <strong style="color: var(--text-color); font-size: 0.88rem;">${ex.nome}</strong>
                                         <span style="font-size: 0.72rem; color: var(--gray); display: block;">Equipamento: ${ex.equipamento || 'Livre'} | Tipo: ${ex.tipo || 'Composto'}</span>
@@ -2420,17 +2468,17 @@
             
             let botoesStatusAprovar = '';
             if (a.status === 'Pendente') {
-                botoesStatusAprovar = `<button onclick="mudarStatusAluno('${a.id}', 'Ativo')" class="btn-action-bar btn-success" style="background:var(--success); color:#fff; margin-right:4px;" title="Aprovar Cadastro">✅ Aprovar</button>`;
+                botoesStatusAprovar = `<button onclick="mudarStatusAluno('${a.id}', 'Ativo')" class="btn-action-bar btn-success" style="background:var(--success); color:#fff; margin-right:4px;" title="Aprovar Cadastro">✅</button>`;
             }
 
             let botoesEspecificos = '';
             if (nivelLogado !== 'professor') {
-                botoesEspecificos += `<button onclick="enviarLinkSenhaAluno('${a.email}')" class="btn-action-bar" style="background:var(--warning); color:#000; margin-right:4px;" title="Enviar Link">🔑 Senha</button>`;
+                botoesEspecificos += `<button onclick="enviarLinkSenhaAluno('${a.email}')" class="btn-action-bar" style="background:var(--warning); color:#000; margin-right:4px;" title="Enviar Link">🔑</button>`;
             }
 
             if (nivelLogado !== 'recepcao') {
-                botoesEspecificos += `<button onclick="abrirModalTreinoFiel('${a.id}', '${a.nome}')" class="btn-action-bar" style="background:#ff5722; color:#fff; margin-right:4px;" title="Plano de Treino">🏋️ Treino</button>`;
-                botoesEspecificos += `<button onclick="abrirModalAvaliacaoFisicaCompleta('${a.id}', '${a.nome}')" class="btn-action-bar" style="background: var(--primary); color: #fff; margin-right:4px;" title="Avaliação Corporal"><i class="fa-solid fa-scale-balanced"></i> Aval. Corporal</button>`;
+                botoesEspecificos += `<button onclick="abrirModalTreinoFiel('${a.id}', '${a.nome}')" class="btn-action-bar" style="background:#ff5722; color:#fff; margin-right:4px;" title="Plano de Treino">🏋️</button>`;
+                botoesEspecificos += `<button onclick="abrirModalAvaliacaoFisicaCompleta('${a.id}', '${a.nome}')" class="btn-action-bar" style="background: var(--primary); color: #fff; margin-right:4px;" title="Avaliação Corporal"><i class="fa-solid fa-scale-balanced"></i></button>`;
             }
 
             tbody.innerHTML += `
@@ -2440,7 +2488,7 @@
                     <td>${a.tel}</td>
                     <td>${a.plano || 'Sem Plano'}</td>
                     <td><span class="status-badge ${badgeClass}">${a.status || 'Pendente'}</span></td>
-                    <td style="text-align: right;">
+                    <td style="text-align: right; white-space: nowrap;">
                         ${botoesStatusAprovar}
                         ${botoesEspecificos}
                         <button onclick="editarAluno('${a.id}')" class="btn-action-bar" title="Editar">✏️</button>
@@ -3097,6 +3145,20 @@
         const loginForm = document.getElementById('loginForm');
         const btnLogout = document.getElementById('btnLogout');
         const btnThemeToggle = document.getElementById('btnThemeToggle');
+        const menuToggle = document.getElementById('menuToggle');
+        const appSidebar = document.getElementById('appSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (menuToggle && appSidebar && sidebarOverlay) {
+            menuToggle.addEventListener('click', () => {
+                appSidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('active');
+            });
+            sidebarOverlay.addEventListener('click', () => {
+                appSidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
 
         if (btnThemeToggle) {
             btnThemeToggle.addEventListener('click', () => {
@@ -3219,6 +3281,12 @@
                     link.classList.add('active');
                     const targetTab = document.getElementById(`tab-${target}`);
                     if (targetTab) targetTab.classList.add('active');
+
+                    // Fecha o menu sidebar em telas menores ao clicar em um link
+                    if(window.innerWidth <= 900) {
+                        appSidebar.classList.remove('open');
+                        sidebarOverlay.classList.remove('active');
+                    }
                 });
             });
 
@@ -3327,8 +3395,8 @@
                             <img src="${f.img}" style="width: 100%; height: 130px; border-radius: 8px; object-fit: cover; margin-bottom: 8px;">
                             <h4 style="font-size: 0.88rem; color: var(--text-color);">${f.titulo}</h4>
                             <div style="display:flex; gap:5px; justify-content:center; margin-top:8px;">
-                                <button onclick="editarFoto('${f.id}')" class="btn-action-bar">✏️ Editar</button>
-                                <button onclick="removerFoto('${f.id}')" class="btn-action-bar btn-danger">Excluir</button>
+                                <button onclick="editarFoto('${f.id}')" class="btn-action-bar">✏️</button>
+                                <button onclick="removerFoto('${f.id}')" class="btn-action-bar btn-danger">🗑️</button>
                             </div>
                         </div>
                     `;
@@ -3379,8 +3447,8 @@
                             <h4 style="font-size: 0.95rem; color: var(--text-color);">${p.nome}</h4>
                             <p style="font-size: 0.75rem; color: var(--gray); margin-bottom: 8px;">${p.esp}</p>
                             <div style="display:flex; gap:5px; justify-content:center;">
-                                <button onclick="editarProf('${p.id}')" class="btn-action-bar">✏️ Editar</button>
-                                <button onclick="removerProf('${p.id}')" class="btn-action-bar btn-danger">Excluir</button>
+                                <button onclick="editarProf('${p.id}')" class="btn-action-bar">✏️</button>
+                                <button onclick="removerProf('${p.id}')" class="btn-action-bar btn-danger">🗑️</button>
                             </div>
                         </div>
                     `;
@@ -3433,9 +3501,9 @@
                                 <td><strong>${n.titulo}</strong></td>
                                 <td>${n.cat}</td>
                                 <td><small style="color:var(--gray);">${(n.conteudo || '').substring(0, 40)}...</small></td>
-                                <td style="text-align: right;">
-                                    <button onclick="editarNoticia('${n.id}')" class="btn-action-bar">✏️ Editar</button>
-                                    <button onclick="removerNoticia('${n.id}')" class="btn-action-bar btn-danger">🗑️ Excluir</button>
+                                <td style="text-align: right; white-space: nowrap;">
+                                    <button onclick="editarNoticia('${n.id}')" class="btn-action-bar">✏️</button>
+                                    <button onclick="removerNoticia('${n.id}')" class="btn-action-bar btn-danger">🗑️</button>
                                 </td>
                             </tr>
                         `;
@@ -3484,9 +3552,9 @@
                                 <td><strong>${b.titulo}</strong></td>
                                 <td><span style="background: var(--dark-2); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">${b.posicao}</span></td>
                                 <td><img src="${b.img}" style="height: 40px; border-radius: 6px; object-fit: cover;"></td>
-                                <td style="text-align: right;">
-                                    <button onclick="editarBanner('${b.id}')" class="btn-action-bar">✏️ Editar</button>
-                                    <button onclick="removerBanner('${b.id}')" class="btn-action-bar btn-danger">🗑️ Excluir</button>
+                                <td style="text-align: right; white-space: nowrap;">
+                                    <button onclick="editarBanner('${b.id}')" class="btn-action-bar">✏️</button>
+                                    <button onclick="removerBanner('${b.id}')" class="btn-action-bar btn-danger">🗑️</button>
                                 </td>
                             </tr>
                         `;
@@ -3535,9 +3603,9 @@
                             <td><strong>${u.nome}</strong></td>
                             <td><code>${u.user}</code></td>
                             <td><span class="status-badge status-respondido">${nivelBadge}</span></td>
-                            <td style="text-align: right;">
-                                <button onclick="editarUsuario('${u.id}')" class="btn-action-bar">✏️ Editar</button>
-                                ${i > 0 ? `<button onclick="removerUsuario('${u.id}')" class="btn-action-bar btn-danger">🗑️ Excluir</button>` : '<span style="font-size:0.75rem; color:var(--gray); margin-left:8px;">Master Principal</span>'}
+                            <td style="text-align: right; white-space: nowrap;">
+                                <button onclick="editarUsuario('${u.id}')" class="btn-action-bar">✏️</button>
+                                ${i > 0 ? `<button onclick="removerUsuario('${u.id}')" class="btn-action-bar btn-danger">🗑️</button>` : ''}
                             </td>
                         </tr>
                     `;
@@ -3598,7 +3666,7 @@
                                     <td>${c.tel}</td>
                                     <td>${c.msg}</td>
                                     <td><span class="status-badge ${statusClass}">${statusTexto}</span></td>
-                                    <td style="text-align: right; display:flex; gap:4px; justify-content:flex-end;">
+                                    <td style="text-align: right; display:flex; gap:4px; justify-content:flex-end; white-space: nowrap;">
                                         <select onchange="alterarStatusContato('${c.id}', this.value)" class="btn-action-bar">
                                             <option value="Pendente" ${statusTexto === 'Pendente' ? 'selected' : ''}>Pendente</option>
                                             <option value="Respondido" ${statusTexto === 'Respondido' ? 'selected' : ''}>Respondido</option>
@@ -3647,7 +3715,7 @@
             window.carregarNoticias();
             window.carregarBanners();
             window.carregarUsuarios();
-            window.carregarLembretesFixosAdmin(); // Inicializa os lembretes fixos de 3 meses
+            window.carregarLembretesFixosAdmin();
         }
     });
 
@@ -3821,34 +3889,59 @@
             perimetria_esq: perimetria_esq
         };
 
+        if (!alunoId || alunoId === '-1') {
+            alert("Erro: ID do aluno inválido.");
+            return;
+        }
+
         try {
-            const { error } = await _supabase.from('avaliacoes_fisicas').upsert({
+            const { data: existente, error: erroBusca } = await _supabase
+                .from('avaliacoes_fisicas')
+                .select('id')
+                .eq('aluno_id', alunoId)
+                .maybeSingle();
+
+            if (erroBusca) throw erroBusca;
+
+            const dadosPayload = {
                 aluno_id: alunoId,
                 peso: peso,
                 altura: altura,
                 gordura: parseFloat(document.getElementById('aval_soma_dobras').textContent) || null,
                 conteudo_detalhado: JSON.stringify(pacoteDetalhado)
-            }, { onConflict: 'aluno_id' });
+            };
 
-            if (error) throw error;
+            let resultado;
 
-            window.showToast("Avaliação Corporal salva com sucesso!");
+            if (existente && existente.id) {
+                resultado = await _supabase
+                    .from('avaliacoes_fisicas')
+                    .update(dadosPayload)
+                    .eq('id', existente.id);
+            } else {
+                resultado = await _supabase
+                    .from('avaliacoes_fisicas')
+                    .insert([dadosPayload]);
+            }
+
+            if (resultado.error) throw resultado.error;
+
+            window.showToast("Avaliação Corporal salva e atualizada com sucesso!");
             fecharModalAvaliacaoCorporal();
             
-            // CORREÇÃO: Atualiza imediatamente a lista de lembretes e alunos no ato
             if (typeof window.carregarLembretesFixosAdmin === 'function') {
-                window.carregarLembretesFixosAdmin();
+                await window.carregarLembretesFixosAdmin();
             }
             if (typeof window.carregarAlunosAdmin === 'function') {
-                window.carregarAlunosAdmin();
+                await window.carregarAlunosAdmin();
             }
+
         } catch(err) {
-            console.error("Erro ao salvar avaliação corporativa: ", err);
-            alert("Erro ao salvar no banco de dados: " + err.message);
+            console.error("Erro crítico ao salvar avaliação no Supabase: ", err);
+            alert("Erro ao atualizar o banco de dados: " + (err.message || JSON.stringify(err)));
         }
     };
 
-    // FUNÇÃO DE LEMBRETES FIXOS DE 3 MESES CORRIGIDA
     window.carregarLembretesFixosAdmin = async function() {
         const tbody = document.getElementById('tabelaLembretesFixosAdminBody');
         const badgeTotal = document.getElementById('badgeTotalAlertasAdmin');
@@ -3906,7 +3999,7 @@
                             <td>${alunoObj.plano || 'Musculação'}</td>
                             <td>${formatoInicio}</td>
                             <td>${formatoVenc}<br>${statusTag}</td>
-                            <td style="text-align: right;">
+                            <td style="text-align: right; white-space: nowrap;">
                                 <button onclick="abrirModalAvaliacaoFisicaCompleta('${alunoObj.id}', '${alunoObj.nome}')" class="btn-action-bar" style="background: var(--primary); color: #fff;" title="Fazer Avaliação Corporal"><i class="fa-solid fa-scale-balanced"></i> Reavaliar</button>
                             </td>
                         </tr>

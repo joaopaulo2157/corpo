@@ -1529,6 +1529,20 @@
                         <button type="click" onclick="mudarAbaTreinoFicha('C')" class="btn-action-bar btn-treino-aba" id="tabTreinoC">Treino C</button>
                         <button type="click" onclick="mudarAbaTreinoFicha('D')" class="btn-action-bar btn-treino-aba" id="tabTreinoD">Treino D</button>
                     </div>
+                    <!-- Modal de Vídeo do Aluno -->
+<div id="modalVideoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; padding: 15px;">
+    <div style="width: 100%; max-width: 650px; background: #1e1e1e; padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative;">
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h4 id="videoModalTitulo" style="font-size: 1rem; color: #fff; margin: 0;">Como Executar</h4>
+            <button type="button" onclick="fecharModalVideoAluno()" style="background: transparent; border: none; color: #9e9e9e; font-size: 1.2rem; cursor: pointer;">✕</button>
+        </div>
+
+        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px;">
+            <iframe id="iframeVideoYoutube" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="" title="Vídeo de Execução" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
 
                     <div class="table-container" style="max-height: 250px; overflow-y: auto;">
                         <table>
@@ -1691,70 +1705,123 @@ window.showToast = function(mensagem, tipo = 'success') {
         });
     };
 
-    // NOVA FUNÇÃO EVOLUÍDA DE SELEÇÃO INTELIGENTE DE EXERCÍCIOS
-   window.abrirSeletorExerciciosFicha = async function() {
-        const nivelRadio = document.querySelector('input[name="tr_nivel"]:checked');
-        const nivelAlunoSelecionado = nivelRadio ? nivelRadio.parentElement.textContent.trim() : 'Iniciante';
-        
-        const divisaoRadio = document.querySelector('input[name="tr_divisao"]:checked');
-        const divisaoSelecionada = divisaoRadio ? divisaoRadio.parentElement.textContent.trim() : 'ABC';
-
+// SELETOR DE EXERCÍCIOS BUSCANDO DIRETAMENTE DO SUPABASE
+    window.abrirSeletorExerciciosFicha = async function() {
         try {
-            // Busca todos os exercícios cadastrados na tabela
-            const { data: biblioteca, error } = await _supabase.from('biblioteca_exercicios').select('*');
+            // Busca diretamente da tabela do banco de dados, sem listas estáticas no código
+            let { data: biblioteca, error } = await _supabase.from('biblioteca_exercicios').select('*');
             
             if (error) {
-                alert("Erro ao buscar a tabela 'biblioteca_exercicios' no Supabase. Verifique se a tabela foi criada.");
+                alert("Erro ao conectar com a tabela no Supabase: " + error.message);
                 return;
             }
 
             if (!biblioteca || biblioteca.length === 0) {
-                alert("A tabela 'biblioteca_exercicios' está vazia. Insira os dados da biblioteca no Supabase.");
+                alert("A tabela 'biblioteca_exercicios' está vazia no Supabase. Insira os dados no painel do banco.");
                 return;
             }
 
-            // Tenta filtrar de forma flexível; se não achar nada, usa todos para travar menos
-            let exerciciosFiltrados = biblioteca.filter(e => {
-                const nivelEx = (e.nivel_recomendado || 'Todos').toLowerCase();
-                const divEx = (e.divisao_compativel || 'Geral').toLowerCase();
-                return nivelEx === 'todos' || nivelEx.includes(nivelAlunoSelecionado.toLowerCase()) || divEx.includes('geral') || divEx.includes(divisaoSelecionada.toLowerCase());
+            // Agrupa os exercícios por grupo principal vindos do banco
+            const grupos = {};
+            biblioteca.forEach(ex => {
+                const grupo = ex.grupo_principal || 'Outros / Geral';
+                if (!grupos[grupo]) grupos[grupo] = [];
+                grupos[grupo].push(ex);
             });
 
-            if (exerciciosFiltrados.length === 0) {
-                exerciciosFiltrados = biblioteca; // Fallback para não deixar vazio
+            // Monta o HTML dinâmico baseado estritamente no banco
+            let conteudoHTML = '';
+            for (const [grupoMuscular, exercicios] of Object.entries(grupos)) {
+                conteudoHTML += `
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: var(--primary-light); font-size: 0.95rem; border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase;">🔹 ${grupoMuscular}</h4>
+                `;
+                
+                exercicios.forEach(ex => {
+                    conteudoHTML += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border: 1px solid var(--border); background: var(--dark-2); border-radius: 8px; margin-bottom: 6px;">
+                            <div>
+                                <strong style="color: var(--text-color); font-size: 0.88rem;">${ex.nome}</strong>
+                                <span style="font-size: 0.72rem; color: var(--gray); display: block;">Equipamento: ${ex.equipamento || 'Livre'} | Tipo: ${ex.tipo || 'Composto'}</span>
+                            </div>
+                            <button type="button" onclick="adicionarExercicioDiretoFicha('${ex.nome}')" class="btn-action-bar" style="background: var(--primary); color: #fff;">➕ Adicionar</button>
+                        </div>
+                    `;
+                });
+                conteudoHTML += `</div>`;
             }
 
-            let opcoesHtml = exerciciosFiltrados.map((ex, idx) => `${idx + 1} - ${ex.nome} [${ex.grupo_principal || 'Geral'}] (${ex.equipamento || 'Livre'})`).join('\n');
-            let escolha = prompt(`🔍 Biblioteca de Exercícios:\n\nSelecione o número do exercício para o Treino ${treinoAtualLetra}:\n\n${opcoesHtml}`);
-            
-            if (!escolha) return;
-            let indexEscolhido = parseInt(escolha) - 1;
-            let exercicioSelecionado = exerciciosFiltrados[indexEscolhido];
+            let modalAntigo = document.getElementById('modalSelecaoCompletaTreino');
+            if (modalAntigo) modalAntigo.remove();
 
-            if (!exercicioSelecionado) {
-                alert("Opção inválida.");
-                return;
-            }
+            const divModal = document.createElement('div');
+            divModal.id = 'modalSelecaoCompletaTreino';
+            divModal.className = 'modal-overlay';
+            divModal.style.display = 'flex';
+            divModal.innerHTML = `
+                <div class="modal-card" style="max-width: 800px; width: 100%;">
+                    <div class="card-header">
+                        <h3>🏋️ Biblioteca do Banco — Treino ${treinoAtualLetra}</h3>
+                        <button type="button" class="btn-action-bar" onclick="document.getElementById('modalSelecaoCompletaTreino').remove()">✕ Fechar</button>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 15px;">Dados carregados diretamente do Supabase. Clique em <strong>Adicionar</strong> para incluir no Treino ${treinoAtualLetra}.</p>
+                    <div style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+                        ${conteudoHTML}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(divModal);
 
-            const series = prompt("Séries (Ex: 4):", "4") || "4";
-            const reps = prompt("Repetições (Ex: 8-10):", "8-10") || "8-10";
-            const carga = prompt("Carga (Ex: 60kg):", "60kg") || "60kg";
-            const metodo = prompt("Método (Ex: Séries Tradicionais, Drop-set, Bi-set):", "Séries Tradicionais") || "Séries Tradicionais";
-
-            exerciciosFichaMemoria[treinoAtualLetra].push({ 
-                exercicio: exercicioSelecionado.nome, 
-                series, 
-                reps, 
-                carga, 
-                metodo 
-            });
-            
-            renderizarTabelaExerciciosFicha();
-            window.showToast(`Exercício adicionado ao Treino ${treinoAtualLetra}!`);
         } catch (err) {
-            alert("Erro ao carregar biblioteca: " + err.message);
+            alert("Erro ao carregar do Supabase: " + err.message);
         }
     };
+
+    // CATÁLOGO DE EXERCÍCIOS LENDO EXCLUSIVAMENTE DO SUPABASE
+    window.abrirModalExerciciosCatalogo = async function() {
+        document.getElementById('modalCatalogoExercicios').style.display = 'flex';
+        const tbody = document.getElementById('tabelaCatalogoExerciciosBody');
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--gray);">Carregando do Supabase...</td></tr>';
+        
+        try {
+            const { data: exList, error } = await _supabase.from('biblioteca_exercicios').select('*');
+            
+            if (error) throw error;
+
+            if (exList && exList.length > 0) {
+                tbody.innerHTML = '';
+                exList.forEach(e => {
+                    tbody.innerHTML += `<tr><td><strong>${e.nome}</strong></td><td>${e.grupo_principal}</td><td>${e.equipamento}</td><td>${e.tipo}</td></tr>`;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--warning);">A tabela 'biblioteca_exercicios' está vazia no banco.</td></tr>`;
+            }
+        } catch(err) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--danger);">Erro ao buscar dados do Supabase: ${err.message}</td></tr>`;
+        }
+    };
+  // Substitua a função antiga no admin.html por esta versão evoluída com suporte a vídeo
+window.adicionarExercicioDiretoFicha = function(nomeExercicio) {
+    const series = prompt("Séries (Ex: 4):", "4") || "4";
+    const reps = prompt("Repetições (Ex: 8-10):", "8-10") || "8-10";
+    const carga = prompt("Carga (Ex: 60kg):", "60kg") || "60kg";
+    const metodo = prompt("Método (Ex: Séries Tradicionais, Drop-set, Bi-set):", "Séries Tradicionais") || "Séries Tradicionais";
+    
+    // NOVO: Pergunta opcionalmente o link do YouTube para o aluno tirar dúvidas
+    const videoUrl = prompt("Link do YouTube para o aluno (Opcional - ex: https://www.youtube.com/watch?v=XYZ ou deixe em branco):", "") || "";
+
+    exerciciosFichaMemoria[treinoAtualLetra].push({ 
+        exercicio: nomeExercicio, 
+        series, 
+        reps, 
+        carga, 
+        metodo,
+        video_url: videoUrl // Salva o link do vídeo estruturado na ficha do aluno
+    });
+    
+    renderizarTabelaExerciciosFicha();
+    window.showToast(`Exercício adicionado ao Treino ${treinoAtualLetra} com suporte a vídeo!`);
+};
     window.removerExercicioDaFicha = function(index) {
         exerciciosFichaMemoria[treinoAtualLetra].splice(index, 1);
         renderizarTabelaExerciciosFicha();
@@ -3258,6 +3325,29 @@ window.showToast = function(mensagem, tipo = 'success') {
             window.carregarUsuarios();
         }
     });
+        window.abrirVideoDuvida = function(nomeExercicio, urlVideo) {
+        if (!urlVideo || urlVideo.trim() === "") {
+            alert("Vídeo demonstrativo não cadastrado para este exercício.");
+            return;
+        }
+        document.getElementById('videoModalTitulo').textContent = `Execução: ${nomeExercicio}`;
+
+        let embedUrl = urlVideo;
+        if (urlVideo.includes('watch?v=')) {
+            embedUrl = urlVideo.replace('watch?v=', 'embed/');
+        } else if (urlVideo.includes('youtu.be/')) {
+            embedUrl = urlVideo.replace('youtu.be/', 'www.youtube.com/embed/');
+        }
+
+        document.getElementById('iframeVideoYoutube').src = embedUrl;
+        document.getElementById('modalVideoAluno').style.display = 'flex';
+    };
+
+    window.fecharModalVideoAluno = function() {
+        document.getElementById('modalVideoAluno').style.display = 'none';
+        document.getElementById('iframeVideoYoutube').src = '';
+    };
     </script>
+
 </body>
 </html>

@@ -410,6 +410,55 @@
         sessionStorage.removeItem('corpofitness_aluno_logado');
         window.location.reload();
     }
+
+window.verificarAvisoFixoPainelAluno = async function(alunoIdLogado) {
+    const cardAviso = document.getElementById('cardAvisoFixoAluno');
+    const textoAviso = document.getElementById('textoAvisoFixoAluno');
+    if (!cardAviso || !alunoIdLogado) return;
+
+    try {
+        const { data: treinos } = await _supabase
+            .from('treinos_alunos')
+            .select('*')
+            .eq('aluno_id', alunoIdLogado);
+
+        if (!treinos || treinos.length === 0) {
+            cardAviso.style.display = 'none';
+            return;
+        }
+
+        // Pega sempre o treino mais recente cadastrado na base
+        const ultimoTreino = treinos.reduce((MaisRecente, atual) => {
+            return new Date(atual.created_at) > new Date(MaisRecente.created_at) ? atual : MaisRecente;
+        }, treinos[0]);
+
+        const dataInicio = new Date(ultimoTreino.created_at);
+        const dataVencimento = new Date(dataInicio);
+        dataVencimento.setMonth(dataVencimento.getMonth() + 3); // Ciclo de 3 meses
+
+        const hoje = new Date();
+        const diasRestantes = Math.ceil((dataVencimento.getTime() - hoje.getTime()) / (1000 * 3600 * 24));
+        const formatoVenc = dataVencimento.toLocaleDateString('pt-BR');
+
+        // Se estiver dentro dos últimos 15 dias ou vencido, o lembrete fica fixo para o aluno
+        if (diasRestantes <= 15) {
+            if (diasRestantes < 0) {
+                textoAviso.innerHTML = `O seu ciclo de treino de 3 meses venceu em <strong>${formatoVenc}</strong> (há ${Math.abs(diasRestantes)} dias). Solicite ao professor a atualização da sua ficha e nova avaliação corporal.`;
+            } else if (diasRestantes === 0) {
+                textoAviso.innerHTML = `O seu ciclo de 3 meses de treino vence <strong>HOJE (${formatoVenc})</strong>! Procure a instrução para renovar seus exercícios.`;
+            } else {
+                textoAviso.innerHTML = `O seu ciclo atual de 3 meses completará o prazo em <strong>${formatoVenc}</strong> (faltam ${diasRestantes} dias). Prepare-se para a sua reavaliação corporal com o professor.`;
+            }
+            cardAviso.style.display = 'block'; // Fica visível e fixo no painel dele
+        } else {
+            // Se um novo treino foi enviado recentemente, os dias restantes sobem e o alerta some sozinho!
+            cardAviso.style.display = 'none'; 
+        }
+
+    } catch (err) {
+        console.error("Erro ao verificar aviso fixo do aluno:", err);
+    }
+};
     </script>
 </body>
 </html>

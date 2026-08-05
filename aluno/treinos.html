@@ -196,20 +196,24 @@
         </div>
     </div>
 
-    <!-- MODAL DE VÍDEO DO EXERCÍCIO (ON-DEMAND) -->
-    <div id="modalVideoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; padding: 15px;">
-        <div style="width: 100%; max-width: 650px; background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative;">
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h4 id="videoModalTitulo" style="font-size: 1rem; color: var(--text-main); margin: 0;">Como Executar</h4>
-                <button type="button" onclick="fecharModalVideoAluno()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">✕</button>
-            </div>
+<!-- MODAL COM PLAYER OFICIAL SEGURO DO YOUTUBE -->
+<div id="modalVideoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; padding: 15px;">
+    <div style="width: 100%; max-width: 650px; background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h4 id="videoModalTitulo" style="font-size: 1rem; color: var(--text-main); margin: 0;">Como Executar</h4>
+            <button type="button" onclick="fecharModalVideoAluno()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">✕</button>
+        </div>
 
-            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px;">
-                <iframe id="iframeVideoYoutube" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="" title="Vídeo de Execução" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
+        <!-- Onde a API do YouTube vai injetar o player seguro -->
+        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px;">
+            <div id="playerYoutubeOficial" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
         </div>
     </div>
+</div>
+
+<!-- Carrega a API oficial do YouTube se já não estiver carregada -->
+<script src="https://www.youtube.com/iframe_api"></script>
 
     <footer>
         <p>© 2026 Corpofitness Premium. Todos os direitos reservados.</p>
@@ -322,29 +326,71 @@
         });
     }
 
-    window.abrirVideoDuvida = function(nomeExercicio, urlVideo) {
-        if (!urlVideo || urlVideo.trim() === "") {
-            alert("Vídeo demonstrativo não cadastrado para este exercício.");
-            return;
-        }
+let linkVideoAtualGlobal = "";
 
-        document.getElementById('videoModalTitulo').textContent = `Execução: ${nomeExercicio}`;
+let playerYoutubeInstance = null;
 
-        let embedUrl = urlVideo;
-        if (urlVideo.includes('watch?v=')) {
-            embedUrl = urlVideo.replace('watch?v=', 'embed/');
-        } else if (urlVideo.includes('youtu.be/')) {
-            embedUrl = urlVideo.replace('youtu.be/', 'www.youtube.com/embed/');
-        }
+// Função obrigatória chamada pela API do YouTube quando ela estiver pronta
+function onYouTubeIframeAPIReady() {
+    // A API carrega o ambiente base
+}
 
-        document.getElementById('iframeVideoYoutube').src = embedUrl;
-        document.getElementById('modalVideoAluno').style.display = 'flex';
-    };
+window.abrirVideoDuvida = function(nomeExercicio, urlVideo) {
+    if (!urlVideo || urlVideo.trim() === "") {
+        alert("Vídeo demonstrativo não cadastrado para este exercício.");
+        return;
+    }
 
-    window.fecharModalVideoAluno = function() {
-        document.getElementById('modalVideoAluno').style.display = 'none';
-        document.getElementById('iframeVideoYoutube').src = '';
-    };
+    document.getElementById('videoModalTitulo').textContent = `Execução: ${nomeExercicio}`;
+    document.getElementById('modalVideoAluno').style.display = 'flex';
+
+    // Extrai o ID do vídeo do YouTube independentemente do formato do link
+    let videoId = "";
+    if (urlVideo.includes('v=')) {
+        videoId = urlVideo.split('v=')[1].split('&')[0];
+    } else if (urlVideo.includes('youtu.be/')) {
+        videoId = urlVideo.split('youtu.be/')[1].split('?')[0];
+    } else if (urlVideo.includes('embed/')) {
+        videoId = urlVideo.split('embed/')[1].split('?')[0];
+    }
+
+    if (!videoId) {
+        alert("Link do YouTube inválido.");
+        return;
+    }
+
+    // Se o player já existe, apenas carrega o novo vídeo sem recriar o elemento
+    if (playerYoutubeInstance && typeof playerYoutubeInstance.loadVideoById === 'function') {
+        playerYoutubeInstance.loadVideoById(videoId);
+    } else {
+        // Cria a instância oficial do player do YouTube de forma segura
+        playerYoutubeInstance = new YT.Player('playerYoutubeOficial', {
+            height: '100%',
+            width: '100%',
+            videoId: videoId,
+            playerVars: {
+                'autoplay': 1,
+                'controls': 1,
+                'rel': 0,
+                'modestbranding': 1,
+                'playsinline': 1
+            },
+            events: {
+                'onError': function(event) {
+                    // Caso o YouTube ainda restrinja por política do canal, exibe um aviso amigável
+                    console.warn("O YouTube restringiu a incorporação deste vídeo específico. Código de erro:", event.data);
+                }
+            }
+        });
+    }
+};
+
+window.fecharModalVideoAluno = function() {
+    document.getElementById('modalVideoAluno').style.display = 'none';
+    if (playerYoutubeInstance && typeof playerYoutubeInstance.stopVideo === 'function') {
+        playerYoutubeInstance.stopVideo(); // Para o vídeo ao fechar o modal
+    }
+};
     </script>
 
 </body>

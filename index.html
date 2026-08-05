@@ -704,7 +704,7 @@
                 }
             }
 
-            // 4. CARREGAR FAQ DINÂMICO
+// 4. CARREGAR FAQ DINÂMICO
             async function carregarFaqSite() {
                 const container = document.querySelector('#containerFaqSite');
                 if (!container) return;
@@ -713,15 +713,36 @@
                     container.innerHTML = '';
                     faqs.forEach((f, idx) => {
                         container.innerHTML += `
-                            <div class="faq-card" data-aos="fade-up" data-aos-delay="${(idx + 1) * 100}">
-                                <div class="faq-card-header">
-                                    <strong>${f.pergunta}</strong>
-                                </div>
-                                <div class="faq-card-body">
+                            <div class="faq-item" data-aos="fade-up" data-aos-delay="${(idx + 1) * 50}">
+                                <button class="faq-question" aria-expanded="false">
+                                    <span>${f.pergunta}</span>
+                                    <i class="fas fa-chevron-down faq-icon" aria-hidden="true"></i>
+                                </button>
+                                <div class="faq-answer">
                                     <p>${f.resposta}</p>
                                 </div>
                             </div>
                         `;
+                    });
+
+                    // Ativa a interatividade de clique (Acordeão)
+                    document.querySelectorAll('.faq-question').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const faqItem = button.parentElement;
+                            const isActive = faqItem.classList.contains('active');
+
+                            // Fecha todos os outros itens (opcional, se quiser deixar apenas um aberto por vez)
+                            document.querySelectorAll('.faq-item').forEach(item => {
+                                item.classList.remove('active');
+                                item.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+                            });
+
+                            // Se não estava ativo, abre este
+                            if (!isActive) {
+                                faqItem.classList.add('active');
+                                button.setAttribute('aria-expanded', 'true');
+                            }
+                        });
                     });
                 }
             }

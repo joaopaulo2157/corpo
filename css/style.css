@@ -2792,21 +2792,86 @@ PARCEIROS / MARCAS (FULL-BLEED + FUNDO MAIS CLARO)
     to { transform: translateX(-50%); }
 }
 
-.item-faq {
-    background: rgba(255, 255, 255, 0.035);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    transition: all 0.35s ease;
+/* ========================================================================= */
+/* ESTILOS DA SEÇÃO FAQ - ACORDEÃO MODERNO                                   */
+/* ========================================================================= */
+
+#faq {
+    padding: 80px 0;
 }
 
-.item-faq:hover,
-.item-faq.active {
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(24px);
-    border-color: rgba(0, 102, 255, 0.25);
+#faq .container {
+    max-width: 900px; /* Deixa a lista mais centralizada e elegante */
+    margin: 0 auto;
 }
 
+.faq-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.faq-item {
+    background: rgba(25, 25, 25, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    border-color: rgba(77, 163, 255, 0.4);
+}
+
+.faq-question {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    gap: 15px;
+}
+
+.faq-icon {
+    transition: transform 0.3s ease;
+    color: var(--primary-light, #4da3ff);
+    font-size: 0.9rem;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease-in-out, padding 0.35s ease;
+    padding: 0 24px;
+    color: #b0b0b0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Estado Ativo (Quando aberto) */
+.faq-item.active {
+    background: rgba(30, 30, 30, 0.9);
+    border-color: rgba(77, 163, 255, 0.6);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-item.active .faq-answer {
+    max-height: 300px; /* Altura máxima estimada para caber o texto */
+    padding: 0 24px 20px 24px;
+}
 footer::before {
     content: "";
     position: absolute;

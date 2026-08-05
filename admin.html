@@ -1827,40 +1827,99 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio) {
         renderizarTabelaExerciciosFicha();
     };
 
-    window.abrirModalTreinoFiel = async function(alunoId, alunoNome) {
-        document.getElementById('tr_aluno_id').value = alunoId;
-        document.getElementById('tr_nome').value = alunoNome;
-        
-        const hoje = new Date();
-        const dia = String(hoje.getDate()).padStart(2, '0');
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const ano = hoje.getFullYear();
-        const elTrData = document.getElementById('tr_data');
-        if (elTrData) elTrData.value = `${dia}/${mes}/${ano}`;
+window.abrirModalTreinoFiel = async function(alunoId, alunoNome) {
+    document.getElementById('tr_aluno_id').value = alunoId;
+    document.getElementById('tr_nome').value = alunoNome;
+    
+    const hoje = new Date();
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+    const elTrData = document.getElementById('tr_data');
+    if (elTrData) elTrData.value = `${dia}/${mes}/${ano}`;
 
-       try {
-            const { data: avalList } = await _supabase.from('avaliacoes_fisicas').select('*').eq('aluno_id', alunoId);
-            if (avalList && avalList.length > 0) {
-                const aval = avalList[0];
-                document.getElementById('fiel_peso').value = aval.peso || '';
-                document.getElementById('fiel_altura').value = aval.altura || '';
-                if(document.getElementById('fiel_gordura')) document.getElementById('fiel_gordura').value = aval.gordura || '';
-                if(document.getElementById('fiel_massa')) document.getElementById('fiel_massa').value = aval.massa || '';
-            } else {
-                // Limpa os campos se o aluno ainda não tiver avaliação cadastrada
-                document.getElementById('fiel_peso').value = '';
-                document.getElementById('fiel_altura').value = '';
-                if(document.getElementById('fiel_gordura')) document.getElementById('fiel_gordura').value = '';
-                if(document.getElementById('fiel_massa')) document.getElementById('fiel_massa').value = '';
+    // Reseta a memória de exercícios antes de carregar
+    exerciciosFichaMemoria = { A: [], B: [], C: [], D: [] };
+
+    try {
+        // 1. Carrega os dados de treino salvos no Supabase
+        const { data: treinoList } = await _supabase.from('treinos_alunos').select('*').eq('aluno_id', alunoId).eq('dia', 'Geral');
+        
+        if (treinoList && treinoList.length > 0) {
+            const dadosTreino = treinoList[0];
+            
+            // Tenta ler o conteúdo como JSON estruturado
+            try {
+                const payload = JSON.parse(dadosTreino.conteudo);
+                if (payload && typeof payload === 'object') {
+                    // Restaura os blocos de exercícios (A, B, C, D)
+                    if (payload.exercicios) {
+                        exerciciosFichaMemoria = payload.exercicios;
+                    }
+                    // Restaura o nível
+                    if (payload.nivel) {
+                        document.querySelectorAll('input[name="tr_nivel"]').forEach(radio => {
+                            if (radio.parentElement.textContent.trim() === payload.nivel) {
+                                radio.checked = true;
+                            }
+                        });
+                    }
+                    // Restaura a divisão
+                    if (payload.divisao) {
+                        document.querySelectorAll('input[name="tr_divisao"]').forEach(radio => {
+                            if (radio.parentElement.textContent.trim() === payload.divisao) {
+                                radio.checked = true;
+                            }
+                        });
+                    }
+                    // Restaura os grupos musculares marcados
+                    if (payload.gruposMusculares) {
+                        document.querySelectorAll('.chk-musculo').forEach(chk => {
+                            const musculo = chk.getAttribute('data-musculo');
+                            if (musculo && payload.gruposMusculares[musculo] !== undefined) {
+                                chk.checked = payload.gruposMusculares[musculo];
+                            }
+                        });
+                        atualizarMapaAnatomico(); // Atualiza a pintura visual do boneco anatômico
+                    }
+                    // Restaura objetivo
+                    if (payload.objetivoTexto) {
+                        const selObj = document.getElementById('tr_objetivo');
+                        if (selObj) selObj.value = payload.objetivoTexto;
+                    }
+                    if (payload.objetivoDescricao) {
+                        const descObj = document.getElementById('tr_objetivo_desc');
+                        if (descObj) descObj.value = payload.objetivoDescricao;
+                    }
+                }
+            } catch (e) {
+                // Caso o conteúdo seja antigo ou texto simples
+                console.log("Conteúdo em formato antigo ou simples.");
             }
-        } catch (e) {
-            console.log("Nenhuma avaliação encontrada para este aluno.");
         }
 
-        document.getElementById('modalTreinoFiel').style.display = 'flex';
-        atualizarMapaAnatomico();
-        renderizarTabelaExerciciosFicha();
-    };
+        // 2. Carrega a avaliação física e bioimpedância
+        const { data: avalList } = await _supabase.from('avaliacoes_fisicas').select('*').eq('aluno_id', alunoId);
+        if (avalList && avalList.length > 0) {
+            const aval = avalList[0];
+            document.getElementById('fiel_peso').value = aval.peso || '';
+            document.getElementById('fiel_altura').value = aval.altura || '';
+            if(document.getElementById('fiel_gordura')) document.getElementById('fiel_gordura').value = aval.gordura || '';
+            if(document.getElementById('fiel_massa')) document.getElementById('fiel_massa').value = aval.massa || '';
+        } else {
+            document.getElementById('fiel_peso').value = '';
+            document.getElementById('fiel_altura').value = '';
+            if(document.getElementById('fiel_gordura')) document.getElementById('fiel_gordura').value = '';
+            if(document.getElementById('fiel_massa')) document.getElementById('fiel_massa').value = '';
+        }
+    } catch (e) {
+        console.log("Erro ao carregar dados do aluno: ", e);
+    }
+
+    document.getElementById('modalTreinoFiel').style.display = 'flex';
+    atualizarMapaAnatomico();
+    renderizarTabelaExerciciosFicha();
+};
 
     window.abrirModalExerciciosCatalogo = async function() {
         document.getElementById('modalCatalogoExercicios').style.display = 'flex';
@@ -1922,45 +1981,94 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio) {
         });
     };
 
-    window.salvarTreinoAnexo = async function() {
-        const alunoId = document.getElementById('tr_aluno_id').value;
-        const objetivo = document.getElementById('tr_objetivo').value;
+window.salvarTreinoAnexo = async function() {
+    const alunoId = document.getElementById('tr_aluno_id').value;
+    const objetivo = document.getElementById('tr_objetivo').value;
+    const objetivoDesc = document.getElementById('tr_objetivo_desc')?.value || '';
 
-        if (!alunoId) {
-            window.showToast("Erro: Nenhum aluno selecionado.", "error");
-            return;
+    // Pega o nível selecionado
+    let nivelSelecionado = 'Iniciante';
+    document.querySelectorAll('input[name="tr_nivel"]').forEach(radio => {
+        if (radio.checked) {
+            nivelSelecionado = radio.parentElement.textContent.trim();
         }
+    });
 
-        try {
-            await _supabase.from('treinos_alunos').upsert({
+    // Pega a divisão de treino selecionada
+    let divisaoSelecionada = 'ABC';
+    document.querySelectorAll('input[name="tr_divisao"]').forEach(radio => {
+        if (radio.checked) {
+            divisaoSelecionada = radio.parentElement.textContent.trim();
+        }
+    });
+
+    // Pega todos os grupos musculares marcados nos checkboxes
+    const gruposMuscularesSelecionados = {};
+    document.querySelectorAll('.chk-musculo').forEach(chk => {
+        const musculo = chk.getAttribute('data-musculo');
+        if (musculo) {
+            gruposMuscularesSelecionados[musculo] = chk.checked;
+        }
+    });
+
+    if (!alunoId) {
+        window.showToast("Erro: Nenhum aluno selecionado.", "error");
+        return;
+    }
+
+    try {
+        // Empacota tudo, incluindo os grupos musculares, no objeto JSON
+        const payloadTreinoCompleto = {
+            objetivoTexto: objetivo,
+            objetivoDescricao: objetivoDesc,
+            nivel: nivelSelecionado,
+            divisao: divisaoSelecionada,
+            gruposMusculares: gruposMuscularesSelecionados, // Salva o estado dos músculos
+            exercicios: exerciciosFichaMemoria // Blocos A, B, C, D
+        };
+
+        // Salva no Supabase
+        const { error: erroTreino } = await _supabase.from('treinos_alunos').upsert({
+            aluno_id: alunoId,
+            dia: 'Geral',
+            objetivo: `${objetivo} - ${objetivoDesc}`,
+            conteudo: JSON.stringify(payloadTreinoCompleto)
+        }, { onConflict: 'aluno_id,dia' });
+
+        if (erroTreino) throw new Error("Erro ao salvar treino: " + erroTreino.message);
+
+        // Trata e salva os dados da avaliação física
+        const pesoVal = document.getElementById('fiel_peso').value;
+        const alturaVal = document.getElementById('fiel_altura').value;
+        const gorduraVal = document.getElementById('fiel_gordura')?.value;
+        const massaVal = document.getElementById('fiel_massa')?.value;
+
+        const peso = pesoVal && pesoVal.trim() !== "" ? parseFloat(pesoVal) : null;
+        const altura = alturaVal && alturaVal.trim() !== "" ? parseFloat(alturaVal) : null;
+        const gordura = gorduraVal && gorduraVal.trim() !== "" ? parseFloat(gorduraVal) : null;
+        const massa = massaVal && massaVal.trim() !== "" ? parseFloat(massaVal) : null;
+
+        if (peso !== null || altura !== null || gordura !== null || massa !== null) {
+            const { error: erroAval } = await _supabase.from('avaliacoes_fisicas').upsert({
                 aluno_id: alunoId,
-                dia: 'Geral',
-                objetivo: objetivo,
-                conteudo: JSON.stringify(exerciciosFichaMemoria)
-            }, { onConflict: 'aluno_id,dia' });
+                peso: peso,
+                altura: altura,
+                gordura: gordura,
+                massa: massa
+            }, { onConflict: 'aluno_id' });
 
-            const peso = document.getElementById('fiel_peso').value;
-            const altura = document.getElementById('fiel_altura').value;
-            const gordura = document.getElementById('fiel_gordura').value;
-            const massa = document.getElementById('fiel_massa').value;
-
-            if(peso || altura || gordura || massa) {
-                await _supabase.from('avaliacoes_fisicas').upsert({
-                    aluno_id: alunoId,
-                    peso: peso,
-                    altura: altura,
-                    gordura: gordura,
-                    massa: massa
-                }, { onConflict: 'aluno_id' });
-            }
-
-            window.showToast("Plano de Treino e Avaliação salvos com sucesso!");
-            fecharModal('modalTreinoFiel');
-        } catch (err) {
-            window.showToast("Plano salvo com sucesso na sessão atual!");
-            fecharModal('modalTreinoFiel');
+            if (erroAval) throw new Error("Erro ao salvar avaliação: " + erroAval.message);
         }
-    };
+
+        window.showToast("Plano de Treino completo e Avaliação salvos com sucesso!");
+        fecharModal('modalTreinoFiel');
+        
+    } catch (err) {
+        console.error(err);
+        window.showToast("Erro ao salvar: " + err.message, "error");
+        alert("Falha ao salvar no banco de dados: " + err.message);
+    }
+};
 </script>
             <footer class="app-footer">
                 <p>© 2026 Corpofitness. Todos os direitos reservados.[cite: 6]</p>

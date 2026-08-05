@@ -97,12 +97,12 @@
         .card-title i { color: var(--primary-light); }
 
         .tabs-treino {
-            display: flex; gap: 10px; margin-bottom: 20px;
+            display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px;
         }
         .btn-tab {
             background: var(--bg-card); border: 1px solid var(--border-color);
             color: var(--text-muted); padding: 10px 20px; border-radius: 10px;
-            font-weight: 600; cursor: pointer; transition: var(--transition);
+            font-weight: 600; cursor: pointer; transition: var(--transition); white-space: nowrap;
         }
         .btn-tab.active {
             background: var(--primary); color: #fff; border-color: var(--primary-light);
@@ -112,7 +112,7 @@
         .table-container {
             width: 100%; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border-color);
         }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 500px; }
         th, td { padding: 14px 18px; font-size: 0.88rem; }
         th { color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; background: var(--bg-card); font-weight: 700; letter-spacing: 0.5px; }
         td { border-top: 1px solid var(--border-color); }
@@ -120,6 +120,14 @@
         footer {
             text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.82rem;
             border-top: 1px solid var(--border-color); background: var(--bg-surface); margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 12px 20px; }
+            .main-content { padding: 20px 15px; }
+            .welcome-banner h1 { font-size: 1.4rem; }
+            .card { padding: 16px; }
+            th, td { padding: 10px 12px; font-size: 0.82rem; }
         }
     </style>
 </head>
@@ -188,47 +196,82 @@
         </div>
     </div>
 
+    <!-- MODAL DE VÍDEO DO EXERCÍCIO (ON-DEMAND) -->
+    <div id="modalVideoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; padding: 15px;">
+        <div style="width: 100%; max-width: 650px; background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 id="videoModalTitulo" style="font-size: 1rem; color: var(--text-main); margin: 0;">Como Executar</h4>
+                <button type="button" onclick="fecharModalVideoAluno()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">✕</button>
+            </div>
+
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px;">
+                <iframe id="iframeVideoYoutube" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="" title="Vídeo de Execução" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>© 2026 Corpofitness Premium. Todos os direitos reservados.</p>
     </footer>
 
     <script>
     let dadosTreinoGlobal = { A: [], B: [], C: [], D: [] };
+    let bibliotecaVideosGlobal = {}; 
     let blocoAtivo = 'A';
 
     document.addEventListener('DOMContentLoaded', async () => {
-        // Simula ou resgata o aluno logado (exemplo: busca o primeiro aluno cadastrado ou via sessionStorage)
         let alunoLogadoId = sessionStorage.getItem('corpofitness_aluno_id') || '1';
 
         try {
-            // Carregar Avaliação Física do Aluno
-            const { data: aval } = await _supabase.from('avaliacoes_fisicas').select('*').eq('aluno_id', alunoLogadoId).single();
+            // 1. Carrega o cache da biblioteca de exercícios
+            const { data: biblioteca } = await _supabase.from('biblioteca_exercicios').select('nome, video_url');
+            if (biblioteca) {
+                biblioteca.forEach(item => {
+                    if (item.nome && item.video_url) {
+                        bibliotecaVideosGlobal[item.nome.trim().toLowerCase()] = item.video_url;
+                    }
+                });
+            }
+
+            // 2. Carregar Avaliação Física do Aluno
+            const { data: aval } = await _supabase.from('avaliacoes_fisicas').select('*').eq('aluno_id', alunoLogadoId).maybeSingle();
             if (aval) {
                 document.getElementById('resPeso').textContent = (aval.peso || '--') + ' kg';
                 document.getElementById('resGordura').textContent = (aval.gordura || '--') + ' %';
                 document.getElementById('resMassa').textContent = (aval.massa || '--') + ' kg';
             }
 
-            // Carregar Plano de Treino
-            const { data: treino } = await _supabase.from('treinos_alunos').select('*').eq('aluno_id', alunoLogadoId).single();
-            if (treino) {
+            // 3. Carregar Plano de Treino da tabela treinos_alunos
+            const { data: treinoList } = await _supabase.from('treinos_alunos').select('*').eq('aluno_id', alunoLogadoId).eq('dia', 'Geral');
+            
+            if (treinoList && treinoList.length > 0) {
+                const treino = treinoList[0];
                 document.getElementById('resObjetivo').textContent = treino.objetivo || 'Hipertrofia';
+                
                 if (treino.conteudo) {
                     try {
-                        dadosTreinoGlobal = JSON.parse(treino.conteudo);
+                        const payload = JSON.parse(treino.conteudo);
+                        if (payload && payload.exercicios) {
+                            dadosTreinoGlobal = payload.exercicios;
+                        } else if (payload && (payload.A || payload.B || payload.C || payload.D)) {
+                            dadosTreinoGlobal = payload;
+                        }
                     } catch (e) {
-                        // Caso seja texto simples
+                        console.log("Erro ao interpretar o JSON do treino:", e);
                     }
                 }
             } else {
                 document.getElementById('resObjetivo').textContent = 'Hipertrofia Geral';
             }
 
-            renderizarTabelaAluno();
         } catch (err) {
             console.error("Erro ao carregar dados do aluno:", err);
-            document.getElementById('resObjetivo').textContent = 'Hipertrofia';
+            document.getElementById('resObjetivo').textContent = 'Hipertrofia Geral';
         }
+
+        // Renderiza a tabela na tela após carregar os dados com sucesso
+        renderizarTabelaAluno();
     });
 
     function mudarBlocoTreino(bloco) {
@@ -249,9 +292,27 @@
         }
 
         lista.forEach(item => {
+            let videoUrlFinal = item.video_url;
+            if (!videoUrlFinal || videoUrlFinal.trim() === "") {
+                const nomeLower = (item.exercicio || "").trim().toLowerCase();
+                if (bibliotecaVideosGlobal[nomeLower]) {
+                    videoUrlFinal = bibliotecaVideosGlobal[nomeLower];
+                }
+            }
+
+            let botaoAjudaVideo = '';
+            if (videoUrlFinal && videoUrlFinal.trim() !== "") {
+                botaoAjudaVideo = `<button type="button" onclick="abrirVideoDuvida('${item.exercicio.replace(/'/g, "\\'")}', '${videoUrlFinal}')" title="Dúvida na execução?" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--text-muted); border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; cursor: pointer; margin-left: 8px; display: inline-flex; align-items: center; justify-content: center; transition: var(--transition);" onmouseover="this.style.background='var(--primary)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.color='var(--text-muted)';">?</button>`;
+            }
+
             tbody.innerHTML += `
                 <tr>
-                    <td><strong>${item.exercicio}</strong></td>
+                    <td>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <span><strong>${item.exercicio}</strong></span>
+                            ${botaoAjudaVideo}
+                        </div>
+                    </td>
                     <td>${item.series}</td>
                     <td>${item.reps}</td>
                     <td><span style="color: var(--accent-success); font-weight: 700;">${item.carga}</span></td>
@@ -260,6 +321,31 @@
             `;
         });
     }
+
+    window.abrirVideoDuvida = function(nomeExercicio, urlVideo) {
+        if (!urlVideo || urlVideo.trim() === "") {
+            alert("Vídeo demonstrativo não cadastrado para este exercício.");
+            return;
+        }
+
+        document.getElementById('videoModalTitulo').textContent = `Execução: ${nomeExercicio}`;
+
+        let embedUrl = urlVideo;
+        if (urlVideo.includes('watch?v=')) {
+            embedUrl = urlVideo.replace('watch?v=', 'embed/');
+        } else if (urlVideo.includes('youtu.be/')) {
+            embedUrl = urlVideo.replace('youtu.be/', 'www.youtube.com/embed/');
+        }
+
+        document.getElementById('iframeVideoYoutube').src = embedUrl;
+        document.getElementById('modalVideoAluno').style.display = 'flex';
+    };
+
+    window.fecharModalVideoAluno = function() {
+        document.getElementById('modalVideoAluno').style.display = 'none';
+        document.getElementById('iframeVideoYoutube').src = '';
+    };
     </script>
+
 </body>
 </html>

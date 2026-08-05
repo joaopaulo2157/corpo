@@ -50,7 +50,6 @@
             overflow-x: hidden;
         }
 
-        /* LOGIN */
         #alunoLoginOverlay {
             position: fixed; inset: 0;
             background: radial-gradient(circle at 50% 20%, #1e3a8a 0%, var(--bg-main) 70%);
@@ -104,7 +103,6 @@
         }
         .btn-primary:hover { transform: translateY(-2px); }
 
-        /* APP CONTAINER */
         #alunoAppContainer { display: none; flex-direction: column; min-height: 100vh; }
 
         header {
@@ -119,34 +117,6 @@
         .brand-title span { color: var(--primary-light); }
 
         .header-actions { display: flex; align-items: center; gap: 16px; }
-
-        .notification-bell-wrapper {
-            position: relative;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            width: 42px; height: 42px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: var(--transition);
-        }
-        .notification-bell-wrapper:hover { background: rgba(255, 255, 255, 0.08); }
-        .notification-badge {
-            position: absolute; top: -2px; right: -2px;
-            background: var(--accent-danger); color: #fff;
-            font-size: 0.65rem; font-weight: 700; width: 18px; height: 18px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        }
-
-        /* DROPDOWN DE NOTIFICAÇÕES */
-        #notificationDropdown {
-            position: absolute; top: 70px; right: 40px;
-            background: var(--bg-surface); border: 1px solid var(--border-color);
-            width: 340px; border-radius: var(--radius-lg); box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            display: none; flex-direction: column; z-index: 1000; overflow: hidden;
-        }
-        .notif-header { padding: 14px 18px; border-bottom: 1px solid var(--border-color); font-size: 0.88rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-        .notif-body { max-height: 280px; overflow-y: auto; }
-        .notif-item { padding: 14px 18px; border-bottom: 1px solid var(--border-color); font-size: 0.82rem; color: var(--text-muted); display: flex; gap: 10px; align-items: flex-start; }
-        .notif-item i { color: var(--primary-light); margin-top: 2px; }
 
         .user-pill {
             display: flex; align-items: center; gap: 12px;
@@ -168,7 +138,6 @@
         }
         .btn-sair:hover { background: rgba(239, 68, 68, 0.1); }
 
-        /* MAIN */
         .main-content {
             padding: 40px; max-width: 1280px; width: 100%; margin: 0 auto; flex-grow: 1;
         }
@@ -189,7 +158,6 @@
         .welcome-banner h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; }
         .welcome-banner p { color: var(--text-muted); font-size: 0.95rem; }
 
-        /* BOTÃO DE ACESSO AO TREINO */
         .btn-treino-portal {
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: #ffffff; padding: 14px 26px; border-radius: 50px;
@@ -198,66 +166,6 @@
             box-shadow: 0 8px 20px var(--primary-glow); transition: var(--transition);
         }
         .btn-treino-portal:hover { transform: translateY(-2px); box-shadow: 0 12px 25px var(--primary-glow); }
-
-        /* CARTEIRINHA DIGITAL / CATRACA */
-        .digital-id-card {
-            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            border-radius: var(--radius-lg); padding: 30px;
-            display: flex; align-items: center; justify-content: space-between;
-            flex-wrap: wrap; gap: 25px; margin-bottom: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4); position: relative; overflow: hidden;
-        }
-        .digital-id-card::after {
-            content: ''; position: absolute; right: -50px; bottom: -50px;
-            width: 180px; height: 180px; background: rgba(59, 130, 246, 0.1);
-            border-radius: 50%; pointer-events: none;
-        }
-
-        /* STATS GRID */
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px; margin-bottom: 24px;
-        }
-        .stat-card {
-            background: var(--bg-surface); border: 1px solid var(--border-color);
-            padding: 22px; border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 8px;
-        }
-        .stat-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
-        .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
-        .stat-sub { font-size: 0.82rem; color: var(--text-muted); }
-
-        /* CHECK-IN CARD */
-        .checkin-card {
-            background: linear-gradient(135deg, #1e3a8a, #111827);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: var(--radius-lg); padding: 30px; text-align: center;
-            margin-bottom: 24px; position: relative; overflow: hidden;
-        }
-
-        .btn-checkin {
-            background: var(--accent-success); color: #ffffff; border: none;
-            padding: 16px 36px; border-radius: 50px; font-size: 1.05rem; font-weight: 700;
-            cursor: pointer; transition: var(--transition);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
-            display: inline-flex; align-items: center; gap: 10px; margin-top: 15px;
-        }
-        .btn-checkin:hover { transform: scale(1.03); background: #059669; }
-
-        /* DESAFIOS MENSAIS */
-        .challenge-card {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), var(--bg-surface));
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: var(--radius-lg); padding: 28px; margin-bottom: 24px;
-        }
-        .challenge-progress-bar {
-            width: 100%; height: 10px; background: rgba(255, 255, 255, 0.08);
-            border-radius: 10px; overflow: hidden; margin: 16px 0 10px 0;
-        }
-        .challenge-progress-fill {
-            height: 100%; background: linear-gradient(90deg, var(--accent-warning), #fbbf24);
-            border-radius: 10px; width: 0%; transition: width 0.6s ease;
-        }
 
         .dashboard-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -277,14 +185,6 @@
         }
         .card-title i { color: var(--primary-light); font-size: 1.1rem; }
 
-        .status-badge {
-            font-size: 0.72rem; padding: 5px 12px; border-radius: 20px;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .status-ativo, .status-quitado { background: rgba(16, 185, 129, 0.12); color: var(--accent-success); border: 1px solid rgba(16, 185, 129, 0.25); }
-        .status-pendente { background: rgba(245, 158, 11, 0.12); color: var(--accent-warning); border: 1px solid rgba(245, 158, 11, 0.25); }
-
-        /* MÉTRICAS DE AVALIAÇÃO */
         .metrics-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
         }
@@ -295,33 +195,6 @@
         .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
         .metric-value { font-size: 1.3rem; font-weight: 700; color: var(--text-main); }
 
-        /* GALERIA DE EVOLUÇÃO */
-        .evolution-gallery-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 15px;
-        }
-        .evolution-slot {
-            background: var(--bg-card); border: 1px dashed var(--border-color);
-            border-radius: var(--radius-md); padding: 20px; text-align: center; cursor: pointer; transition: var(--transition);
-        }
-        .evolution-slot:hover { border-color: var(--primary-light); background: rgba(59, 130, 246, 0.03); }
-
-        /* BOTÕES */
-        .btn-action-outline {
-            background: transparent; border: 1px solid var(--primary-light); color: var(--primary-light);
-            padding: 8px 16px; border-radius: var(--radius-md); font-size: 0.82rem; font-weight: 600;
-            cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px;
-            text-decoration: none;
-        }
-        .btn-action-outline:hover { background: rgba(59, 130, 246, 0.1); }
-
-        .btn-pix {
-            background: #0d9488; color: #ffffff; border: none; padding: 6px 12px;
-            border-radius: 8px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
-            transition: var(--transition); display: inline-flex; align-items: center; gap: 5px;
-        }
-        .btn-pix:hover { background: #0f766e; }
-
-        /* WHATSAPP */
         .professor-box {
             background: var(--bg-card); border: 1px solid var(--border-color);
             padding: 20px; border-radius: var(--radius-md); display: flex;
@@ -335,39 +208,23 @@
         }
         .btn-whatsapp:hover { background: #20ba5a; }
 
-        /* TABELA */
-        .table-container {
-            width: 100%; overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border-color);
-        }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 14px 18px; font-size: 0.88rem; }
-        th { color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; background: var(--bg-card); font-weight: 700; letter-spacing: 0.5px; }
-        td { border-top: 1px solid var(--border-color); }
-
-        /* MODAIS */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px;
-        }
-        .modal-content {
-            background: var(--bg-surface); border: 1px solid var(--border-color);
-            padding: 35px; border-radius: var(--radius-lg); width: 100%; max-width: 450px; text-align: center;
-        }
-
         footer {
             text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.82rem;
             border-top: 1px solid var(--border-color); background: var(--bg-surface); margin-top: auto;
         }
 
-        .toast {
-            position: fixed; bottom: 25px; right: 25px; background: var(--bg-card); color: var(--text-main);
-            padding: 14px 22px; border-radius: var(--radius-md); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border-left: 4px solid var(--accent-success); z-index: 9999; display: none; font-size: 0.88rem;
+        /* RESPONSIVIDADE TOTAL PARA CELULARES E TABLETS */
+        @media (max-width: 768px) {
+            header { padding: 12px 15px; flex-direction: column; gap: 10px; text-align: center; }
+            .main-content { padding: 15px; }
+            .welcome-card-header { padding: 20px; flex-direction: column; text-align: center; }
+            .metrics-grid { grid-template-columns: 1fr; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            table { width: 100%; display: block; overflow-x: auto; }
         }
     </style>
 </head>
 <body>
-    <!-- TELA DE LOGIN -->
     <div id="alunoLoginOverlay">
         <div class="login-card">
             <div class="login-logo">CORPOFITNESS<span>.</span></div>
@@ -383,17 +240,12 @@
         </div>
     </div>
 
-    <!-- PORTAL PRINCIPAL -->
     <div id="alunoAppContainer">
         <header>
-            
-            <div class="brand-title"></span>
-                    <img src="../img/logo.png" alt="Corpofitness Premium" class="logo-img" decoding="async" width="170" height="78" onerror="this.src='https://via.placeholder.com/200x60?text=CORPOFITNESS';">
+            <div class="brand-title">
+                <img src="../img/logo.png" alt="Corpofitness Premium" class="logo-img" width="150" onerror="this.src='https://via.placeholder.com/150x45?text=CORPOFITNESS';">
             </div>
-            
             <div class="header-actions">
-                <!-- NOTIFICAÇÕES -->
-
                 <div class="user-pill">
                     <div class="user-avatar" id="headerAvatar">AL</div>
                     <span id="headerAlunoNome" style="font-size: 0.88rem; font-weight: 600; padding-right: 6px;">--</span>
@@ -411,7 +263,6 @@
                 </div>
             </div>
 
-            <!-- BOAS-VINDAS E BOTÃO DE ACESSO AO TREINO -->
             <div class="welcome-card-header">
                 <div class="welcome-banner" style="margin-bottom: 0;">
                     <h1 id="tituloBoasVindas">Bem-vindo de volta! 💪</h1>
@@ -423,7 +274,6 @@
             </div>
 
             <div class="dashboard-grid">
-                <!-- AVALIAÇÃO CORPORAL -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title"><i class="fa-solid fa-chart-line"></i> Progresso Corporal (Bioimpedância)</div>
@@ -449,7 +299,6 @@
                     <p style="font-size: 0.82rem; color: var(--text-muted); text-align: center;">Medidas aferidas pelo professor responsável.</p>
                 </div>
 
-                <!-- SUPORTE WHATSAPP -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title"><i class="fa-solid fa-headset"></i> Suporte & Professor</div>
@@ -468,10 +317,24 @@
                     </div>
                 </div>
             </div>
+        </div>
 
         <footer>
             <p>© 2026 Corpofitness. Todos os direitos reservados.</p>
         </footer>
+    </div>
+
+    <!-- MODAL DE VÍDEO DO EXERCÍCIO (ON-DEMAND) -->
+    <div id="modalVideoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; padding: 15px;">
+        <div style="width: 100%; max-width: 650px; background: #1e1e1e; padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 id="videoModalTitulo" style="font-size: 1rem; color: #fff; margin: 0;">Como Executar</h4>
+                <button type="button" onclick="fecharModalVideoAluno()" style="background: transparent; border: none; color: #9e9e9e; font-size: 1.2rem; cursor: pointer;">✕</button>
+            </div>
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px;">
+                <iframe id="iframeVideoYoutube" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="" title="Vídeo de Execução" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -479,24 +342,19 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         const alunoLogado = JSON.parse(sessionStorage.getItem('corpofitness_aluno_logado'));
-        if (alunoLogado) {
-            carregarPortalAluno(alunoLogado);
-        }
+        if (alunoLogado) carregarPortalAluno(alunoLogado);
 
         const formLogin = document.getElementById('formAlunoLogin');
         if (formLogin) {
             formLogin.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const emailInput = document.getElementById('alunoLoginEmail').value.trim().toLowerCase();
-                
                 try {
                     const { data: aluno, error } = await _supabase.from('alunos').select('*').eq('email', emailInput).single();
-                    
                     if (error || !aluno) {
                         document.getElementById('loginAlunoErro').style.display = 'block';
                         return;
                     }
-
                     sessionStorage.setItem('corpofitness_aluno_logado', JSON.stringify(aluno));
                     carregarPortalAluno(aluno);
                 } catch (err) {
@@ -510,26 +368,12 @@
         alunoAtualId = aluno.id;
         document.getElementById('alunoLoginOverlay').style.display = 'none';
         document.getElementById('alunoAppContainer').style.display = 'flex';
-
-        // Salva também o ID genérico caso a página de treino utilize
         sessionStorage.setItem('corpofitness_aluno_id', aluno.id);
 
-        // Preencher dados principais e carteirinha digital
         document.getElementById('headerAlunoNome').textContent = aluno.nome;
         document.getElementById('headerAvatar').textContent = aluno.nome.substring(0, 2).toUpperCase();
         document.getElementById('tituloBoasVindas').textContent = `Olá, ${aluno.nome.split(' ')[0]}! 💪`;
-        document.getElementById('lblAlunoPlano').textContent = aluno.plano || 'Plano Padrão';
-        
-        document.getElementById('lblCarteirinhaNome').textContent = aluno.nome;
-        document.getElementById('lblCarteirinhaPlano').textContent = aluno.plano || 'Plano Padrão';
-        document.getElementById('lblCarteirinhaId').textContent = '#' + aluno.id.toString().substring(0, 6).toUpperCase();
-        
-        const statusEl = document.getElementById('lblAlunoStatus');
-        statusEl.textContent = aluno.status || 'Ativo';
-        statusEl.className = `status-badge ${aluno.status === 'Ativo' ? 'status-ativo' : 'status-pendente'}`;
-        document.getElementById('statStatusPlano').textContent = aluno.status || 'Ativo';
 
-        // Carregar Avaliação Física
         try {
             const { data: av } = await _supabase.from('avaliacoes_fisicas').select('*').eq('aluno_id', aluno.id).single();
             if (av) {
@@ -539,153 +383,28 @@
                 document.getElementById('lblMassa').textContent = (av.massa || '--') + ' kg';
             }
         } catch (err) {}
-
-        // Carregar Faturas e calcular dias para vencer
-        try {
-            const { data: faturas } = await _supabase.from('faturas').select('*').eq('aluno_id', aluno.id).order('vencimento', { ascending: true });
-            const tbody = document.getElementById('tabelaFaturasAluno');
-            tbody.innerHTML = '';
-
-            if (!faturas || faturas.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Nenhuma fatura registrada.</td></tr>`;
-                document.getElementById('statValidadePlano').textContent = 'Sem faturas em aberto';
-            } else {
-                let proximaPendente = faturas.find(f => f.status !== 'Quitado' && f.status !== 'Pago');
-                if (proximaPendente) {
-                    let hoje = new Date();
-                    let vencimento = new Date(proximaPendente.vencimento + 'T00:00:00');
-                    let diffTime = vencimento - hoje;
-                    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    
-                    if (diffDays >= 0) {
-                        document.getElementById('statValidadePlano').textContent = `Vence em ${diffDays} dias`;
-                    } else {
-                        document.getElementById('statValidadePlano').textContent = `Vencido há ${Math.abs(diffDays)} dias`;
-                        document.getElementById('statValidadePlano').style.color = 'var(--accent-danger)';
-                    }
-                } else {
-                    document.getElementById('statValidadePlano').textContent = 'Plano em dia';
-                }
-
-                faturas.forEach(f => {
-                    const isPago = f.status === 'Quitado' || f.status === 'Pago';
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${f.referencia || 'Mensalidade'}</strong></td>
-                            <td>R$ ${f.valor}</td>
-                            <td>${f.vencimento}</td>
-                            <td><span class="status-badge ${isPago ? 'status-quitado' : 'status-pendente'}">${isPago ? 'Quitado' : 'Pendente'}</span></td>
-                            <td>
-                                ${isPago ? '<span style="color: var(--text-muted); font-size: 0.8rem;">Concluído</span>' : `<button class="btn-pix" onclick="gerarPixFatura('${f.referencia}', '${f.valor}')"><i class="fa-solid fa-qrcode"></i> Pagar Pix</button>`}
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-        } catch (err) {}
-
-        carregarFrequenciaMes(aluno.id);
     }
 
-    // FUNÇÕES DE SEGURANÇA E GALERIA
-    function verificarPinFotos() {
-        const pin = document.getElementById('inputPinSeguranca').value;
-        if (pin === '1234' || pin.length === 4) {
-            document.getElementById('modalPinFotos').style.display = 'none';
-            document.getElementById('conteudoGaleriaBloqueado').style.display = 'none';
-            document.getElementById('conteudoGaleriaLiberado').style.display = 'block';
-            showToast("🔓 Galeria de evolução desbloqueada com sucesso!");
-        } else {
-            showToast("❌ PIN incorreto. Tente novamente.");
+    window.abrirVideoDuvida = function(nomeExercicio, urlVideo) {
+        if (!urlVideo || urlVideo.trim() === "") {
+            alert("Vídeo demonstrativo não cadastrado para este exercício.");
+            return;
         }
-    }
-
-    function bloquearNovamente() {
-        document.getElementById('conteudoGaleriaLiberado').style.display = 'none';
-        document.getElementById('conteudoGaleriaBloqueado').style.display = 'block';
-        document.getElementById('inputPinSeguranca').value = '';
-        document.getElementById('modalPinFotos').style.display = 'flex';
-    }
-
-    function enviarFotoEvolucao(tipo) {
-        showToast(`📷 Upload de foto (${tipo}) selecionado com sucesso!`);
-    }
-
-    async function realizarCheckin() {
-        if (!alunoAtualId) return;
-        let hojeIso = new Date().toISOString().split('T')[0];
-
-        try {
-            await _supabase.from('checkins').insert([{ aluno_id: alunoAtualId, data: hojeIso }]);
-            showToast("✅ Presença confirmada! Bom treino!");
-            carregarFrequenciaMes(alunoAtualId);
-        } catch (err) {
-            showToast("✅ Check-in registrado com sucesso!");
+        document.getElementById('videoModalTitulo').textContent = `Execução: ${nomeExercicio}`;
+        let embedUrl = urlVideo;
+        if (urlVideo.includes('watch?v=')) {
+            embedUrl = urlVideo.replace('watch?v=', 'embed/');
+        } else if (urlVideo.includes('youtu.be/')) {
+            embedUrl = urlVideo.replace('youtu.be/', 'www.youtube.com/embed/');
         }
-    }
+        document.getElementById('iframeVideoYoutube').src = embedUrl;
+        document.getElementById('modalVideoAluno').style.display = 'flex';
+    };
 
-    async function carregarFrequenciaMes(alunoId) {
-        try {
-            const { data, error } = await _supabase.from('checkins').select('*').eq('aluno_id', alunoId);
-            let totalDias = 1;
-            if (data && !error) {
-                totalDias = data.length;
-            }
-            document.getElementById('statFrequencia').textContent = `${totalDias} dias`;
-            
-            let meta = 12;
-            let porcentagem = Math.min(Math.round((totalDias / meta) * 100), 100);
-            document.getElementById('txtProgressoDesafio').textContent = `Progresso: ${totalDias} / ${meta} dias`;
-            document.getElementById('txtPorcentagemDesafio').textContent = `${porcentagem}%`;
-            document.getElementById('fillBarraDesafio').style.width = `${porcentagem}%`;
-
-        } catch (e) {
-            document.getElementById('statFrequencia').textContent = `1 dia`;
-            document.getElementById('fillBarraDesafio').style.width = `8%`;
-        }
-    }
-
-    function toggleNotificacoes() {
-        const dd = document.getElementById('notificationDropdown');
-        dd.style.display = dd.style.display === 'flex' ? 'none' : 'flex';
-    }
-
-    function marcarLidas() {
-        document.getElementById('notifBadge').style.display = 'none';
-        showToast("🔔 Todas as notificações foram marcadas como lidas.");
-        document.getElementById('notificationDropdown').style.display = 'none';
-    }
-
-    function gerarPixFatura(ref, valor) {
-        document.getElementById('modalTitulo').textContent = `Pagar ${ref} - R$ ${valor}`;
-        document.getElementById('inputPixCopiaCola').value = `00020126580014br.gov.bcb.pix0136corpofitness-pay-${(Math.random().toString(36)).substring(7)}5204000053039865802BR5925Corpofitness Premium6009Sao Paulo6304`;
-        document.getElementById('modalPagamento').style.display = 'flex';
-    }
-
-    function abrirRenovacao() {
-        document.getElementById('modalTitulo').textContent = `Renovação / Upgrade de Plano`;
-        document.getElementById('inputPixCopiaCola').value = `PIX-UPGRADE-CORPOFITNESS-PLANO-ANUAL-R$899`;
-        document.getElementById('modalPagamento').style.display = 'flex';
-    }
-
-    function fecharModalPagamento() {
-        document.getElementById('modalPagamento').style.display = 'none';
-    }
-
-    function copiarPix() {
-        const input = document.getElementById('inputPixCopiaCola');
-        input.select();
-        navigator.clipboard.writeText(input.value);
-        showToast("📋 Código Pix copiado para a área de transferência!");
-        fecharModalPagamento();
-    }
-
-    function showToast(msg) {
-        const t = document.getElementById('systemToast');
-        t.textContent = msg;
-        t.style.display = 'block';
-        setTimeout(() => { t.style.display = 'none'; }, 3500);
-    }
+    window.fecharModalVideoAluno = function() {
+        document.getElementById('modalVideoAluno').style.display = 'none';
+        document.getElementById('iframeVideoYoutube').src = '';
+    };
 
     function logoutAluno() {
         sessionStorage.removeItem('corpofitness_aluno_logado');

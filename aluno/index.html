@@ -337,6 +337,22 @@
         </div>
     </div>
 
+    <!-- POP-UP DE ALERTA DE VENCIMENTO DE 3 MESES PARA O ALUNO -->
+    <div id="modalPopUpVencimentoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
+        <div style="background: var(--bg-card, #1f2937); border: 1px solid var(--accent-warning, #f59e0b); border-radius: var(--radius-lg, 20px); width: 100%; max-width: 450px; padding: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative;">
+            <div style="font-size: 3rem; color: var(--accent-warning, #f59e0b); margin-bottom: 15px;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 style="color: var(--text-main, #fff); font-size: 1.3rem; margin-bottom: 10px;">Atenção !!!</h3>
+            <p id="textoPopUpVencimentoAluno" style="color: var(--text-muted, #9ca3af); font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px;">
+                O seu Plano de Treino atual de 3 meses está completando o prazo. Solicite ao professor uma nova avaliação para a montagem de uma nova ficha.
+            </p>
+            <button type="button" onclick="fecharPopUpVencimentoAluno()" style="background: var(--primary, #2563eb); color: #fff; border: none; padding: 12px 25px; border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%; font-size: 0.95rem;">
+                Entendido, vou procurar o professor
+            </button>
+        </div>
+    </div>
+
     <script>
     let alunoAtualId = null;
 
@@ -383,6 +399,9 @@
                 document.getElementById('lblMassa').textContent = (av.massa || '--') + ' kg';
             }
         } catch (err) {}
+
+        // Dispara a verificação automática do Pop-up de vencimento de 3 meses ao entrar
+        window.verificarPopUpVencimentoAluno(aluno.id);
     }
 
     window.abrirVideoDuvida = function(nomeExercicio, urlVideo) {
@@ -411,54 +430,56 @@
         window.location.reload();
     }
 
-window.verificarAvisoFixoPainelAluno = async function(alunoIdLogado) {
-    const cardAviso = document.getElementById('cardAvisoFixoAluno');
-    const textoAviso = document.getElementById('textoAvisoFixoAluno');
-    if (!cardAviso || !alunoIdLogado) return;
+    window.verificarPopUpVencimentoAluno = async function(alunoIdLogado) {
+        const modalPopUp = document.getElementById('modalPopUpVencimentoAluno');
+        const textoPopUp = document.getElementById('textoPopUpVencimentoAluno');
+        if (!modalPopUp || !alunoIdLogado) return;
 
-    try {
-        const { data: treinos } = await _supabase
-            .from('treinos_alunos')
-            .select('*')
-            .eq('aluno_id', alunoIdLogado);
+        try {
+            const { data: treinos } = await _supabase
+                .from('treinos_alunos')
+                .select('*')
+                .eq('aluno_id', alunoIdLogado);
 
-        if (!treinos || treinos.length === 0) {
-            cardAviso.style.display = 'none';
-            return;
-        }
-
-        // Pega sempre o treino mais recente cadastrado na base
-        const ultimoTreino = treinos.reduce((MaisRecente, atual) => {
-            return new Date(atual.created_at) > new Date(MaisRecente.created_at) ? atual : MaisRecente;
-        }, treinos[0]);
-
-        const dataInicio = new Date(ultimoTreino.created_at);
-        const dataVencimento = new Date(dataInicio);
-        dataVencimento.setMonth(dataVencimento.getMonth() + 3); // Ciclo de 3 meses
-
-        const hoje = new Date();
-        const diasRestantes = Math.ceil((dataVencimento.getTime() - hoje.getTime()) / (1000 * 3600 * 24));
-        const formatoVenc = dataVencimento.toLocaleDateString('pt-BR');
-
-        // Se estiver dentro dos últimos 15 dias ou vencido, o lembrete fica fixo para o aluno
-        if (diasRestantes <= 15) {
-            if (diasRestantes < 0) {
-                textoAviso.innerHTML = `O seu ciclo de treino de 3 meses venceu em <strong>${formatoVenc}</strong> (há ${Math.abs(diasRestantes)} dias). Solicite ao professor a atualização da sua ficha e nova avaliação corporal.`;
-            } else if (diasRestantes === 0) {
-                textoAviso.innerHTML = `O seu ciclo de 3 meses de treino vence <strong>HOJE (${formatoVenc})</strong>! Procure a instrução para renovar seus exercícios.`;
-            } else {
-                textoAviso.innerHTML = `O seu ciclo atual de 3 meses completará o prazo em <strong>${formatoVenc}</strong> (faltam ${diasRestantes} dias). Prepare-se para a sua reavaliação corporal com o professor.`;
+            if (!treinos || treinos.length === 0) {
+                modalPopUp.style.display = 'none';
+                return;
             }
-            cardAviso.style.display = 'block'; // Fica visível e fixo no painel dele
-        } else {
-            // Se um novo treino foi enviado recentemente, os dias restantes sobem e o alerta some sozinho!
-            cardAviso.style.display = 'none'; 
-        }
 
-    } catch (err) {
-        console.error("Erro ao verificar aviso fixo do aluno:", err);
-    }
-};
+            const ultimoTreino = treinos.reduce((MaisRecente, atual) => {
+                return new Date(atual.created_at) > new Date(MaisRecente.created_at) ? atual : MaisRecente;
+            }, treinos[0]);
+
+            const dataInicio = new Date(ultimoTreino.created_at);
+            const dataVencimento = new Date(dataInicio);
+            dataVencimento.setMonth(dataVencimento.getMonth() + 3);
+
+            const hoje = new Date();
+            const diasRestantes = Math.ceil((dataVencimento.getTime() - hoje.getTime()) / (1000 * 3600 * 24));
+            const formatoVenc = dataVencimento.toLocaleDateString('pt-BR');
+
+            if (diasRestantes <= 15) {
+                if (diasRestantes < 0) {
+                    textoPopUp.innerHTML = `O seu ciclo de treino de 3 meses venceu em <strong>${formatoVenc}</strong> (há ${Math.abs(diasRestantes)} dias). O seu painel requer atualização de ficha e nova avaliação com o professor.`;
+                } else if (diasRestantes === 0) {
+                    textoPopUp.innerHTML = `O seu ciclo de 3 meses de treino vence <strong>HOJE (${formatoVenc})</strong>! Procure a instrução para renovar seus exercícios.`;
+                } else {
+                    textoPopUp.innerHTML = `O seu ciclo atual de 3 meses completará o prazo em <strong>${formatoVenc}</strong> (faltam ${diasRestantes} dias). Prepare-se para a sua reavaliação corporal com o professor.`;
+                }
+                modalPopUp.style.display = 'flex';
+            } else {
+                modalPopUp.style.display = 'none';
+            }
+
+        } catch (err) {
+            console.error("Erro ao verificar pop-up de vencimento do aluno:", err);
+        }
+    };
+
+    window.fecharPopUpVencimentoAluno = function() {
+        const modalPopUp = document.getElementById('modalPopUpVencimentoAluno');
+        if (modalPopUp) modalPopUp.style.display = 'none';
+    };
     </script>
 </body>
 </html>

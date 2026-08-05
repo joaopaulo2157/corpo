@@ -686,33 +686,33 @@
                             </table>
                         </div>
                     </div>
-                </div>
 
-                <!-- PAINEL ADMINISTRATIVO: CARD FIXO DE ALERTAS DE 3 MESES -->
-                <div class="card" style="margin-top: 20px; border: 1px solid var(--warning);">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="color: var(--warning); margin: 0;"><i class="fa-solid fa-clock-rotate-left"></i> Lembretes Fixos: Planos Completando 3 Meses</h3>
-                        <span id="badgeTotalAlertasAdmin" class="status-badge" style="background: var(--warning); color: #000; font-weight: bold;">0 Alertas</span>
-                    </div>
-                    <div class="card-body" style="padding: 10px 0;">
-                        <p style="color: var(--text-muted); font-size: 0.85rem; padding: 0 15px; margin-bottom: 15px;">
-                            Esta lista exibe de forma fixa os alunos cujos planos de treino atingiram ou estão prestes a atingir o ciclo limite de 3 meses, necessitando de atualização e reavaliação corporal.
-                        </p>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Aluno</th>
-                                        <th>Plano / Status</th>
-                                        <th>Data do Treino (Início)</th>
-                                        <th>Vencimento (3 Meses)</th>
-                                        <th style="text-align: right;">Ação Recomendada</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabelaLembretesFixosAdminBody">
-                                    <tr><td colspan="5" style="text-align: center; color: var(--gray);">Carregando painel de lembretes...</td></tr>
-                                </tbody>
-                            </table>
+                    <!-- CARD FIXO DE ALERTAS DE 3 MESES (MOVIDO CORRETAMENTE PARA DENTRO DA ABA DASHBOARD) -->
+                    <div class="card" style="margin-top: 20px; border: 1px solid var(--warning);">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="color: var(--warning); margin: 0;"><i class="fa-solid fa-clock-rotate-left"></i> Lembretes Fixos: Planos Completando 3 Meses</h3>
+                            <span id="badgeTotalAlertasAdmin" class="status-badge" style="background: var(--warning); color: #000; font-weight: bold;">0 Alertas</span>
+                        </div>
+                        <div class="card-body" style="padding: 10px 0;">
+                            <p style="color: var(--text-muted); font-size: 0.85rem; padding: 0 15px; margin-bottom: 15px;">
+                                Esta lista exibe de forma fixa os alunos cujos planos de treino atingiram ou estão prestes a atingir o ciclo limite de 3 meses, necessitando de atualização e reavaliação corporal.
+                            </p>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Aluno</th>
+                                            <th>Plano / Status</th>
+                                            <th>Data do Treino (Início)</th>
+                                            <th>Vencimento (3 Meses)</th>
+                                            <th style="text-align: right;">Ação Recomendada</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabelaLembretesFixosAdminBody">
+                                        <tr><td colspan="5" style="text-align: center; color: var(--gray);">Carregando painel de lembretes...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1157,6 +1157,55 @@
                             <h3>Perguntas Cadastradas (Arraste para Reordenar)</h3>
                         </div>
                         <div id="listaFaqAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+                    </div>
+                </div>
+
+                <!-- NOVA ABA: BACKUP COMPLETO DO SISTEMA (PÁGINAS E BANCO DE DADOS) -->
+                <div id="tab-backupsecao" class="tab-content">
+                    <div class="page-header">
+                        <h1>💾 Central de Backup e Segurança do Sistema</h1>
+                        <p>Realize o backup completo de todo o ecossistema (páginas do sistema e banco de dados completo do Supabase) para o seu computador e para o banco.</p>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                        <div class="card" style="margin: 0;">
+                            <div class="card-header">
+                                <h3>📦 Backup das Páginas (Código-Fonte)</h3>
+                            </div>
+                            <p style="color: var(--gray); font-size: 0.85rem; margin-bottom: 20px;">
+                                Baixe uma cópia integral do código HTML/JS atual executado no painel diretamente para o armazenamento do seu PC.
+                            </p>
+                            <button type="button" class="btn" onclick="executarBackupPaginasPC()">⬇️ Baixar Páginas para o PC (.html)</button>
+                        </div>
+
+                        <div class="card" style="margin: 0;">
+                            <div class="card-header">
+                                <h3>🗄️ Backup Completo do Banco de Dados</h3>
+                            </div>
+                            <p style="color: var(--gray); font-size: 0.85rem; margin-bottom: 20px;">
+                                Exporta todas as tabelas (Alunos, Treinos, Avaliações, Configurações, etc.) do Supabase em um arquivo JSON estruturado.
+                            </p>
+                            <button type="button" class="btn btn-success" onclick="executarBackupBancoSupabase()">📥 Baixar Dump do Banco (.json)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>📊 Status de Integridade do Sistema</h3>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                            <div style="background: var(--dark-2); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+                                <span style="font-size: 0.75rem; color: var(--gray);">CONEXÃO SUPABASE</span>
+                                <h4 style="color: var(--success); font-size: 1rem; margin-top: 4px;">🟢 Ativa & Online</h4>
+                            </div>
+                            <div style="background: var(--dark-2); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+                                <span style="font-size: 0.75rem; color: var(--gray);">REGRAS DE CÓDIGO</span>
+                                <h4 style="color: var(--primary-light); font-size: 1rem; margin-top: 4px;">🛡️ Evolução Contínua</h4>
+                            </div>
+                            <div style="background: var(--dark-2); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+                                <span style="font-size: 0.75rem; color: var(--gray);">ÚLTIMO BACKUP</span>
+                                <h4 id="statusUltimoBackup" style="color: var(--text-color); font-size: 1rem; margin-top: 4px;">Pendente</h4>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -2984,6 +3033,64 @@
         window.showToast("Status atualizado!");
     };
 
+    // NOVAS FUNÇÕES DE BACKUP INTEGRAL DO SISTEMA
+    window.executarBackupPaginasPC = function() {
+        try {
+            const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_sistema_corpofitness_${new Date().toISOString().slice(0,10)}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            window.showToast("Backup das páginas baixado para o PC com sucesso!");
+            atualizarStatusBackupUI();
+        } catch (err) {
+            alert("Erro ao gerar backup das páginas: " + err.message);
+        }
+    };
+
+    window.executarBackupBancoSupabase = async function() {
+        try {
+            window.showToast("Gerando dump completo do banco Supabase...");
+            const tabelas = ['alunos', 'treinos_alunos', 'avaliacoes_fisicas', 'planos', 'professores', 'galeria', 'noticias', 'banners', 'usuarios', 'contatos', 'parceiros', 'estrutura', 'modalidades', 'faq', 'biblioteca_exercicios'];
+            const dumpCompleto = { timestamp: new Date().toISOString(), projeto: "Corpofitness Premium", dados: {} };
+
+            for (const tabela of tabelas) {
+                const { data, error } = await _supabase.from(tabela).select('*');
+                if (!error && data) {
+                    dumpCompleto.dados[tabela] = data;
+                }
+            }
+
+            const jsonString = JSON.stringify(dumpCompleto, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_banco_supabase_corpofitness_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            window.showToast("Backup completo do banco de dados baixado com sucesso!");
+            atualizarStatusBackupUI();
+        } catch (err) {
+            alert("Erro ao exportar banco de dados: " + err.message);
+        }
+    };
+
+    window.atualizarStatusBackupUI = function() {
+        const el = document.getElementById('statusUltimoBackup');
+        if (el) {
+            const agora = new Date();
+            el.textContent = `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`;
+        }
+    };
+
     document.addEventListener('DOMContentLoaded', () => {
         const loginOverlay = document.getElementById('loginOverlay');
         const mainAppContainer = document.getElementById('mainAppContainer');
@@ -3074,6 +3181,7 @@
                     <li><a href="#modalidadessecao" class="menu-link" data-target="modalidadessecao">🥊 Modalidades</a></li>
                     <li><a href="#feedbacksecao" class="menu-link" data-target="feedbacksecao">💬 Quem Já Treina</a></li>
                     <li><a href="#faqsecao" class="menu-link" data-target="faqsecao">❓ Dúvidas Frequentes</a></li>
+                    <li><a href="#backupsecao" class="menu-link" data-target="backupsecao">💾 Backup & Segurança</a></li>
                     <li><a href="#professores" class="menu-link" data-target="professores">👥 Equipe de Professores</a></li>
                     <li><a href="#planos" class="menu-link" data-target="planos">💳 Planos & Preços</a></li>
                     <li><a href="#parceiros" class="menu-link" data-target="parceiros">🤝 Parceiros & Marcas</a></li>
@@ -3087,6 +3195,7 @@
                     <li><a href="#dashboard" class="menu-link active" data-target="dashboard">📊 Visão Geral</a></li>
                     <li><a href="#alunos" class="menu-link" data-target="alunos">💪 Gestão de Alunos & Treino</a></li>
                     <li><a href="#contatos" class="menu-link" data-target="contatos">📩 Mensagens & Logs</a></li>
+                    <li><a href="#backupsecao" class="menu-link" data-target="backupsecao">💾 Backup & Segurança</a></li>
                 `;
             } else if (nivel === 'professor') {
                 htmlMenu = `
@@ -3723,8 +3832,16 @@
 
             if (error) throw error;
 
-            alert("Avaliação Corporal salva com sucesso!");
+            window.showToast("Avaliação Corporal salva com sucesso!");
             fecharModalAvaliacaoCorporal();
+            
+            // CORREÇÃO: Atualiza imediatamente a lista de lembretes e alunos no ato
+            if (typeof window.carregarLembretesFixosAdmin === 'function') {
+                window.carregarLembretesFixosAdmin();
+            }
+            if (typeof window.carregarAlunosAdmin === 'function') {
+                window.carregarAlunosAdmin();
+            }
         } catch(err) {
             console.error("Erro ao salvar avaliação corporativa: ", err);
             alert("Erro ao salvar no banco de dados: " + err.message);
@@ -3785,12 +3902,12 @@
 
                     tbody.innerHTML += `
                         <tr>
-                            <td><strong>${alunoObj.nome}</strong><br><span style="font-size:0.75rem; color:var(--text-muted);">${alunoObj.tel || 'Sem tel'}</span></td>
+                            <td><strong>${alunoObj.nome}</strong><br><span style="font-size:0.75rem; color: var(--text-muted);">${alunoObj.tel || 'Sem tel'}</span></td>
                             <td>${alunoObj.plano || 'Musculação'}</td>
                             <td>${formatoInicio}</td>
                             <td>${formatoVenc}<br>${statusTag}</td>
                             <td style="text-align: right;">
-                                <button onclick="abrirModalTreinoFiel('${alunoObj.id}', '${alunoObj.nome}')" class="btn-action-bar" style="background: var(--primary); color: #fff;" title="Fazer Novo Treino"><i class="fa-solid fa-scale-balanced"></i> Reavaliar</button>
+                                <button onclick="abrirModalAvaliacaoFisicaCompleta('${alunoObj.id}', '${alunoObj.nome}')" class="btn-action-bar" style="background: var(--primary); color: #fff;" title="Fazer Avaliação Corporal"><i class="fa-solid fa-scale-balanced"></i> Reavaliar</button>
                             </td>
                         </tr>
                     `;

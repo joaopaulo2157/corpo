@@ -43,9 +43,6 @@
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700;800&display=swap">
 
-    <!-- PRELOAD DO VÍDEO DO HERO -->
-    <link rel="preload" as="video" href="videos/academia.mp4" type="video/mp4">
-
     <!-- FAVICON -->
     <link rel="icon" href="img/favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -432,6 +429,20 @@
             </div>
         </section>
 
+        <!-- NOVA SEÇÃO: NOTÍCIAS E DICAS -->
+        <section id="noticias-dicas" class="section-noticias-dicas">
+            <div class="container">
+                <div class="titulo" data-aos="fade-up">
+                    <span>BLOG & CONTEÚDO</span>
+                    <h2>NOTÍCIAS E DICAS DE TREINO</h2>
+                    <p>Fique por dentro das novidades, avisos e dicas exclusivas da nossa equipe para potencializar seus resultados.</p>
+                </div>
+                <div class="noticias-grid" id="containerNoticiasSite">
+                    <!-- Notícias serão carregadas aqui via JavaScript -->
+                </div>
+            </div>
+        </section>
+
         <!-- 11. FAQ / DÚVIDAS FREQUENTES (DINÂMICO DO SUPABASE) -->
         <section id="faq" aria-label="Perguntas Frequentes">
             <div class="container">
@@ -799,7 +810,7 @@
 
                         container.innerHTML += `
                             <div class="galeria-item" data-aos="zoom-in">
-                                <img src="${lowQualityUrl}" class="galeria-img-placeholder" alt="${altText}" loading="eager">
+                                <img src="${lowQualityUrl}" class="galeria-img-placeholder" alt="${altText}" loading="eager" onload="this.classList.add('loaded')">
                                 <img src="${highQualityUrl}" class="galeria-img-hq" alt="${altText}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded'); this.src='${FALLBACK_IMG}'">
                             </div>
                         `;
@@ -913,6 +924,39 @@
                 });
             }
 
+            async function carregarNoticiasSite() {
+                const container = document.querySelector('#containerNoticiasSite');
+                if (!container) return;
+
+                try {
+                    const { data: noticias, error } = await _supabase.from('noticias').select('*').order('created_at', { ascending: false }).limit(3);
+                    if (error) throw error;
+
+                    if (!noticias || noticias.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; color: var(--gray-soft);">Nenhuma notícia ou dica disponível no momento.</p>';
+                        return;
+                    }
+
+                    container.innerHTML = '';
+                    noticias.forEach((n, index) => {
+                        const dataFormatada = new Date(n.created_at).toLocaleDateString('pt-BR');
+                        container.innerHTML += `
+                            <div class="noticia-card" data-aos="fade-up" data-aos-delay="${index * 100}">
+                                <span class="noticia-categoria">${n.cat || 'Geral'}</span>
+                                <h3>${n.titulo}</h3>
+                                <p>${n.conteudo.substring(0, 120)}...</p>
+                                <div class="noticia-meta">
+                                    <span><i class="fas fa-calendar-alt"></i> ${dataFormatada}</span>
+                                    <a href="#" class="btn-ler-mais">Ler Mais <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } catch (err) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--gray-soft);">Erro ao carregar notícias.</p>';
+                }
+            }
+
             carregarEstruturaSite();
             carregarModalidadesSite();
             carregarFeedbacksSite();
@@ -922,6 +966,7 @@
             carregarProfessores();
             carregarBanners();
             carregarParceirosSite();
+            carregarNoticiasSite();
         });
 
         document.addEventListener('DOMContentLoaded', async () => {

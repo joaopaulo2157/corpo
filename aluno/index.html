@@ -227,16 +227,25 @@
 <body>
     <div id="alunoLoginOverlay">
         <div class="login-card">
-            <div class="login-logo">CORPOFITNESS<span>.</span></div>
-            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 30px;">Digite seu e-mail cadastrado para acessar o portal</p>
-            <form id="formAlunoLogin">
-                <div class="form-group">
-                    <label class="form-label">E-mail de Acesso</label>
-                    <input type="email" id="alunoLoginEmail" class="form-control" required placeholder="seu@email.com">
-                </div>
-                <div id="loginAlunoErro" style="color: var(--accent-danger); font-size: 0.8rem; margin-bottom: 15px; display: none;">E-mail não encontrado na base de alunos.</div>
-                <button type="submit" class="btn-primary">Acessar Portal</button>
-            </form>
+            <div id="loginCardContent">
+                <div class="login-logo">CORPOFITNESS<span>.</span></div>
+                <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 30px;">Digite seu e-mail </p>
+                <form id="formAlunoLogin">
+                    <div class="form-group">
+                        <label class="form-label">E-mail</label>
+                        <input type="text" id="alunoLoginIdentifier" class="form-control" required placeholder="seu@email.com">
+                    </div>
+                    <div id="loginAlunoErro" style="color: var(--accent-danger); font-size: 0.8rem; margin-bottom: 15px; display: none;">Dados não encontrados. Verifique e tente novamente.</div>
+                    <button type="submit" class="btn-primary">Acessar Portal</button>
+                </form>
+            </div>
+            <div id="loginCardBlocked" style="display: none; text-align: center;">
+                <div class="login-logo" style="color: var(--accent-warning);"><i class="fa-solid fa-lock"></i> ACESSO BLOQUEADO</div>
+                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin: 25px 0;">Entrar em contato com a direção da Academia Corpo Fitness.</p>
+                <a href="https://wa.me/5582996786183?text=Olá,%20meu%20acesso%20ao%20portal%20foi%20bloqueado.%20Poderiam%20verificar%20para%20mim?" target="_blank" class="btn-whatsapp" style="width: 100%; justify-content: center; padding: 14px; border-radius: 50px;">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Chamar no WhatsApp
+                </a>
+            </div>
         </div>
     </div>
 
@@ -255,14 +264,6 @@
         </header>
 
         <div class="main-content">
-            <div class="notice-banner">
-                <i class="fa-solid fa-bullhorn"></i>
-                <div>
-                    <strong style="font-size: 0.9rem; display: block; color: var(--text-main);">Aviso da Academia</strong>
-                    <span style="font-size: 0.85rem; color: var(--text-muted);">Mantenha suas mensalidades em dia para garantir acesso livre à catraca e aos treinos.</span>
-                </div>
-            </div>
-
             <div class="welcome-card-header">
                 <div class="welcome-banner" style="margin-bottom: 0;">
                     <h1 id="tituloBoasVindas">Bem-vindo de volta! 💪</h1>
@@ -364,17 +365,39 @@
         if (formLogin) {
             formLogin.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const emailInput = document.getElementById('alunoLoginEmail').value.trim().toLowerCase();
+                const identifier = document.getElementById('alunoLoginIdentifier').value.trim();
+                const erroBox = document.getElementById('loginAlunoErro');
+                const loginCard = document.getElementById('loginCardContent');
+                const blockedCard = document.getElementById('loginCardBlocked');
+
+                erroBox.style.display = 'none';
+
                 try {
-                    const { data: aluno, error } = await _supabase.from('alunos').select('*').eq('email', emailInput).single();
-                    if (error || !aluno) {
-                        document.getElementById('loginAlunoErro').style.display = 'block';
+                    const { data: alunos, error } = await _supabase
+                        .from('alunos')
+                        .select('*')
+                        .or(`email.eq.${identifier},tel.eq.${identifier}`);
+
+                    if (error || !alunos || alunos.length === 0) {
+                        erroBox.textContent = 'Dados não encontrados. Verifique e tente novamente.';
+                        erroBox.style.display = 'block';
                         return;
                     }
+
+                    const aluno = alunos[0];
+
+                    if (aluno.status === 'Bloqueado') {
+                        loginCard.style.display = 'none';
+                        blockedCard.style.display = 'block';
+                        return;
+                    }
+
                     sessionStorage.setItem('corpofitness_aluno_logado', JSON.stringify(aluno));
                     carregarPortalAluno(aluno);
+
                 } catch (err) {
-                    document.getElementById('loginAlunoErro').style.display = 'block';
+                    erroBox.textContent = 'Erro ao tentar fazer login. Tente mais tarde.';
+                    erroBox.style.display = 'block';
                 }
             });
         }

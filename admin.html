@@ -12,6 +12,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- LIBS PARA GRÁFICOS E PDF -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    
     <script>
         // Configuração do Cliente Supabase
         const NEXT_PUBLIC_SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
@@ -465,13 +470,62 @@
         .status-pendente { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
         .status-respondido { background: rgba(30, 136, 229, 0.15); color: #64b5f6; border: 1px solid rgba(30, 136, 229, 0.3); }
         .status-matriculado, .status-ativo, .status-quitado { background: rgba(76, 175, 80, 0.15); color: #4caf50; border: 1px solid rgba(76, 175, 80, 0.3); }
-
+        .status-bloqueado { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        
         .table-container {
             width: 100%;
             overflow-x: auto;
             border: 1px solid var(--border);
             border-radius: 12px;
             -webkit-overflow-scrolling: touch;
+        }
+
+        /* CORREÇÃO: Garante que a seção e seus elementos fiquem estáticos e centralizados na grid padrão */
+        #tab-noticias {
+            animation: none !important;
+            transform: none !important;
+        }
+
+        /* Toggle Switch para Status do Aluno */
+        .switch-status {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+            vertical-align: middle;
+        }
+        .switch-status input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider-status {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--danger);
+            transition: .3s;
+            border-radius: 24px;
+        }
+        .slider-status:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider-status {
+            background-color: var(--success);
+        }
+        input:checked + .slider-status:before {
+            transform: translateX(22px);
         }
 
         table {
@@ -590,7 +644,7 @@
         }
         @media(min-width: 992px) {
             .modal-card-grid-duplo {
-                grid-template-columns: 460px 1fr;
+                grid-template-columns: 380px 1fr;
             }
         }
 
@@ -801,9 +855,8 @@
                                 <div class="form-group">
                                     <label class="form-label">Status do Cadastro</label>
                                     <select id="alunoStatus" class="form-control" required>
-                                        <option value="Ativo">Ativo (Liberado)</option>
-                                        <option value="Pendente">Pendente (Aguardando Aprovação)</option>
-                                        <option value="Vencido">Vencido</option>
+                                        <option value="Ativo">Ativo</option>
+                                        <option value="Bloqueado">Bloqueado</option>
                                     </select>
                                 </div>
                             </div>
@@ -814,6 +867,9 @@
                     <div class="card">
                         <div class="card-header">
                             <h3>Alunos Registrados e Cadastros Pendentes</h3>
+                            <div class="form-group" style="margin-bottom: 0; max-width: 300px; margin-left: auto;">
+                                <input type="text" id="inputBuscaAluno" class="form-control" placeholder="🔎 Buscar por nome, e-mail...">
+                            </div>
                         </div>
                         <div class="table-container">
                             <table>
@@ -1655,52 +1711,94 @@
 
             </div>
 
+            <!-- MODAL HISTÓRICO DE AVALIAÇÕES -->
+            <div class="modal-overlay" id="modalHistoricoAvaliacoes" style="display: none; z-index: 3500; align-items: flex-start; justify-content: center; padding-top: 50px;">
+                <div class="modal-card" style="max-width: 950px;">
+                    <div class="card-header">
+                        <h3 id="tituloHistoricoAvaliacoes">Histórico de Avaliações</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn btn-success" id="btnExportarPDFHistorico" style="padding: 8px 14px; font-size: 0.8rem;">Exportar PDF</button>
+                            <button type="button" class="btn-action-bar" onclick="fecharModal('modalHistoricoAvaliacoes')">✕ Fechar</button>
+                        </div>
+                    </div>
+                    <div id="chartsContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; margin-bottom: 20px;">
+                        <div style="width: 100%; height: 250px; padding: 10px; background: var(--dark-2); border-radius: 12px;">
+                            <canvas id="graficoEvolucaoPeso"></canvas>
+                        </div>
+                        <div id="gorduraChartContainer" style="width: 100%; height: 250px; padding: 10px; background: var(--dark-2); border-radius: 12px;">
+                            <canvas id="graficoEvolucaoGordura"></canvas>
+                        </div>
+                    </div>
+                    <div class="table-container" style="max-height: 40vh;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Peso (kg)</th>
+                                    <th>Altura (m)</th>
+                                    <th>IMC</th>
+                                    <th>% Gordura (Dobras)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaHistoricoAvaliacoesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-            <!-- MODAL PLANO DE TREINO PROFISSIONAL EVOLUÍDO -->
+            <!-- MODAL PLANO DE TREINO PROFISSIONAL EVOLUÍDO E ORGANIZADO -->
             <div class="modal-overlay" id="modalTreinoFiel" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto; padding: 15px;">
-                <div class="modal-card" style="max-width: 1450px; width: 100%; background: #181818; color: #fff; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.8);">
+                <div class="modal-card" style="max-width: 1450px; width: 100%; background: #181818; color: #fff; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.8);">
                     
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                        <div style="background: rgba(30,136,229,0.15); border: 1px solid var(--primary); padding: 8px 14px; font-weight: bold; font-size: 0.85rem; border-radius: 8px; color: var(--primary-light);">📅 PLANO DE TREINO PROFISSIONAL & AVALIAÇÃO</div>
+                    <!-- Topo do Modal / Ações Rápidas -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="background: rgba(30,136,229,0.15); border: 1px solid var(--primary); padding: 8px 14px; font-weight: bold; font-size: 0.85rem; border-radius: 8px; color: var(--primary-light);">📅 PLANO DE TREINO PROFISSIONAL & AVALIAÇÃO</span>
+                        </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button type="button" onclick="abrirModalExerciciosCatalogo()" class="btn-action-bar">🏋️ Biblioteca</button>
-                            <button type="button" onclick="abrirModalMetodosLista()" class="btn-action-bar">⚙️ Métodos</button>
-                            <button type="button" onclick="window.print()" class="btn btn-print" style="padding: 6px 12px; font-size: 0.8rem;"><i class="fa-solid fa-print"></i></button>
-                            <button type="button" onclick="salvarTreinoAnexo()" class="btn btn-success" style="padding: 6px 16px; font-size: 0.8rem;">💾 Salvar</button>
-                            <button type="button" onclick="fecharModal('modalTreinoFiel')" class="btn-action-bar" style="background: var(--danger); color: #fff;">✕</button>
+                            <button type="button" onclick="abrirModalExerciciosCatalogo()" class="btn-action-bar"><i class="fa-solid fa-dumbbell"></i> Biblioteca</button>
+                            <button type="button" onclick="abrirModalMetodosLista()" class="btn-action-bar"><i class="fa-solid fa-gears"></i> Métodos</button>
+                            <button type="button" onclick="window.print()" class="btn btn-print" style="padding: 6px 12px; font-size: 0.8rem;"><i class="fa-solid fa-print"></i> Imprimir</button>
+                            <button type="button" onclick="salvarTreinoAnexo()" class="btn btn-success" style="padding: 6px 16px; font-size: 0.8rem;"><i class="fa-solid fa-floppy-disk"></i> Salvar Treino</button>
+                            <button type="button" onclick="fecharModal('modalTreinoFiel')" class="btn-action-bar" style="background: var(--danger); color: #fff; padding: 6px 12px;">✕</button>
                         </div>
                     </div>
 
                     <input type="hidden" id="tr_aluno_id">
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; align-items: center; margin-bottom: 15px; background: var(--dark-card); padding: 12px; border: 1px solid var(--border); border-radius: 12px;">
-                        <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Cod</label><input type="text" id="tr_cod" value="1" class="form-control" readonly></div>
-                        <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">CodT</label><input type="text" id="tr_codt" value="1" class="form-control" readonly></div>
+                    <!-- Informações do Aluno / Cabeçalho Técnico -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; align-items: center; margin-bottom: 20px; background: var(--dark-card); padding: 15px; border: 1px solid var(--border); border-radius: 12px;">
+                        <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Cód</label><input type="text" id="tr_cod" value="1" class="form-control" readonly></div>
+                        <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">CódT</label><input type="text" id="tr_codt" value="1" class="form-control" readonly></div>
                         <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Data Aplicação:</label><input type="text" id="tr_data" value="" class="form-control"></div>
                         <div style="grid-column: 1 / -1; @media(min-width: 768px){grid-column: auto;}"><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Nome do Aluno:</label><input type="text" id="tr_nome" value="" class="form-control" readonly></div>
                     </div>
 
-                    <div class="modal-card-grid-duplo">
+                    <!-- GRID PRINCIPAL DUPLO OTIMIZADO E ALINHADO -->
+                    <div class="modal-card-grid-duplo" style="align-items: start;">
                         
+                        <!-- Coluna da Esquerda: Objetivo, Anatomia Compacta, Nível e Divisão -->
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                             
-                            <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 15px; border-radius: 12px; position: relative;">
-                                <span style="position: absolute; top: -11px; left: 15px; background: var(--dark-card); padding: 0 8px; color: var(--primary-light); font-weight: 700; font-size: 0.78rem;">🎯 OBJETIVO & ESTRUTURA</span>
-                                <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 8px; @media(min-width: 500px){grid-template-columns: 130px 1fr;}">
-                                    <select id="tr_objetivo" class="form-control">
+                            <!-- Objetivo & Estrutura -->
+                            <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 14px; border-radius: 12px; position: relative;">
+                                <span style="position: absolute; top: -11px; left: 15px; background: var(--dark-card); padding: 0 8px; color: var(--primary-light); font-weight: 700; font-size: 0.75rem;">🎯 OBJETIVO & ESTRUTURA</span>
+                                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+                                    <select id="tr_objetivo" class="form-control" style="padding: 10px;">
                                         <option>Hipertrofia</option>
                                         <option>Emagrecimento</option>
                                         <option>Força</option>
                                         <option>Condicionamento</option>
                                     </select>
-                                    <input type="text" id="tr_objetivo_desc" placeholder="Obs. do objetivo" class="form-control">
+                                    <input type="text" id="tr_objetivo_desc" placeholder="Obs. do objetivo" class="form-control" style="padding: 10px;">
                                 </div>
                             </div>
 
-                            <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 15px; border-radius: 12px; position: relative;">
+                            <!-- Mapa Muscular Anatômico Compacto -->
+                            <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 14px; border-radius: 12px; position: relative;">
                                 <span style="position: absolute; top: -11px; left: 15px; background: var(--dark-card); padding: 0 8px; color: var(--gray); font-weight: 600; font-size: 0.75rem;">Principais Grupos Musculares</span>
                                 
-                                <div style="display: grid; grid-template-columns: 1fr; gap: 10px; align-items: center; margin-top: 8px; font-size: 0.75rem; @media(min-width: 500px){grid-template-columns: 110px 1fr 110px;}">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; font-size: 0.73rem;">
                                     <div style="display: flex; flex-direction: column; gap: 4px;">
                                         <label><input type="checkbox" id="chk_todos" onchange="toggleTodosMusculos(this)"> Todos</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="deltoides" checked onchange="atualizarMapaAnatomico()"> Deltóides</label>
@@ -1712,33 +1810,6 @@
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="quadriceps" checked onchange="atualizarMapaAnatomico()"> Quadríceps</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="tibial" onchange="atualizarMapaAnatomico()"> Tibiais</label>
                                     </div>
-
-                                    <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); padding: 8px; text-align: center; border-radius: 8px;">
-                                        <div style="display: flex; justify-content: center; gap: 10px;">
-                                            <svg width="35" height="100" viewBox="0 0 100 250">
-                                                <circle cx="50" cy="20" r="15" fill="#4caf50"/>
-                                                <path id="map-deltoides" d="M30 40 Q50 35 70 40 L65 55 L35 55 Z" fill="#4caf50" opacity="0.9"/>
-                                                <path id="map-peitoral" d="M35 58 Q50 55 65 58 L63 85 Q50 90 37 85 Z" fill="#4caf50" opacity="0.9"/>
-                                                <path id="map-biceps" d="M22 58 L32 58 L30 85 L22 83 Z" fill="#4caf50" opacity="0.9"/>
-                                                <path id="map-biceps-r" d="M78 58 L68 58 L70 85 L78 83 Z" fill="#4caf50" opacity="0.9"/>
-                                                <path id="map-antebraco" d="M18 86 L30 88 L27 115 L18 112 Z" fill="#4caf50" opacity="0.9"/>
-                                                <path id="map-antebraco-r" d="M82 86 L70 88 L73 115 L82 112 Z" fill="#4caf50" opacity="0.9"/>
-                                                <path id="map-abdomen" d="M38 88 Q50 86 62 88 L60 125 Q50 130 40 125 Z" fill="#4caf50" opacity="0.9"/>
-                                                <path id="map-quadriceps" d="M40 132 L49 132 L47 185 L38 180 Z" fill="#4caf50" opacity="0.9"/>
-                                                <path id="map-quadriceps-r" d="M60 132 L51 132 L53 185 L62 180 Z" fill="#4caf50" opacity="0.9"/>
-                                            </svg>
-                                            <svg width="35" height="100" viewBox="0 0 100 250">
-                                                <circle cx="50" cy="20" r="15" fill="#4caf50"/>
-                                                <path id="map-trapezio" d="M35 38 Q50 35 65 38 L72 58 L28 58 Z" fill="#4caf50" opacity="0.3"/>
-                                                <path id="map-dorsal" d="M30 60 L70 60 L62 95 Q50 100 38 95 Z" fill="#4caf50" opacity="0.3"/>
-                                                <path id="map-triceps" d="M22 60 L30 60 L28 88 L22 85 Z" fill="#4caf50" opacity="0.3"/>
-                                                <path id="map-gluteos" d="M36 102 L64 102 L60 135 L40 135 Z" fill="#4caf50" opacity="0.3"/>
-                                                <path id="map-posterior" d="M39 138 L48 138 L46 185 L38 180 Z" fill="#4caf50" opacity="0.3"/>
-                                                <path id="map-panturrilhas" d="M38 190 L46 190 L44 230 L39 225 Z" fill="#4caf50" opacity="0.3"/>
-                                            </svg>
-                                        </div>
-                                    </div>
-
                                     <div style="display: flex; flex-direction: column; gap: 4px;">
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="trapezio" onchange="atualizarMapaAnatomico()"> Trapézio</label>
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="infraespinhal" onchange="atualizarMapaAnatomico()"> Infra</label>
@@ -1750,20 +1821,46 @@
                                         <label><input type="checkbox" class="chk-musculo" data-musculo="panturrilhas" checked onchange="atualizarMapaAnatomico()"> Panturrilha</label>
                                     </div>
                                 </div>
+
+                                <!-- Bonecos Anatômicos com Altura Reduzida e Proporcional -->
+                                <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); padding: 8px; text-align: center; border-radius: 8px; margin-top: 12px; display: flex; justify-content: center; gap: 15px;">
+                                    <svg width="30" height="90" viewBox="0 0 100 250">
+                                        <circle cx="50" cy="20" r="15" fill="#4caf50"/>
+                                        <path id="map-deltoides" d="M30 40 Q50 35 70 40 L65 55 L35 55 Z" fill="#4caf50" opacity="0.9"/>
+                                        <path id="map-peitoral" d="M35 58 Q50 55 65 58 L63 85 Q50 90 37 85 Z" fill="#4caf50" opacity="0.9"/>
+                                        <path id="map-biceps" d="M22 58 L32 58 L30 85 L22 83 Z" fill="#4caf50" opacity="0.9"/>
+                                        <path id="map-biceps-r" d="M78 58 L68 58 L70 85 L78 83 Z" fill="#4caf50" opacity="0.9"/>
+                                        <path id="map-antebraco" d="M18 86 L30 88 L27 115 L18 112 Z" fill="#4caf50" opacity="0.9"/>
+                                        <path id="map-antebraco-r" d="M82 86 L70 88 L73 115 L82 112 Z" fill="#4caf50" opacity="0.9"/>
+                                        <path id="map-abdomen" d="M38 88 Q50 86 62 88 L60 125 Q50 130 40 125 Z" fill="#4caf50" opacity="0.9"/>
+                                        <path id="map-quadriceps" d="M40 132 L49 132 L47 185 L38 180 Z" fill="#4caf50" opacity="0.9"/>
+                                        <path id="map-quadriceps-r" d="M60 132 L51 132 L53 185 L62 180 Z" fill="#4caf50" opacity="0.9"/>
+                                    </svg>
+                                    <svg width="30" height="90" viewBox="0 0 100 250">
+                                        <circle cx="50" cy="20" r="15" fill="#4caf50"/>
+                                        <path id="map-trapezio" d="M35 38 Q50 35 65 38 L72 58 L28 58 Z" fill="#4caf50" opacity="0.3"/>
+                                        <path id="map-dorsal" d="M30 60 L70 60 L62 95 Q50 100 38 95 Z" fill="#4caf50" opacity="0.3"/>
+                                        <path id="map-triceps" d="M22 60 L30 60 L28 88 L22 85 Z" fill="#4caf50" opacity="0.3"/>
+                                        <path id="map-gluteos" d="M36 102 L64 102 L60 135 L40 135 Z" fill="#4caf50" opacity="0.3"/>
+                                        <path id="map-posterior" d="M39 138 L48 138 L46 185 L38 180 Z" fill="#4caf50" opacity="0.3"/>
+                                        <path id="map-panturrilhas" d="M38 190 L46 190 L44 230 L39 225 Z" fill="#4caf50" opacity="0.3"/>
+                                    </svg>
+                                </div>
                             </div>
 
+                            <!-- Nível e Divisão (Lado a Lado Compacto) -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                                 <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                    <div style="font-weight: 700; font-size: 0.78rem; margin-bottom: 8px; color: var(--primary-light);">⚙️ NÍVEL</div>
-                                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem;">
+                                    <div style="font-weight: 700; font-size: 0.75rem; margin-bottom: 6px; color: var(--primary-light);">⚙️ NÍVEL</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.75rem;">
                                         <label><input type="radio" name="tr_nivel" checked> Iniciante</label>
                                         <label><input type="radio" name="tr_nivel"> Intermediário</label>
                                         <label><input type="radio" name="tr_nivel"> Avançado</label>
                                     </div>
                                 </div>
                                 <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 12px; border-radius: 12px;">
-                                    <div style="font-weight: 700; font-size: 0.78rem; margin-bottom: 8px; color: var(--primary-light);">🔤 DIVISÃO</div>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.75rem;">
+                                    <div style="font-weight: 700; font-size: 0.75rem; margin-bottom: 6px; color: var(--primary-light);">🔤 DIVISÃO</div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 0.73rem;">
                                         <label><input type="radio" name="tr_divisao"> Full</label>
                                         <label><input type="radio" name="tr_divisao"> A</label>
                                         <label><input type="radio" name="tr_divisao"> AB</label>
@@ -1776,38 +1873,26 @@
 
                         </div>
 
+                        <!-- Coluna da Direita: Ficha de Treino e Bioimpedância -->
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                             
-                            <!-- MONTAGEM DAS FICHAS DE TREINO (A, B, C...) -->
-                            <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 15px; border-radius: 12px; position: relative;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-                                    <h4 style="font-size: 0.92rem; color: var(--text-color);"><i class="fa-solid fa-dumbbell"></i> Montagem de Exercícios</h4>
-                                    <button type="button" onclick="abrirSeletorExerciciosFicha()" class="btn-action-bar" style="background: var(--primary); color:#fff;">➕ Adicionar</button>
+                            <!-- Montagem dos Exercícios por Ficha -->
+                            <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 18px; border-radius: 12px; position: relative;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                                    <h4 style="font-size: 0.95rem; color: var(--text-color); margin: 0;"><i class="fa-solid fa-dumbbell"></i> Montagem de Exercícios</h4>
+                                    <button type="button" onclick="abrirSeletorExerciciosFicha()" class="btn-action-bar" style="background: var(--primary); color:#fff; padding: 6px 14px;">➕ Adicionar Exercício</button>
                                 </div>
 
-                                <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
-                                    <button type="click" onclick="mudarAbaTreinoFicha('A')" class="btn-action-bar btn-treino-aba active" id="tabTreinoA">Treino A</button>
-                                    <button type="click" onclick="mudarAbaTreinoFicha('B')" class="btn-action-bar btn-treino-aba" id="tabTreinoB">Treino B</button>
-                                    <button type="click" onclick="mudarAbaTreinoFicha('C')" class="btn-action-bar btn-treino-aba" id="tabTreinoC">Treino C</button>
-                                    <button type="click" onclick="mudarAbaTreinoFicha('D')" class="btn-action-bar btn-treino-aba" id="tabTreinoD">Treino D</button>
+                                <!-- Abas de Seleção de Treino (A, B, C, D) -->
+                                <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+                                    <button type="button" onclick="mudarAbaTreinoFicha('A')" class="btn-action-bar btn-treino-aba active" id="tabTreinoA">Treino A</button>
+                                    <button type="button" onclick="mudarAbaTreinoFicha('B')" class="btn-action-bar btn-treino-aba" id="tabTreinoB">Treino B</button>
+                                    <button type="button" onclick="mudarAbaTreinoFicha('C')" class="btn-action-bar btn-treino-aba" id="tabTreinoC">Treino C</button>
+                                    <button type="button" onclick="mudarAbaTreinoFicha('D')" class="btn-action-bar btn-treino-aba" id="tabTreinoD">Treino D</button>
                                 </div>
 
-                                <!-- Modal de Vídeo do Aluno -->
-                                <div id="modalVideoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; padding: 15px;">
-                                    <div style="width: 100%; max-width: 650px; background: #1e1e1e; padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative;">
-
-                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                            <h4 id="videoModalTitulo" style="font-size: 1rem; color: #fff; margin: 0;">Como Executar</h4>
-                                            <button type="button" onclick="fecharModalVideoAluno()" style="background: transparent; border: none; color: #9e9e9e; font-size: 1.2rem; cursor: pointer;">✕</button>
-                                        </div>
-
-                                        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px;">
-                                            <iframe id="iframeVideoYoutube" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="" title="Vídeo de Execução" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="table-container" style="max-height: 250px; overflow-y: auto;">
+                                <!-- Tabela de Exercícios da Ficha Atual -->
+                                <div class="table-container" style="max-height: 280px; overflow-y: auto;">
                                     <table>
                                         <thead>
                                             <tr>
@@ -1826,9 +1911,10 @@
                                 </div>
                             </div>
 
-                            <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 15px; border-radius: 12px;">
-                                <h4 style="font-size: 0.9rem; color: var(--text-color); margin-bottom: 12px;"><i class="fa-solid fa-scale-balanced"></i> Avaliação e Bioimpedância</h4>
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px;">
+                            <!-- Dados Rápidos de Bioimpedância no Treino -->
+                            <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 18px; border-radius: 12px;">
+                                <h4 style="font-size: 0.9rem; color: var(--text-color); margin-bottom: 12px;"><i class="fa-solid fa-scale-balanced"></i> Dados Antropométricos Rápidos</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px;">
                                     <div>
                                         <label class="form-label">Peso (kg)</label>
                                         <input type="number" step="0.1" id="fiel_peso" class="form-control" placeholder="75.5">
@@ -1907,6 +1993,19 @@
                 </div>
             </div>
 
+            <!-- MODAL DE VÍDEO DO ALUNO -->
+            <div id="modalVideoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; padding: 15px;">
+                <div style="width: 100%; max-width: 650px; background: #1e1e1e; padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 id="videoModalTitulo" style="font-size: 1rem; color: #fff; margin: 0;">Como Executar</h4>
+                        <button type="button" onclick="fecharModalVideoAluno()" style="background: transparent; border: none; color: #9e9e9e; font-size: 1.2rem; cursor: pointer;">✕</button>
+                    </div>
+                    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px;">
+                        <iframe id="iframeVideoYoutube" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="" title="Vídeo de Execução" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+
             <style>
             .switch-container { position: relative; display: inline-block; width: 100%; cursor: pointer; }
             .switch-container input { opacity: 0; width: 0; height: 0; }
@@ -1972,7 +2071,6 @@
                 });
             };
 
-            // SELETOR DE EXERCÍCIOS BUSCANDO DIRETAMENTE DO SUPABASE
             window.abrirSeletorExerciciosFicha = async function() {
                 try {
                     let { data: biblioteca, error } = await _supabase.from('biblioteca_exercicios').select('*');
@@ -2234,7 +2332,8 @@
                         aluno_id: alunoId,
                         dia: 'Geral',
                         objetivo: `${objetivo} - ${objetivoDesc}`,
-                        conteudo: JSON.stringify(payloadTreinoCompleto)
+                        conteudo: JSON.stringify(payloadTreinoCompleto),
+                        created_at: new Date().toISOString() // Força a atualização do timestamp para o lembrete de 3 meses
                     }, { onConflict: 'aluno_id,dia' });
 
                     if (erroTreino) throw new Error("Erro ao salvar treino: " + erroTreino.message);
@@ -2250,13 +2349,13 @@
                     const massa = massaVal && massaVal.trim() !== "" ? parseFloat(massaVal) : null;
 
                     if (peso !== null || altura !== null || gordura !== null || massa !== null) {
-                        const { error: erroAval } = await _supabase.from('avaliacoes_fisicas').upsert({
+                        const { error: erroAval } = await _supabase.from('avaliacoes_fisicas').insert([{
                             aluno_id: alunoId,
                             peso: peso,
                             altura: altura,
                             gordura: gordura,
                             massa: massa
-                        }, { onConflict: 'aluno_id' });
+                        }]);
 
                         if (erroAval) throw new Error("Erro ao salvar avaliação: " + erroAval.message);
                     }
@@ -2264,7 +2363,6 @@
                     window.showToast("Plano de Treino completo e Avaliação salvos com sucesso!");
                     fecharModal('modalTreinoFiel');
                     
-                    // Atualiza a tabela de lembretes instantaneamente após salvar o treino
                     window.carregarLembretesFixosAdmin();
                     
                 } catch (err) {
@@ -2464,21 +2562,28 @@
         let totalAtivos = 0;
         alunos.forEach(a => {
             if (a.status === 'Ativo') totalAtivos++;
-            const badgeClass = a.status === 'Ativo' ? 'status-ativo' : 'status-pendente';
+            let badgeClass = 'status-pendente';
+            if (a.status === 'Ativo') badgeClass = 'status-ativo';
+            if (a.status === 'Bloqueado') badgeClass = 'status-bloqueado';
             
             let botoesStatusAprovar = '';
             if (a.status === 'Pendente') {
                 botoesStatusAprovar = `<button onclick="mudarStatusAluno('${a.id}', 'Ativo')" class="btn-action-bar btn-success" style="background:var(--success); color:#fff; margin-right:4px;" title="Aprovar Cadastro">✅</button>`;
             }
 
-            let botoesEspecificos = '';
-            if (nivelLogado !== 'professor') {
-                botoesEspecificos += `<button onclick="enviarLinkSenhaAluno('${a.email}')" class="btn-action-bar" style="background:var(--warning); color:#000; margin-right:4px;" title="Enviar Link">🔑</button>`;
-            }
+            const isAtivo = a.status === 'Ativo';
+            const toggleSwitch = `
+                <label class="switch-status" title="${isAtivo ? 'Bloquear Aluno' : 'Ativar Aluno'}">
+                    <input type="checkbox" ${isAtivo ? 'checked' : ''} onchange="toggleStatusAluno('${a.id}', this)">
+                    <span class="slider-status"></span>
+                </label>
+            `;
 
+            let botoesEspecificos = '';
             if (nivelLogado !== 'recepcao') {
                 botoesEspecificos += `<button onclick="abrirModalTreinoFiel('${a.id}', '${a.nome}')" class="btn-action-bar" style="background:#ff5722; color:#fff; margin-right:4px;" title="Plano de Treino">🏋️</button>`;
                 botoesEspecificos += `<button onclick="abrirModalAvaliacaoFisicaCompleta('${a.id}', '${a.nome}')" class="btn-action-bar" style="background: var(--primary); color: #fff; margin-right:4px;" title="Avaliação Corporal"><i class="fa-solid fa-scale-balanced"></i></button>`;
+                botoesEspecificos += `<button onclick="abrirModalHistoricoAvaliacoes('${a.id}', '${a.nome}')" class="btn-action-bar" style="background: var(--success); color: #fff; margin-right:4px;" title="Histórico de Avaliações"><i class="fa-solid fa-chart-line"></i></button>`;
             }
 
             tbody.innerHTML += `
@@ -2488,8 +2593,9 @@
                     <td>${a.tel}</td>
                     <td>${a.plano || 'Sem Plano'}</td>
                     <td><span class="status-badge ${badgeClass}">${a.status || 'Pendente'}</span></td>
-                    <td style="text-align: right; white-space: nowrap;">
+                    <td style="text-align: right; white-space: nowrap; display: flex; justify-content: flex-end; align-items: center; gap: 6px;">
                         ${botoesStatusAprovar}
+                        ${toggleSwitch}
                         ${botoesEspecificos}
                         <button onclick="editarAluno('${a.id}')" class="btn-action-bar" title="Editar">✏️</button>
                         <button onclick="removerAluno('${a.id}')" class="btn-action-bar btn-danger" title="Excluir">🗑️</button>
@@ -2499,6 +2605,32 @@
         });
         const countEl = document.getElementById('countAlunos');
         if (countEl) countEl.textContent = totalAtivos;
+    };
+
+    window.toggleStatusAluno = async function(alunoId, checkbox) {
+        const novoStatus = checkbox.checked ? 'Ativo' : 'Bloqueado';
+        
+        try {
+            const { error } = await _supabase
+                .from('alunos')
+                .update({ status: novoStatus })
+                .eq('id', alunoId);
+
+            if (error) throw error;
+
+            const row = checkbox.closest('tr');
+            if (row) {
+                const statusBadge = row.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.textContent = novoStatus;
+                    statusBadge.className = `status-badge ${novoStatus === 'Ativo' ? 'status-ativo' : 'status-bloqueado'}`;
+                }
+            }
+            window.showToast(`Aluno ${novoStatus.toLowerCase()} com sucesso!`);
+        } catch (err) {
+            alert('Erro ao atualizar status do aluno: ' + err.message);
+            checkbox.checked = !checkbox.checked;
+        }
     };
 
     window.mudarStatusAluno = async function(id, novoStatus) {
@@ -3081,7 +3213,6 @@
         window.showToast("Status atualizado!");
     };
 
-    // NOVAS FUNÇÕES DE BACKUP INTEGRAL DO SISTEMA
     window.executarBackupPaginasPC = function() {
         try {
             const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
@@ -3136,6 +3267,12 @@
         if (el) {
             const agora = new Date();
             el.textContent = `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`;
+        }
+    };
+
+    window.verificarVencimentosTreinos3Meses = function() {
+        if (typeof window.carregarLembretesFixosAdmin === 'function') {
+            window.carregarLembretesFixosAdmin();
         }
     };
 
@@ -3203,7 +3340,14 @@
         if (btnLogout) {
             btnLogout.addEventListener('click', () => {
                 sessionStorage.removeItem('corpofitness_logado');
-                window.location.reload();
+                localStorage.removeItem('corpofitness_logado');
+                if (mainAppContainer) mainAppContainer.style.display = 'none';
+                if (loginOverlay) loginOverlay.style.display = 'flex';
+                const userInp = document.getElementById('loginUser');
+                const passInp = document.getElementById('loginPass');
+                if (userInp) userInp.value = '';
+                if (passInp) passInp.value = '';
+                window.showToast("Sessão encerrada com sucesso!");
             });
         }
 
@@ -3225,6 +3369,23 @@
             iniciarPainel();
 
             window.verificarVencimentosTreinos3Meses();
+        }
+
+        const inputBusca = document.getElementById('inputBuscaAluno');
+        if (inputBusca) {
+            inputBusca.addEventListener('input', () => {
+                const termo = inputBusca.value.toLowerCase().trim();
+                const linhas = document.querySelectorAll('#tabelaAlunosBody tr');
+                
+                linhas.forEach(linha => {
+                    const textoLinha = linha.textContent.toLowerCase();
+                    if (textoLinha.includes(termo)) {
+                        linha.style.display = '';
+                    } else {
+                        linha.style.display = 'none';
+                    }
+                });
+            });
         }
 
         function montarMenuLateralPorNivel(nivel) {
@@ -3282,7 +3443,6 @@
                     const targetTab = document.getElementById(`tab-${target}`);
                     if (targetTab) targetTab.classList.add('active');
 
-                    // Fecha o menu sidebar em telas menores ao clicar em um link
                     if(window.innerWidth <= 900) {
                         appSidebar.classList.remove('open');
                         sidebarOverlay.classList.remove('active');
@@ -3895,14 +4055,6 @@
         }
 
         try {
-            const { data: existente, error: erroBusca } = await _supabase
-                .from('avaliacoes_fisicas')
-                .select('id')
-                .eq('aluno_id', alunoId)
-                .maybeSingle();
-
-            if (erroBusca) throw erroBusca;
-
             const dadosPayload = {
                 aluno_id: alunoId,
                 peso: peso,
@@ -3911,20 +4063,23 @@
                 conteudo_detalhado: JSON.stringify(pacoteDetalhado)
             };
 
-            let resultado;
+            // Sempre insere um novo registro para criar um histórico de avaliações
+            const { error: insertError } = await _supabase
+                .from('avaliacoes_fisicas')
+                .insert([dadosPayload]);
 
-            if (existente && existente.id) {
-                resultado = await _supabase
-                    .from('avaliacoes_fisicas')
-                    .update(dadosPayload)
-                    .eq('id', existente.id);
-            } else {
-                resultado = await _supabase
-                    .from('avaliacoes_fisicas')
-                    .insert([dadosPayload]);
+            if (insertError) throw insertError;
+
+            // Adicionado para resetar o timer de 3 meses do treino ao salvar uma nova avaliação
+            const { error: erroUpdateTreino } = await _supabase
+                .from('treinos_alunos')
+                .update({ created_at: new Date().toISOString() })
+                .eq('aluno_id', alunoId);
+
+            if (erroUpdateTreino) {
+                // Não interrompe o fluxo, apenas avisa no console se falhar.
+                console.warn("Aviso: não foi possível atualizar o timestamp do treino do aluno, mas a avaliação foi salva.", erroUpdateTreino);
             }
-
-            if (resultado.error) throw resultado.error;
 
             window.showToast("Avaliação Corporal salva e atualizada com sucesso!");
             fecharModalAvaliacaoCorporal();
@@ -3939,6 +4094,194 @@
         } catch(err) {
             console.error("Erro crítico ao salvar avaliação no Supabase: ", err);
             alert("Erro ao atualizar o banco de dados: " + (err.message || JSON.stringify(err)));
+        }
+    };
+
+    let chartInstance = null;
+    let chartGorduraInstance = null;
+
+    window.abrirModalHistoricoAvaliacoes = async function(alunoId, alunoNome) {
+        const modal = document.getElementById('modalHistoricoAvaliacoes');
+        const tbody = document.getElementById('tabelaHistoricoAvaliacoesBody');
+        const titulo = document.getElementById('tituloHistoricoAvaliacoes');
+        const btnExportar = document.getElementById('btnExportarPDFHistorico'); // CORREÇÃO: Declaração da variável aqui
+        
+        if (!modal || !tbody || !titulo) return;
+
+        titulo.textContent = `Histórico de Avaliações: ${alunoNome}`;
+        if (btnExportar) {
+            btnExportar.onclick = () => exportarHistoricoPDF(alunoId, alunoNome);
+        }
+
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--gray);">Carregando histórico...</td></tr>';
+        modal.style.display = 'flex';
+
+        try {
+            const { data: avaliacoes, error } = await _supabase
+                .from('avaliacoes_fisicas')
+                .select('*')
+                .eq('aluno_id', alunoId)
+                .order('created_at', { ascending: true }); // Ascendente para o gráfico
+
+            if (error) throw error;
+
+            const chartsContainer = document.getElementById('chartsContainer');
+            if (!avaliacoes || avaliacoes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--gray);">Nenhum histórico de avaliação encontrado para este aluno.</td></tr>';
+                if (chartsContainer) chartsContainer.style.display = 'none';
+                return;
+            }
+
+            if (chartsContainer) chartsContainer.style.display = 'grid';
+            tbody.innerHTML = '';
+            // Inverte para a tabela mostrar o mais recente primeiro
+            avaliacoes.slice().reverse().forEach(aval => {
+                const dataFormatada = new Date(aval.created_at).toLocaleDateString('pt-BR');
+                const peso = aval.peso || '-';
+                const altura = aval.altura || '-';
+                let imc = '-';
+                if (peso !== '-' && altura > 0) {
+                    imc = (peso / (altura * altura)).toFixed(2);
+                }
+                const gordura = aval.gordura ? `${aval.gordura.toFixed(1)}` : '-';
+
+                tbody.innerHTML += `<tr><td><strong>${dataFormatada}</strong></td><td>${peso}</td><td>${altura}</td><td>${imc}</td><td>${gordura}</td></tr>`;
+            });
+
+            // --- Lógica do Gráfico ---
+            const ctxPeso = document.getElementById('graficoEvolucaoPeso').getContext('2d');
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            const labels = avaliacoes.map(a => new Date(a.created_at).toLocaleDateString('pt-BR'));
+            const pesos = avaliacoes.map(a => a.peso || null);
+
+            chartInstance = new Chart(ctxPeso, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Evolução do Peso (kg)',
+                        data: pesos,
+                        borderColor: 'var(--primary)',
+                        backgroundColor: 'rgba(30, 136, 229, 0.2)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: 'var(--primary-light)',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        spanGaps: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: false, ticks: { color: 'var(--gray)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { ticks: { color: 'var(--gray)' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    },
+                    plugins: { legend: { labels: { color: 'var(--text-color)' } } }
+                }
+            });
+
+            // --- Lógica do Gráfico de Gordura ---
+            const gorduraChartDiv = document.getElementById('gorduraChartContainer');
+            const ctxGordura = document.getElementById('graficoEvolucaoGordura').getContext('2d');
+            if (chartGorduraInstance) {
+                chartGorduraInstance.destroy();
+            }
+
+            const gorduras = avaliacoes.map(a => a.gordura || null);
+
+            if (gorduras.some(g => g !== null)) {
+                if (gorduraChartDiv) gorduraChartDiv.style.display = 'block';
+                if (chartsContainer) chartsContainer.style.gridTemplateColumns = '1fr 1fr';
+
+                chartGorduraInstance = new Chart(ctxGordura, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Evolução do % de Gordura',
+                            data: gorduras,
+                            borderColor: 'var(--warning)',
+                            backgroundColor: 'rgba(255, 152, 0, 0.2)',
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: '#ffb74d',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            spanGaps: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: false, ticks: { color: 'var(--gray)', callback: value => value + '%' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                            x: { ticks: { color: 'var(--gray)' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                        },
+                        plugins: { 
+                            legend: { labels: { color: 'var(--text-color)' } },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => `${context.dataset.label || ''}: ${context.parsed.y !== null ? context.parsed.y.toFixed(1) + '%' : 'N/A'}`
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                if (gorduraChartDiv) gorduraChartDiv.style.display = 'none';
+                if (chartsContainer) chartsContainer.style.gridTemplateColumns = '1fr';
+            }
+        } catch (err) {
+            console.error("Erro ao carregar histórico de avaliações:", err);
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger);">Erro ao carregar histórico: ${err.message}</td></tr>`;
+        }
+    };
+
+    window.exportarHistoricoPDF = async function(alunoId, alunoNome) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        try {
+            const { data: avaliacoes, error } = await _supabase
+                .from('avaliacoes_fisicas')
+                .select('*')
+                .eq('aluno_id', alunoId)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            doc.setFontSize(18);
+            doc.text(`Histórico de Avaliações - ${alunoNome}`, 14, 22);
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Relatório gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 30);
+
+            if (!avaliacoes || avaliacoes.length === 0) {
+                doc.text("Nenhum histórico de avaliação encontrado para este aluno.", 14, 40);
+            } else {
+                const tableColumn = ["Data", "Peso (kg)", "Altura (m)", "IMC", "% Gordura"];
+                const tableRows = avaliacoes.map(aval => {
+                    const dataFormatada = new Date(aval.created_at).toLocaleDateString('pt-BR');
+                    const peso = aval.peso || '-';
+                    const altura = aval.altura || '-';
+                    const imc = (peso && altura) ? (peso / (altura * altura)).toFixed(2) : '-';
+                    const gordura = aval.gordura ? `${aval.gordura.toFixed(1)}` : '-';
+                    return [dataFormatada, peso, altura, imc, gordura];
+                });
+
+                doc.autoTable({ head: [tableColumn], body: tableRows, startY: 35, theme: 'striped', headStyles: { fillColor: [30, 136, 229] } });
+            }
+
+            doc.save(`historico_avaliacoes_${alunoNome.replace(/\s+/g, '_').toLowerCase()}.pdf`);
+            window.showToast("PDF gerado com sucesso!");
+
+        } catch (err) {
+            alert("Erro ao gerar PDF: " + err.message);
         }
     };
 

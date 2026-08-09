@@ -18,10 +18,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
     <script>
-        // Configuração do Cliente Supabase
         const NEXT_PUBLIC_SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
         const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
-
         const _supabase = supabase.createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
     </script>
 
@@ -671,6 +669,7 @@
             -moz-appearance: textfield;
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -885,6 +884,129 @@
                                 </thead>
                                 <tbody id="tabelaAlunosBody">
                                     <tr><td colspan="6" style="text-align: center; color: var(--gray);">Carregando alunos...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA: BIBLIOTECA DE EXERCÍCIOS -->
+                <div id="tab-biblioteca" class="tab-content">
+                    <div class="page-header">
+                        <h1>Biblioteca de Exercícios</h1>
+                        <p>Cadastre e gerencie a lista completa de exercícios e vídeos de execução para montagem das fichas de treino.</p>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <button type="button" class="btn" id="btnAbrirNovoExercicio" onclick="abrirFormExercicio()">➕ Cadastrar Novo Exercício</button>
+                    </div>
+
+                    <div class="card" id="cardFormExercicio" style="display: none; margin-bottom: 25px;">
+                        <div class="card-header">
+                            <h3 id="tituloFormExercicio">Cadastrar Exercício</h3>
+                            <button type="button" class="btn-action-bar" onclick="fecharFormExercicio()">✕ Fechar</button>
+                        </div>
+                        <form id="formExercicioDinamico">
+                            <input type="hidden" id="exercicioId" value="-1">
+                            <input type="hidden" id="exercicioVideo">
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Nome do Exercício</label>
+                                    <input type="text" id="exercicioNome" class="form-control" required placeholder="Ex: Supino Reto com Barra">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Grupo Muscular Principal</label>
+                                    <select id="exercicioGrupo" class="form-control" required>
+                                        <option value="Peitoral">Peitoral</option>
+                                        <option value="Dorsal">Dorsal / Costas</option>
+                                        <option value="Quadríceps">Quadríceps</option>
+                                        <option value="Posterior">Posterior de Coxa</option>
+                                        <option value="Deltóides">Deltóides / Ombro</option>
+                                        <option value="Bíceps">Bíceps</option>
+                                        <option value="Tríceps">Tríceps</option>
+                                        <option value="Glúteos">Glúteos</option>
+                                        <option value="Panturrilha">Panturrilha</option>
+                                        <option value="Abdômen">Abdômen</option>
+                                        <option value="Outros">Outros / Geral</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Equipamento</label>
+                                    <select id="exercicioEquipamento" class="form-control" required>
+                                        <option value="Barra">Barra</option>
+                                        <option value="Halteres">Halteres</option>
+                                        <option value="Máquina">Máquina / Polia</option>
+                                        <option value="Livre">Peso Corporal / Livre</option>
+                                        <option value="Elasticos">Elásticos / Banners</option>
+                                        <option value="Outros">Outros</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tipo de Movimento</label>
+                                    <select id="exercicioTipo" class="form-control" required>
+                                        <option value="Composto">Composto (Multiarticular)</option>
+                                        <option value="Isolado">Isolado (Monoarticular)</option>
+                                        <option value="Isometria">Isometria</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group full" style="background: var(--dark-2); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                                    <label class="form-label" style="color: var(--primary-light); font-weight: 700;">Vídeo Demonstrativo de Execução</label>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px; @media(min-width: 600px){grid-template-columns: 1fr 1fr;}">
+                                        <div>
+                                            <span style="font-size: 0.75rem; color: var(--gray); display: block; margin-bottom: 4px;">Enviar arquivo de vídeo (Upload direto):</span>
+                                            <input type="file" id="exercicioVideoFile" class="form-control" accept="video/mp4,video/webm,video/ogg,video/quicktime" onchange="previewVideoUpload(this)">
+                                        </div>
+                                        <div>
+                                            <span style="font-size: 0.75rem; color: var(--gray); display: block; margin-bottom: 4px;">Ou insira URL/Link (YouTube/GitHub/Vimeo):</span>
+                                            <div style="display: flex; gap: 6px;">
+                                                <input type="url" id="exercicioVideoUrl" class="form-control" placeholder="https://...">
+                                                <button type="button" onclick="usarLinkVideoExercicio()" class="btn-action-bar" style="background: var(--primary); color: #fff;">Usar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="uploadStatus" style="font-size: 0.8rem; margin-top: 8px; color: var(--primary-light); font-weight: 600;"></div>
+
+                                    <div id="videoPreviewContainer" style="display: none; margin-top: 12px; gap: 15px; align-items: center; background: var(--dark-card); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                                        <video id="videoPreview" controls style="max-width: 180px; max-height: 100px; border-radius: 6px;"></video>
+                                        <div>
+                                            <strong id="videoFileName" style="font-size: 0.82rem; display: block; color: var(--text-color);"></strong>
+                                            <span id="videoFileSize" style="font-size: 0.75rem; color: var(--gray);"></span>
+                                            <br>
+                                            <button type="button" onclick="limparVideoExercicio()" class="btn-action-bar btn-danger" style="margin-top: 6px;">🗑️ Remover Vídeo</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="btnSalvarExercicio" class="btn">Salvar Exercício no Supabase</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Biblioteca de Exercícios</h3>
+                            <div class="form-group" style="margin-bottom: 0; max-width: 300px; margin-left: auto;">
+                                <input type="text" id="inputBuscaExercicio" class="form-control" placeholder="🔎 Buscar exercício...">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Exercício</th>
+                                        <th>Grupo Muscular</th>
+                                        <th>Equipamento</th>
+                                        <th>Tipo</th>
+                                        <th>Vídeo</th>
+                                        <th style="text-align: right;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaBibliotecaBody">
+                                    <tr><td colspan="6" style="text-align: center; color: var(--gray);">Carregando biblioteca...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -2016,6 +2138,89 @@
             </style>
 
             <script>
+
+window.adicionarExercicioDiretoFicha = function(nomeExercicio, videoUrl = '') {
+    try {
+        if (!nomeExercicio) {
+            alert("Erro: Nome do exercício não informado.");
+            return;
+        }
+
+        // Se o vídeo não foi passado diretamente, tenta buscar na biblioteca global
+        let videoUrlFinal = videoUrl || '';
+        
+        if (!videoUrlFinal && typeof window.bibliotecaGlobalAdmin !== 'undefined' && Array.isArray(window.bibliotecaGlobalAdmin)) {
+            const exercicioEncontrado = window.bibliotecaGlobalAdmin.find(item => item.nome === nomeExercicio);
+            if (exercicioEncontrado) {
+                videoUrlFinal = exercicioEncontrado.video_url || '';
+            }
+        }
+
+        // Se ainda não tem vídeo, tenta buscar diretamente do Supabase
+        if (!videoUrlFinal) {
+            // Busca assíncrona, mas como estamos em uma função síncrona, fazemos uma busca rápida
+            // Nota: Isso pode ser melhorado com async/await, mas mantemos compatibilidade
+            _supabase.from('biblioteca_exercicios')
+                .select('video_url')
+                .eq('nome', nomeExercicio)
+                .single()
+                .then(({ data, error }) => {
+                    if (!error && data && data.video_url) {
+                        videoUrlFinal = data.video_url;
+                        // Atualiza o item já adicionado com o vídeo
+                        const blocoAtivo = treinoAtualLetra || 'A';
+                        const lista = exerciciosFichaMemoria[blocoAtivo] || [];
+                        const ultimoItem = lista[lista.length - 1];
+                        if (ultimoItem && ultimoItem.exercicio === nomeExercicio) {
+                            ultimoItem.video_url = videoUrlFinal;
+                            renderizarTabelaExerciciosFicha();
+                        }
+                    }
+                })
+                .catch(() => {});
+        }
+
+        // Solicita os parâmetros do exercício
+        const series = prompt("Número de séries:", "3") || "3";
+        const reps = prompt("Repetições (ex: 10-12):", "10-12") || "10-12";
+        const carga = prompt("Carga/Intensidade (ex: 50kg, A definir):", "A definir") || "A definir";
+        const metodo = prompt("Método (ex: Tradicional, Bi-set, etc.):", "Tradicional") || "Tradicional";
+
+        // Monta o objeto do exercício - AGORA COM VIDEO_URL
+        const novoItem = {
+            exercicio: nomeExercicio,
+            series: series,
+            reps: reps,
+            carga: carga,
+            metodo: metodo,
+            video_url: videoUrlFinal  // <-- ADICIONADO: o vídeo vai para o plano
+        };
+
+        // Adiciona no bloco ativo
+        const blocoAtivo = treinoAtualLetra || 'A';
+        if (!exerciciosFichaMemoria[blocoAtivo]) {
+            exerciciosFichaMemoria[blocoAtivo] = [];
+        }
+        exerciciosFichaMemoria[blocoAtivo].push(novoItem);
+
+        // Atualiza a tabela
+        renderizarTabelaExerciciosFicha();
+
+        // Fecha o modal de seleção
+        const modalSelecao = document.getElementById('modalSelecaoCompletaTreino');
+        if (modalSelecao) {
+            modalSelecao.remove();
+        }
+
+        const statusVideo = videoUrlFinal ? 'com vídeo' : 'sem vídeo';
+        window.showToast(`✅ Exercício "${nomeExercicio}" adicionado ao Treino ${blocoAtivo} ${statusVideo}!`);
+
+    } catch (err) {
+        console.error("Erro ao adicionar exercício na ficha:", err);
+        alert("Erro ao adicionar exercício: " + err.message);
+    }
+};
+
             window.showToast = function(mensagem, tipo = 'success') {
                 const toastDiv = document.createElement('div');
                 toastDiv.style.position = 'fixed';
@@ -2071,73 +2276,39 @@
                 });
             };
 
-            window.abrirSeletorExerciciosFicha = async function() {
-                try {
-                    let { data: biblioteca, error } = await _supabase.from('biblioteca_exercicios').select('*');
-                    
-                    if (error) {
-                        alert("Erro ao conectar com a tabela no Supabase: " + error.message);
-                        return;
-                    }
-
-                    if (!biblioteca || biblioteca.length === 0) {
-                        alert("A tabela 'biblioteca_exercicios' está vazia no Supabase. Insira os dados no painel do banco.");
-                        return;
-                    }
-
-                    const grupos = {};
-                    biblioteca.forEach(ex => {
-                        const grupo = ex.grupo_principal || 'Outros / Geral';
-                        if (!grupos[grupo]) grupos[grupo] = [];
-                        grupos[grupo].push(ex);
-                    });
-
-                    let conteudoHTML = '';
-                    for (const [grupoMuscular, exercicios] of Object.entries(grupos)) {
-                        conteudoHTML += `
-                            <div style="margin-bottom: 20px;">
-                                <h4 style="color: var(--primary-light); font-size: 0.95rem; border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase;">🔹 ${grupoMuscular}</h4>
-                        `;
-                        
-                        exercicios.forEach(ex => {
-                            conteudoHTML += `
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border: 1px solid var(--border); background: var(--dark-2); border-radius: 8px; margin-bottom: 6px; gap: 10px; flex-wrap: wrap;">
-                                    <div>
-                                        <strong style="color: var(--text-color); font-size: 0.88rem;">${ex.nome}</strong>
-                                        <span style="font-size: 0.72rem; color: var(--gray); display: block;">Equipamento: ${ex.equipamento || 'Livre'} | Tipo: ${ex.tipo || 'Composto'}</span>
-                                    </div>
-                                    <button type="button" onclick="adicionarExercicioDiretoFicha('${ex.nome}')" class="btn-action-bar" style="background: var(--primary); color: #fff;">➕ Adicionar</button>
-                                </div>
-                            `;
-                        });
-                        conteudoHTML += `</div>`;
-                    }
-
-                    let modalAntigo = document.getElementById('modalSelecaoCompletaTreino');
-                    if (modalAntigo) modalAntigo.remove();
-
-                    const divModal = document.createElement('div');
-                    divModal.id = 'modalSelecaoCompletaTreino';
-                    divModal.className = 'modal-overlay';
-                    divModal.style.display = 'flex';
-                    divModal.innerHTML = `
-                        <div class="modal-card" style="max-width: 800px; width: 100%;">
-                            <div class="card-header">
-                                <h3>🏋️ Biblioteca do Banco — Treino ${treinoAtualLetra}</h3>
-                                <button type="button" class="btn-action-bar" onclick="document.getElementById('modalSelecaoCompletaTreino').remove()">✕ Fechar</button>
-                            </div>
-                            <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 15px;">Dados carregados diretamente do Supabase. Clique em <strong>Adicionar</strong> para incluir no Treino ${treinoAtualLetra}.</p>
-                            <div style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
-                                ${conteudoHTML}
-                            </div>
-                        </div>
-                    `;
-                    document.body.appendChild(divModal);
-
-                } catch (err) {
-                    alert("Erro ao carregar do Supabase: " + err.message);
-                }
-            };
+            window.renderizarTabelaExerciciosFicha = function() {
+    const tbody = document.getElementById('tabelaExerciciosFichaBody');
+    if (!tbody) return;
+    
+    const lista = exerciciosFichaMemoria[treinoAtualLetra] || [];
+    
+    if (lista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">Nenhum exercício no Treino ${treinoAtualLetra}. Clique em Adicionar.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = '';
+    lista.forEach((item, index) => {
+        // Verifica se tem vídeo
+        const temVideo = item.video_url && item.video_url.trim() !== "";
+        const videoBtn = temVideo 
+            ? `<button onclick="abrirVideoDuvidaAdmin('${item.exercicio.replace(/'/g, "\\'")}', '${item.video_url.replace(/'/g, "\\'")}')" class="btn-action-bar" style="background: var(--primary); color:#fff; padding: 2px 8px; font-size: 0.7rem;">🎥</button>`
+            : `<span style="color: var(--gray); font-size: 0.7rem;">Sem vídeo</span>`;
+        
+        tbody.innerHTML += `
+            <tr>
+                <td><strong>${item.exercicio}</strong> ${videoBtn}</td>
+                <td>${item.series}</td>
+                <td>${item.reps}</td>
+                <td>${item.carga}</td>
+                <td><span style="font-size:0.75rem; color:var(--primary-light);">${item.metodo}</span></td>
+                <td style="text-align: right;">
+                    <button onclick="removerExercicioDaFicha(${index})" class="btn-action-bar btn-danger" style="padding: 2px 8px;">🗑️</button>
+                </td>
+            </tr>
+        `;
+    });
+};
 
             window.abrirModalExerciciosCatalogo = async function() {
                 document.getElementById('modalCatalogoExercicios').style.display = 'flex';
@@ -2162,25 +2333,74 @@
                 }
             };
 
-            window.adicionarExercicioDiretoFicha = function(nomeExercicio) {
-                const series = prompt("Séries (Ex: 4):", "4") || "4";
-                const reps = prompt("Repetições (Ex: 8-10):", "8-10") || "8-10";
-                const carga = prompt("Carga (Ex: 60kg):", "60kg") || "60kg";
-                const metodo = prompt("Método (Ex: Séries Tradicionais, Drop-set, Bi-set):", "Séries Tradicionais") || "Séries Tradicionais";
-                const videoUrl = prompt("Link do YouTube para o aluno (Opcional - ex: https://www.youtube.com/watch?v=XYZ ou deixe em branco):", "") || "";
+window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCompleto = null) {
+    try {
+        // Verifica se o nome foi passado
+        if (!nomeExercicio) {
+            alert("Erro: Nome do exercício não informado.");
+            return;
+        }
 
-                exerciciosFichaMemoria[treinoAtualLetra].push({ 
-                    exercicio: nomeExercicio, 
-                    series, 
-                    reps, 
-                    carga, 
-                    metodo,
-                    video_url: videoUrl 
-                });
-                
-                renderizarTabelaExerciciosFicha();
-                window.showToast(`Exercício adicionado ao Treino ${treinoAtualLetra} com suporte a vídeo!`);
-            };
+        // Se dados completos foram fornecidos, usa-os; senão, busca na biblioteca global
+        let exercicioEncontrado = null;
+        if (dadosExercicioCompleto && dadosExercicioCompleto.video_url) {
+            exercicioEncontrado = dadosExercicioCompleto;
+        } else if (typeof bibliotecaGlobalAdmin !== 'undefined' && Array.isArray(bibliotecaGlobalAdmin)) {
+            exercicioEncontrado = bibliotecaGlobalAdmin.find(item => item.nome === nomeExercicio);
+        }
+
+        // Busca o vídeo do exercício na biblioteca (se encontrado)
+        let videoUrlFinal = "";
+        if (exercicioEncontrado) {
+            videoUrlFinal = exercicioEncontrado.video_url || "";
+        } else {
+            // Tenta buscar na tabela do Supabase diretamente como fallback (caso a biblioteca global não esteja carregada)
+            // Isso é assíncrono, então vamos usar um fallback simples ou buscar diretamente
+            console.warn("Exercício não encontrado na biblioteca global. Buscando no Supabase...");
+            // Como não podemos fazer uma chamada assíncrona aqui facilmente, mantemos o vídeo vazio
+            // Mas o exercício ainda será adicionado.
+        }
+
+        // Solicita os parâmetros do exercício (séries, reps, carga, método)
+        // Usamos prompts para simplicidade, mas você pode adaptar para um modal mais elaborado
+        const series = prompt("Número de séries:", "3") || "3";
+        const reps = prompt("Repetições (ex: 10-12):", "10-12") || "10-12";
+        const carga = prompt("Carga/Intensidade (ex: 50kg, A definir):", "A definir") || "A definir";
+        const metodo = prompt("Método (ex: Tradicional, Bi-set, etc.):", "Tradicional") || "Tradicional";
+
+        // Monta o objeto do exercício com os parâmetros solicitados
+        // NÃO INCLUIMOS video_url para garantir que ele não seja salvo na ficha de treino
+        const novoItem = {
+            exercicio: nomeExercicio,
+            series: series,
+            reps: reps,
+            carga: carga,
+            metodo: metodo
+        };
+
+        // Adiciona no bloco ativo do treino (A, B, C ou D)
+        const blocoAtivo = treinoAtualLetra || 'A'; // Usa a variável global que controla a aba atual
+        if (!exerciciosFichaMemoria[blocoAtivo]) {
+            exerciciosFichaMemoria[blocoAtivo] = [];
+        }
+        exerciciosFichaMemoria[blocoAtivo].push(novoItem);
+
+        // Atualiza a tabela para refletir a adição
+        renderizarTabelaExerciciosFicha();
+
+        // Fecha o modal de seleção, se estiver aberto
+        const modalSelecao = document.getElementById('modalSelecaoCompletaTreino');
+        if (modalSelecao) {
+            modalSelecao.remove();
+        }
+
+        window.showToast(`Exercício "${nomeExercicio}" adicionado ao Treino ${blocoAtivo}!`);
+
+    } catch (err) {
+        console.error("Erro ao adicionar exercício na ficha:", err);
+        alert("Erro ao adicionar exercício: " + err.message);
+    }
+};
 
             window.removerExercicioDaFicha = function(index) {
                 exerciciosFichaMemoria[treinoAtualLetra].splice(index, 1);
@@ -2277,6 +2497,101 @@
                     <tr><td><strong>Myo-reps</strong></td><td>Técnica de ativação + mini-séries</td><td>Hipertrofia avançada</td></tr>
                 `;
             };
+
+            
+            window.abrirSeletorExerciciosFicha = async function() {
+                const modalId = 'modalSelecaoCompletaTreino';
+                let modalExistente = document.getElementById(modalId);
+                if (modalExistente) modalExistente.remove();
+
+                const div = document.createElement('div');
+                div.id = modalId;
+                div.className = 'modal-overlay';
+                div.style.cssText = 'display:flex; z-index:3600; align-items:center; justify-content:center;';
+                div.innerHTML = `
+                    <div class="modal-card" style="max-width:950px; width:100%; max-height:88vh; display:flex; flex-direction:column;">
+                        <div class="card-header">
+                            <h3>🏋️ Selecionar Exercício da Biblioteca</h3>
+                            <button type="button" class="btn-action-bar" onclick="document.getElementById('${modalId}').remove()">✕ Fechar</button>
+                        </div>
+                        <div style="margin-bottom:14px;">
+                            <input type="text" id="buscaExercicioSelecao" class="form-control" placeholder="🔎 Buscar exercício por nome ou grupo..." oninput="filtrarSelecaoExercicios()">
+                        </div>
+                        <div class="table-container" style="flex:1; overflow-y:auto; max-height:60vh;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Exercício</th>
+                                        <th>Grupo Muscular</th>
+                                        <th>Equipamento</th>
+                                        <th>Tipo</th>
+                                        <th style="text-align:right;">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodySelecaoExercicios">
+                                    <tr><td colspan="5" style="text-align:center; color:var(--gray);">Carregando biblioteca do Supabase...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top:12px; font-size:0.78rem; color:var(--gray);">
+                            💡 Dica: O vídeo do exercício permanece centralizado na Biblioteca. O plano de treino armazena apenas a prescrição (séries, reps, carga e método).
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(div);
+
+                try {
+                    const { data: exList, error } = await _supabase.from('biblioteca_exercicios').select('*').order('nome', {ascending:true});
+                    const tbody = document.getElementById('tbodySelecaoExercicios');
+                    if (!tbody) return;
+                    if (error || !exList || exList.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--warning);">Biblioteca vazia ou erro de conexão com o Supabase.</td></tr>';
+                        return;
+                    }
+                    window._cacheSelecaoExercicios = exList;
+                    renderizarSelecaoExercicios(exList);
+                } catch(err) {
+                    const tbody = document.getElementById('tbodySelecaoExercicios');
+                    if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--danger);">Erro ao carregar biblioteca: ' + (err.message || err) + '</td></tr>';
+                }
+            };
+
+            window.renderizarSelecaoExercicios = function(lista) {
+                const tbody = document.getElementById('tbodySelecaoExercicios');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                if (!lista || lista.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--gray);">Nenhum exercício encontrado.</td></tr>';
+                    return;
+                }
+                lista.forEach(e => {
+                    const temVideo = e.video_url && String(e.video_url).trim() !== '' ? '<span style="color:var(--primary-light); font-size:0.75rem;">🎥 Vídeo cadastrado</span>' : '<span style="color:var(--gray); font-size:0.75rem;">Sem vídeo</span>';
+                    const nomeEscapado = (e.nome || '').replace(/'/g, "\'");
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${e.nome}</strong><br>${temVideo}</td>
+                            <td>${e.grupo_principal || '-'}</td>
+                            <td>${e.equipamento || '-'}</td>
+                            <td>${e.tipo || '-'}</td>
+                            <td style="text-align:right; white-space:nowrap;">
+                                <button type="button" onclick="adicionarExercicioDiretoFicha('${nomeEscapado}')" class="btn-action-bar" style="background:var(--success); color:#fff;">➕ Adicionar ao Treino ${treinoAtualLetra}</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            };
+
+            window.filtrarSelecaoExercicios = function() {
+                const termo = (document.getElementById('buscaExercicioSelecao')?.value || '').toLowerCase().trim();
+                if (!window._cacheSelecaoExercicios) return;
+                const filtrada = window._cacheSelecaoExercicios.filter(e => 
+                    (e.nome || '').toLowerCase().includes(termo) ||
+                    (e.grupo_principal || '').toLowerCase().includes(termo) ||
+                    (e.equipamento || '').toLowerCase().includes(termo)
+                );
+                renderizarSelecaoExercicios(filtrada);
+            };
+
 
             window.toggleTodosMusculos = function(master) {
                 const checks = document.querySelectorAll('.chk-musculo');
@@ -3398,6 +3713,7 @@
                 htmlMenu = `
                     <li><a href="#dashboard" class="menu-link active" data-target="dashboard">📊 Visão Geral</a></li>
                     <li><a href="#alunos" class="menu-link" data-target="alunos">💪 Gestão de Alunos & Planos</a></li>
+                    <li><a href="#biblioteca" class="menu-link" data-target="biblioteca">🏋️ Biblioteca Exercícios</a></li>
                     <li><a href="#contatos" class="menu-link" data-target="contatos">📩 Mensagens & Logs</a></li>
                     <li><a href="#hero" class="menu-link" data-target="hero">🖼️ Banner Principal (Hero)</a></li>
                     <li><a href="#estruturasecao" class="menu-link" data-target="estruturasecao">🏢 Nossa Estrutura</a></li>
@@ -3423,6 +3739,7 @@
             } else if (nivel === 'professor') {
                 htmlMenu = `
                     <li><a href="#alunos" class="menu-link active" data-target="alunos">💪 Alunos (Treinos e Avaliações)</a></li>
+                    <li><a href="#biblioteca" class="menu-link" data-target="biblioteca">🏋️ Biblioteca Exercícios</a></li>
                 `;
             }
 
@@ -3863,6 +4180,7 @@
             };
 
             window.carregarAlunosAdmin();
+            window.carregarBiblioteca();
             window.carregarPlanosAdmin();
             window.carregarParceirosAdmin();
             window.carregarEstruturaAdmin();
@@ -3879,7 +4197,7 @@
         }
     });
 
-    window.abrirVideoDuvida = function(nomeExercicio, urlVideo) {
+    window.abrirVideoDuvidaAdmin = function(nomeExercicio, urlVideo) {
         if (!urlVideo || urlVideo.trim() === "") {
             alert("Vídeo demonstrativo não cadastrado para este exercício.");
             return;
@@ -4104,7 +4422,7 @@
         const modal = document.getElementById('modalHistoricoAvaliacoes');
         const tbody = document.getElementById('tabelaHistoricoAvaliacoesBody');
         const titulo = document.getElementById('tituloHistoricoAvaliacoes');
-        const btnExportar = document.getElementById('btnExportarPDFHistorico'); // CORREÇÃO: Declaração da variável aqui
+        const btnExportar = document.getElementById('btnExportarPDFHistorico');
         
         if (!modal || !tbody || !titulo) return;
 
@@ -4360,6 +4678,651 @@
             console.error("Erro ao carregar lembretes administrativos:", err);
         }
     };
+// ============================================
+// BIBLIOTECA DE EXERCÍCIOS (SUPABASE STORAGE)
+// ============================================
+const STORAGE_BUCKET = 'videos-exercicios';
+const VIDEO_MAX_SIZE_MB = 250;
+
+function normalizarLinkVideo(url) {
+    if (!url) return '';
+    let valor = String(url).trim();
+
+    try {
+        const github = valor.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/(.+)$/i);
+        if (github) {
+            valor = `https://raw.githubusercontent.com/${github[1]}/${github[2]}/${github[3]}`;
+        }
+    } catch (_) {}
+
+    return valor;
+}
+
+function videoUrlEhStorage(url) {
+    return !!url && (
+        url.includes(`/storage/v1/object/public/${STORAGE_BUCKET}/`) ||
+        url.includes(`/storage/v1/object/authenticated/${STORAGE_BUCKET}/`) ||
+        url.includes(`/storage/v1/object/sign/${STORAGE_BUCKET}/`)
+    );
+}
+
+async function uploadVideoToStorage(file, nomeExercicio) {
+    try {
+        if (!file) throw new Error('Nenhum arquivo de vídeo foi selecionado.');
+
+        const maxBytes = VIDEO_MAX_SIZE_MB * 1024 * 1024;
+        if (file.size > maxBytes) {
+            throw new Error(`O vídeo excede o limite definido pelo painel (${VIDEO_MAX_SIZE_MB} MB).`);
+        }
+
+        const timestamp = Date.now();
+        const nomeBase = String(nomeExercicio || 'exercicio')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '')
+            .toLowerCase();
+
+        const extensao = (file.name.split('.').pop() || 'mp4').toLowerCase();
+        const fileName = `${nomeBase}_${timestamp}.${extensao}`;
+        const filePath = `exercicios/${fileName}`;
+
+        const statusEl = document.getElementById('uploadStatus');
+        if (statusEl) statusEl.textContent = `⏳ Enviando ${(file.size / 1024 / 1024).toFixed(1)} MB...`;
+
+        const { error } = await _supabase.storage
+            .from(STORAGE_BUCKET)
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false,
+                contentType: file.type || 'video/mp4'
+            });
+
+        if (error) {
+            console.error('Erro no upload:', error);
+            if (statusEl) statusEl.textContent = '❌ Erro no upload: ' + error.message;
+            throw new Error('Erro ao fazer upload do vídeo: ' + error.message);
+        }
+
+        const { data: urlData } = _supabase.storage
+            .from(STORAGE_BUCKET)
+            .getPublicUrl(filePath);
+
+        if (!urlData?.publicUrl) {
+            throw new Error('O arquivo foi enviado, mas o Supabase não retornou uma URL pública.');
+        }
+
+        if (statusEl) statusEl.textContent = '✅ Upload concluído e URL gerada!';
+        return urlData.publicUrl;
+
+    } catch (err) {
+        console.error('Erro no upload do vídeo:', err);
+        const statusEl = document.getElementById('uploadStatus');
+        if (statusEl) statusEl.textContent = '❌ ' + err.message;
+        throw err;
+    }
+}
+
+async function deleteVideoFromStorage(videoUrl) {
+    if (!videoUrl || !videoUrlEhStorage(videoUrl)) return;
+
+    try {
+        const marker = `/storage/v1/object/public/${STORAGE_BUCKET}/`;
+        const marker2 = `/storage/v1/object/authenticated/${STORAGE_BUCKET}/`;
+        const marker3 = `/storage/v1/object/sign/${STORAGE_BUCKET}/`;
+
+        let filePath = '';
+        if (videoUrl.includes(marker)) filePath = decodeURIComponent(videoUrl.split(marker)[1].split('?')[0]);
+        else if (videoUrl.includes(marker2)) filePath = decodeURIComponent(videoUrl.split(marker2)[1].split('?')[0]);
+        else if (videoUrl.includes(marker3)) filePath = decodeURIComponent(videoUrl.split(marker3)[1].split('?')[0]);
+
+        if (!filePath) return;
+
+        const { error } = await _supabase.storage
+            .from(STORAGE_BUCKET)
+            .remove([filePath]);
+
+        if (error) console.warn('Erro ao deletar vídeo do Storage:', error);
+    } catch (err) {
+        console.warn('Erro ao deletar vídeo:', err);
+    }
+}
+
+window.previewVideoUpload = function(input) {
+    const file = input.files[0];
+    const container = document.getElementById('videoPreviewContainer');
+    const video = document.getElementById('videoPreview');
+    const fileName = document.getElementById('videoFileName');
+    const fileSize = document.getElementById('videoFileSize');
+    const hiddenInput = document.getElementById('exercicioVideo');
+    const urlInput = document.getElementById('exercicioVideoUrl');
+    const statusEl = document.getElementById('uploadStatus');
+
+    if (file) {
+        if (file.size > VIDEO_MAX_SIZE_MB * 1024 * 1024) {
+            alert(`O arquivo é muito grande! O limite definido pelo painel é ${VIDEO_MAX_SIZE_MB}MB.`);
+            input.value = '';
+            container.style.display = 'none';
+            hiddenInput.value = '';
+            if (statusEl) statusEl.textContent = '';
+            return;
+        }
+
+        const tiposPermitidos = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+        if (file.type && !tiposPermitidos.includes(file.type)) {
+            alert('Formato de vídeo não suportado. Use MP4, WebM, OGG ou MOV.');
+            input.value = '';
+            container.style.display = 'none';
+            hiddenInput.value = '';
+            if (statusEl) statusEl.textContent = '';
+            return;
+        }
+
+        if (urlInput) urlInput.value = '';
+
+        video.src = URL.createObjectURL(file);
+        container.style.display = 'flex';
+        fileName.textContent = file.name;
+        fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+        if (statusEl) statusEl.textContent = '📤 Pronto para enviar ao Supabase Storage';
+        hiddenInput.value = '';
+    } else {
+        container.style.display = 'none';
+        hiddenInput.value = '';
+        if (statusEl) statusEl.textContent = '';
+    }
+};
+
+window.usarLinkVideoExercicio = function() {
+    const urlInput = document.getElementById('exercicioVideoUrl');
+    const fileInput = document.getElementById('exercicioVideoFile');
+    const url = normalizarLinkVideo(urlInput?.value || '');
+
+    if (!url) {
+        alert('Informe o link do vídeo primeiro.');
+        return;
+    }
+
+    if (!/^https?:\/\//i.test(url)) {
+        alert('O link precisa começar com http:// ou https://');
+        return;
+    }
+
+    if (fileInput) fileInput.value = '';
+
+    const video = document.getElementById('videoPreview');
+    const container = document.getElementById('videoPreviewContainer');
+    const fileName = document.getElementById('videoFileName');
+    const fileSize = document.getElementById('videoFileSize');
+    const statusEl = document.getElementById('uploadStatus');
+
+    document.getElementById('exercicioVideo').value = url;
+    if (video) video.src = url;
+    if (container) container.style.display = 'flex';
+    if (fileName) fileName.textContent = 'Vídeo por URL';
+    if (fileSize) fileSize.textContent = 'Link salvo no banco';
+    if (statusEl) statusEl.textContent = '🔗 URL pronta para salvar';
+};
+
+window.converterLinkGithubVideo = function() {
+    const input = document.getElementById('exercicioVideoUrl');
+    if (!input || !input.value.trim()) {
+        alert('Cole primeiro o link do GitHub.');
+        return;
+    }
+    const convertido = normalizarLinkVideo(input.value.trim());
+    input.value = convertido;
+    usarLinkVideoExercicio();
+};
+
+window.limparVideoExercicio = function() {
+    const inputUrl = document.getElementById('exercicioVideoUrl');
+    const inputFile = document.getElementById('exercicioVideoFile');
+    const hidden = document.getElementById('exercicioVideo');
+    const preview = document.getElementById('videoPreview');
+    const container = document.getElementById('videoPreviewContainer');
+    const status = document.getElementById('uploadStatus');
+    if (inputUrl) inputUrl.value = '';
+    if (inputFile) inputFile.value = '';
+    if (hidden) hidden.value = '';
+    if (preview) {
+        preview.pause();
+        preview.removeAttribute('src');
+        preview.load();
+    }
+    if (container) container.style.display = 'none';
+    if (status) status.textContent = '🗑️ Vídeo marcado para remoção ao salvar.';
+};
+
+window.abrirFormExercicio = function() {
+    document.getElementById('formExercicioDinamico').reset();
+    document.getElementById('exercicioId').value = "-1";
+    document.getElementById('videoPreviewContainer').style.display = 'none';
+    document.getElementById('exercicioVideo').value = '';
+    const urlInputNovo = document.getElementById('exercicioVideoUrl');
+    if (urlInputNovo) urlInputNovo.value = '';
+    const fileInputNovo = document.getElementById('exercicioVideoFile');
+    if (fileInputNovo) fileInputNovo.value = '';
+    document.getElementById('uploadStatus').textContent = '';
+    document.getElementById('tituloFormExercicio').textContent = "Cadastrar Exercício";
+    document.getElementById('cardFormExercicio').style.display = "block";
+};
+
+window.fecharFormExercicio = function() {
+    document.getElementById('cardFormExercicio').style.display = "none";
+};
+
+window.carregarBiblioteca = async function() {
+    try {
+        const { data: exercicios, error } = await _supabase
+            .from('biblioteca_exercicios')
+            .select('*')
+            .order('nome', { ascending: true });
+
+        const tbody = document.getElementById('tabelaBibliotecaBody');
+        if (!tbody) return;
+        
+        if (error || !exercicios || exercicios.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--gray);">Nenhum exercício cadastrado na biblioteca.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        exercicios.forEach(ex => {
+            const videoPreview = ex.video_url && ex.video_url.trim() !== "" ? 
+                `<button onclick="abrirVideoDuvidaAdmin('${ex.nome.replace(/'/g, "\\'")}', '${ex.video_url.replace(/'/g, "\\'")}')" class="btn-action-bar" style="background: var(--primary); color: #fff;">🎥 Ver</button>` : 
+                '<span style="color: var(--gray);">Sem vídeo</span>';
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${ex.nome}</strong></td>
+                    <td>${ex.grupo_principal || 'Geral'}</td>
+                    <td>${ex.equipamento || 'Livre'}</td>
+                    <td>${ex.tipo || 'Composto'}</td>
+                    <td>${videoPreview}</td>
+                    <td style="text-align: right; white-space: nowrap; display: flex; justify-content: flex-end; gap: 6px;">
+                        <button onclick="editarExercicio('${ex.id}')" class="btn-action-bar">✏️</button>
+                        <button onclick="removerExercicio('${ex.id}')" class="btn-action-bar btn-danger">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        console.error('Erro ao carregar biblioteca:', err);
+        const tbody = document.getElementById('tabelaBibliotecaBody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--danger);">Erro ao carregar dados.</td></tr>';
+    }
+};
+
+window.editarExercicio = async function(id) {
+    try {
+        const { data: ex, error } = await _supabase
+            .from('biblioteca_exercicios')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error || !ex) {
+            alert('Erro ao carregar dados do exercício.');
+            return;
+        }
+
+        document.getElementById('exercicioId').value = ex.id;
+        document.getElementById('exercicioNome').value = ex.nome || '';
+        document.getElementById('exercicioGrupo').value = ex.grupo_principal || 'Outros';
+        document.getElementById('exercicioEquipamento').value = ex.equipamento || 'Outros';
+        document.getElementById('exercicioTipo').value = ex.tipo || 'Composto';
+
+        const urlInputEdicao = document.getElementById('exercicioVideoUrl');
+        const fileInputEdicao = document.getElementById('exercicioVideoFile');
+        if (urlInputEdicao) urlInputEdicao.value = ex.video_url || '';
+        if (fileInputEdicao) fileInputEdicao.value = '';
+        
+        if (ex.video_url && ex.video_url.trim() !== "") {
+            const videoPreview = document.getElementById('videoPreview');
+            const container = document.getElementById('videoPreviewContainer');
+            const fileName = document.getElementById('videoFileName');
+            const fileSize = document.getElementById('videoFileSize');
+            const statusEl = document.getElementById('uploadStatus');
+            
+            videoPreview.src = ex.video_url;
+            container.style.display = 'flex';
+            fileName.textContent = 'Vídeo atual carregado do servidor';
+            fileSize.textContent = 'Clique em "Atualizar" para trocar o vídeo';
+            if (statusEl) statusEl.textContent = '✅ Vídeo existente';
+            document.getElementById('exercicioVideo').value = ex.video_url;
+        } else {
+            document.getElementById('videoPreviewContainer').style.display = 'none';
+            document.getElementById('exercicioVideo').value = '';
+            document.getElementById('uploadStatus').textContent = '';
+        }
+
+        document.getElementById('tituloFormExercicio').textContent = "Editar Exercício";
+        document.getElementById('cardFormExercicio').style.display = "block";
+        document.getElementById('cardFormExercicio').scrollIntoView({ behavior: 'smooth' });
+    } catch (err) {
+        alert('Erro ao carregar exercício: ' + err.message);
+    }
+};
+
+window.removerExercicio = async function(id) {
+    if (!confirm('Deseja excluir este exercício da biblioteca?')) return;
+    
+    try {
+        const { data: ex, error: fetchError } = await _supabase
+            .from('biblioteca_exercicios')
+            .select('video_url')
+            .eq('id', id)
+            .single();
+
+        if (fetchError) throw fetchError;
+
+        if (ex && ex.video_url) {
+            await deleteVideoFromStorage(ex.video_url);
+        }
+
+        const { error } = await _supabase
+            .from('biblioteca_exercicios')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+        
+        window.carregarBiblioteca();
+        window.showToast('Exercício removido com sucesso!');
+    } catch (err) {
+        alert('Erro ao remover exercício: ' + err.message);
+    }
+};
+
+document.getElementById('formExercicioDinamico')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const btnSalvar = document.getElementById('btnSalvarExercicio');
+    const id = document.getElementById('exercicioId').value;
+    const nome = document.getElementById('exercicioNome').value.trim();
+    const videoFile = document.getElementById('exercicioVideoFile').files[0];
+    const videoAtual = document.getElementById('exercicioVideo').value;
+    const videoUrlInformada = normalizarLinkVideo(document.getElementById('exercicioVideoUrl')?.value || '');
+
+    if (!nome) {
+        alert('Por favor, preencha o nome do exercício.');
+        return;
+    }
+
+    btnSalvar.disabled = true;
+    btnSalvar.textContent = '⏳ Salvando...';
+
+    try {
+        let videoUrl = videoAtual || videoUrlInformada || null;
+
+        if (videoFile) {
+            videoUrl = await uploadVideoToStorage(videoFile, nome);
+        } else if (videoUrlInformada) {
+            videoUrl = videoUrlInformada;
+        }
+
+        const dados = {
+            nome: nome,
+            grupo_principal: document.getElementById('exercicioGrupo').value,
+            equipamento: document.getElementById('exercicioEquipamento').value,
+            tipo: document.getElementById('exercicioTipo').value,
+            video_url: videoUrl
+        };
+
+        let resultado;
+        if (id !== "-1") {
+            if (videoAtual && videoAtual !== videoUrl) {
+                await deleteVideoFromStorage(videoAtual);
+            }
+            
+            resultado = await _supabase
+                .from('biblioteca_exercicios')
+                .update(dados)
+                .eq('id', id);
+        } else {
+            resultado = await _supabase
+                .from('biblioteca_exercicios')
+                .insert([dados]);
+        }
+
+        if (resultado.error) throw resultado.error;
+
+        window.fecharFormExercicio();
+        window.carregarBiblioteca();
+        window.showToast(`Exercício ${id !== "-1" ? 'atualizado' : 'cadastrado'} com sucesso!`);
+        
+        document.getElementById('exercicioVideoFile').value = '';
+        
+    } catch (err) {
+        console.error('Erro ao salvar exercício:', err);
+        alert('Erro ao salvar: ' + err.message);
+    } finally {
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = 'Salvar Exercício no Supabase';
+    }
+});
+
+document.getElementById('inputBuscaExercicio')?.addEventListener('input', function() {
+    const termo = this.value.toLowerCase().trim();
+    const linhas = document.querySelectorAll('#tabelaBibliotecaBody tr');
+    linhas.forEach(linha => {
+        if (linha.cells && linha.cells.length > 0) {
+            const texto = linha.textContent.toLowerCase();
+            linha.style.display = texto.includes(termo) ? '' : 'none';
+        }
+    });
+});
+
+document.getElementById('formExercicioDinamico')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('exercicioId').value;
+    const btnSalvar = document.getElementById('btnSalvarExercicio');
+    btnSalvar.disabled = true;
+
+    try {
+        let videoUrl = document.getElementById('exercicioVideoUrl').value || document.getElementById('exercicioVideo').value;
+        const fileInput = document.getElementById('exercicioVideoFile');
+
+        // Se houver um arquivo de vídeo selecionado, realiza o upload primeiro
+        if (fileInput && fileInput.files[0]) {
+            const nomeExercicio = document.getElementById('exercicioNome').value;
+            videoUrl = await uploadVideoToStorage(fileInput.files[0], nomeExercicio);
+        }
+
+        const dadosExercicio = {
+            nome: document.getElementById('exercicioNome').value,
+            grupo_principal: document.getElementById('exercicioGrupo').value,
+            equipamento: document.getElementById('exercicioEquipamento').value,
+            tipo: document.getElementById('exercicioTipo').value,
+            video_url: videoUrl
+        };
+
+        let res;
+        if (id !== "-1") {
+            res = await _supabase.from('biblioteca_exercicios').update(dadosExercicio).eq('id', id);
+        } else {
+            res = await _supabase.from('biblioteca_exercicios').insert([dadosExercicio]);
+        }
+
+        if (res.error) throw res.error;
+
+        fecharFormExercicio();
+        window.carregarBiblioteca();
+        window.showToast("Exercício salvo com sucesso!");
+    } catch (err) {
+        alert("Erro ao salvar exercício: " + err.message);
+    } finally {
+        btnSalvar.disabled = false;
+    }
+});
+
+
+        /* ================================================================
+           EVOLUÇÃO 2026.08 — VÍDEOS CENTRALIZADOS NA BIBLIOTECA
+           Regra de arquitetura:
+           - O vídeo pertence exclusivamente à biblioteca_exercicios.
+           - O plano de treino salva apenas a referência do exercício e
+             seus parâmetros de prescrição.
+           - Código legado é preservado para compatibilidade, mas seus
+             video_url são removidos antes de permanecerem no plano.
+           ================================================================ */
+        (function implementarCentralizacaoVideosBiblioteca() {
+            'use strict';
+
+            const CAMPOS_VIDEO_LEGADOS = [
+                'video_url',
+                'videoUrl',
+                'video',
+                'url_video',
+                'video_url_final',
+                'videoUrlFinal'
+            ];
+
+            function removerCamposVideoDoObjeto(objeto) {
+                if (!objeto || typeof objeto !== 'object') return objeto;
+
+                const copia = Array.isArray(objeto) ? [...objeto] : { ...objeto };
+
+                if (!Array.isArray(copia)) {
+                    CAMPOS_VIDEO_LEGADOS.forEach(campo => {
+                        if (Object.prototype.hasOwnProperty.call(copia, campo)) {
+                            delete copia[campo];
+                        }
+                    });
+                }
+
+                return copia;
+            }
+
+            function sanitizarListaExercicios(lista) {
+                if (!Array.isArray(lista)) return [];
+                return lista.map(item => removerCamposVideoDoObjeto(item));
+            }
+
+            function sanitizarFichaCompleta(ficha) {
+                const origem = (ficha && typeof ficha === 'object') ? ficha : {};
+                const resultado = {};
+
+                Object.keys(origem).forEach(bloco => {
+                    resultado[bloco] = sanitizarListaExercicios(origem[bloco]);
+                });
+
+                return resultado;
+            }
+
+            function sanitizarMemoriaGlobal() {
+                if (typeof exerciciosFichaMemoria !== 'undefined' && exerciciosFichaMemoria) {
+                    exerciciosFichaMemoria = sanitizarFichaCompleta(exerciciosFichaMemoria);
+                }
+
+                if (typeof dadosTreinoAdmin !== 'undefined' && dadosTreinoAdmin) {
+                    Object.keys(dadosTreinoAdmin).forEach(bloco => {
+                        dadosTreinoAdmin[bloco] = sanitizarListaExercicios(dadosTreinoAdmin[bloco]);
+                    });
+                }
+            }
+
+            /*
+             * Mantém a função original intacta e acrescenta uma camada de
+             * segurança: mesmo que o código legado encontre um vídeo na
+             * biblioteca, ele não será copiado para o objeto do treino.
+             */
+            if (typeof window.adicionarExercicioDiretoFicha === 'function') {
+                const adicionarExercicioOriginal = window.adicionarExercicioDiretoFicha;
+
+                window.adicionarExercicioDiretoFicha = function(...args) {
+                    const resultado = adicionarExercicioOriginal.apply(this, args);
+                    sanitizarMemoriaGlobal();
+                    if (typeof window.renderizarTabelaExerciciosFicha === 'function') {
+                        window.renderizarTabelaExerciciosFicha();
+                    }
+                    if (typeof window.renderizarTabelaAdmin === 'function') {
+                        window.renderizarTabelaAdmin();
+                    }
+                    return resultado;
+                };
+            }
+
+            /*
+             * Compatibilidade com fichas antigas: ao abrir uma ficha, qualquer
+             * video_url que tenha sido salvo anteriormente é retirado apenas
+             * da estrutura do plano em memória. O vídeo continua intacto na
+             * tabela biblioteca_exercicios.
+             */
+            if (typeof window.abrirModalTreinoFiel === 'function') {
+                const abrirModalTreinoFielOriginal = window.abrirModalTreinoFiel;
+
+                window.abrirModalTreinoFiel = async function(...args) {
+                    const resultado = await abrirModalTreinoFielOriginal.apply(this, args);
+                    sanitizarMemoriaGlobal();
+                    if (typeof window.renderizarTabelaExerciciosFicha === 'function') {
+                        window.renderizarTabelaExerciciosFicha();
+                    }
+                    if (typeof window.renderizarTabelaAdmin === 'function') {
+                        window.renderizarTabelaAdmin();
+                    }
+                    return resultado;
+                };
+            }
+
+            /*
+             * Camada final de proteção no salvamento. O código original continua
+             * responsável pelo fluxo completo do Supabase, avaliação e mensagens;
+             * apenas substituímos temporariamente a memória por uma versão sem
+             * vídeo para garantir que treinos_alunos nunca receba esse campo.
+             */
+            if (typeof window.salvarTreinoAnexo === 'function') {
+                const salvarTreinoAnexoOriginal = window.salvarTreinoAnexo;
+
+                window.salvarTreinoAnexo = async function(...args) {
+                    const memoriaOriginal = (typeof exerciciosFichaMemoria !== 'undefined')
+                        ? exerciciosFichaMemoria
+                        : null;
+
+                    try {
+                        if (typeof exerciciosFichaMemoria !== 'undefined') {
+                            exerciciosFichaMemoria = sanitizarFichaCompleta(exerciciosFichaMemoria);
+                        }
+
+                        sanitizarMemoriaGlobal();
+                        return await salvarTreinoAnexoOriginal.apply(this, args);
+                    } finally {
+                        /*
+                         * Não reintroduzimos os vídeos antigos. A memória permanece
+                         * limpa depois do salvamento para impedir cópias futuras.
+                         */
+                        if (typeof exerciciosFichaMemoria !== 'undefined') {
+                            exerciciosFichaMemoria = sanitizarFichaCompleta(exerciciosFichaMemoria);
+                        }
+
+                        void memoriaOriginal;
+                    }
+                };
+            }
+
+            /*
+             * API pública para outras páginas/scripts do sistema. Permite que
+             * qualquer módulo que monte um plano aplique a mesma regra sem
+             * duplicar a lógica.
+             */
+            window.CorpofitnessTreinoVideoPolicy = Object.freeze({
+                sanitizarExercicio: removerCamposVideoDoObjeto,
+                sanitizarLista: sanitizarListaExercicios,
+                sanitizarFicha: sanitizarFichaCompleta,
+                limparMemoria: sanitizarMemoriaGlobal,
+                versao: '2026.08-biblioteca-centralizada'
+            });
+
+            /* Executa uma limpeza inicial para estruturas legadas já carregadas. */
+            sanitizarMemoriaGlobal();
+
+            console.info(
+                '[Corpofitness] Política de vídeos ativa: vídeos pertencem à Biblioteca de Exercícios; '
+                + 'planos de treino armazenam apenas referência e prescrição.'
+            );
+        })();
+
     </script>
 
 </body>

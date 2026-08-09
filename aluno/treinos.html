@@ -129,7 +129,70 @@
             .card { padding: 16px; }
             th, td { padding: 10px 12px; font-size: 0.82rem; }
         }
-    </style>
+    
+        /* PLAYER CORPOFITNESS */
+        .cf-player {
+            --cf-accent: #2563eb;
+            position:relative; width:100%; background:#000;
+            border:1px solid var(--border-color); border-radius:16px;
+            overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.55); user-select:none;
+        }
+        .cf-player-video {
+            display:block; width:100%; max-height:500px; aspect-ratio:16/9;
+            object-fit:contain; background:#000; cursor:pointer;
+        }
+        .cf-player-loading {
+            position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:10px;
+            background:rgba(0,0,0,.55); color:#fff; font-size:.8rem; z-index:4; pointer-events:none;
+            opacity:0; transition:opacity .2s;
+        }
+        .cf-player-loading.show { opacity:1; }
+        .cf-spinner {
+            width:20px;height:20px;border:2px solid rgba(255,255,255,.25);
+            border-top-color:#fff;border-radius:50%;animation:cfSpin .75s linear infinite;
+        }
+        @keyframes cfSpin { to { transform:rotate(360deg); } }
+        .cf-player-center-play {
+            position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) scale(.92);
+            width:72px;height:72px;border-radius:50%; display:flex;align-items:center;justify-content:center;
+            background:rgba(37,99,235,.94);color:#fff;font-size:1.3rem;
+            box-shadow:0 12px 40px rgba(37,99,235,.4); cursor:pointer;z-index:3;opacity:0;pointer-events:none;transition:.2s;
+        }
+        .cf-player.show-center-play .cf-player-center-play {
+            opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);
+        }
+        .cf-player-controls {
+            position:absolute;left:0;right:0;bottom:0;z-index:5; padding:10px 12px 11px;
+            background:linear-gradient(to top,rgba(0,0,0,.96),rgba(0,0,0,.62),transparent);
+        }
+        .cf-player-progress-wrap { width:100%;padding:3px 0 7px; }
+        .cf-player-progress,.cf-player-volume {
+            appearance:none;-webkit-appearance:none; background:rgba(255,255,255,.18);
+            border-radius:999px;height:4px;outline:none;cursor:pointer;
+        }
+        .cf-player-progress { width:100%; }
+        .cf-player-volume { width:76px; }
+        .cf-player-progress::-webkit-slider-thumb,.cf-player-volume::-webkit-slider-thumb {
+            appearance:none;-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+            background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.3);
+        }
+        .cf-player-bottom { display:flex;align-items:center;justify-content:space-between;gap:10px; }
+        .cf-player-left,.cf-player-right { display:flex;align-items:center;gap:6px; }
+        .cf-player-btn {
+            width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;
+            border:0;border-radius:8px;background:rgba(255,255,255,.08);color:#fff;
+            cursor:pointer;transition:.18s;font-size:.72rem;
+        }
+        .cf-player-btn:hover { background:var(--cf-accent);transform:translateY(-1px); }
+        .cf-speed-btn { width:39px;font-weight:700; }
+        .cf-player-time { color:rgba(255,255,255,.86);font-size:.68rem;white-space:nowrap;font-variant-numeric:tabular-nums; }
+        @media(max-width:600px) {
+            .cf-player-volume { display:none; }
+            .cf-player-time { font-size:.61rem; }
+            .cf-player-btn { width:29px;height:29px; }
+            .cf-player-controls { padding:8px; }
+        }
+</style>
 </head>
 <body>
 
@@ -140,8 +203,8 @@
 
     <div class="main-content">
         <div class="welcome-banner">
-            <h1>Seu Plano de Treino 🏋️</h1>
-            <p>Fichas personalizadas e atualizadas diretamente pela equipe técnica.</p>
+            <h1 id="tituloBoasVindas">Seu Plano de Treino 🏋️</h1>
+            <p>Fichas personalizadas e atualizadas em tempo real pela equipe técnica.</p>
         </div>
 
         <!-- RESUMO DA AVALIAÇÃO -->
@@ -164,17 +227,17 @@
             </div>
         </div>
 
-        <!-- SELEÇÃO DE BLOCOS DE TREINO (A, B, C...) -->
+        <!-- FICHA DE EXERCÍCIOS -->
         <div class="card">
             <div class="card-header">
                 <div class="card-title"><i class="fa-solid fa-dumbbell"></i> Ficha de Exercícios</div>
             </div>
 
             <div class="tabs-treino">
-                <button class="btn-tab active" onclick="mudarBlocoTreino('A')">Treino A</button>
-                <button class="btn-tab" onclick="mudarBlocoTreino('B')">Treino B</button>
-                <button class="btn-tab" onclick="mudarBlocoTreino('C')">Treino C</button>
-                <button class="btn-tab" onclick="mudarBlocoTreino('D')">Treino D</button>
+                <button class="btn-tab active" onclick="mudarBlocoTreino('A', event)">Treino A</button>
+                <button class="btn-tab" onclick="mudarBlocoTreino('B', event)">Treino B</button>
+                <button class="btn-tab" onclick="mudarBlocoTreino('C', event)">Treino C</button>
+                <button class="btn-tab" onclick="mudarBlocoTreino('D', event)">Treino D</button>
             </div>
 
             <div class="table-container">
@@ -196,24 +259,58 @@
         </div>
     </div>
 
-<!-- MODAL COM PLAYER OFICIAL SEGURO DO YOUTUBE -->
-<div id="modalVideoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; padding: 15px;">
-    <div style="width: 100%; max-width: 650px; background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative;">
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h4 id="videoModalTitulo" style="font-size: 1rem; color: var(--text-main); margin: 0;">Como Executar</h4>
-            <button type="button" onclick="fecharModalVideoAluno()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">✕</button>
-        </div>
+    <!-- MODAL DO PLAYER DE VÍDEO -->
+    <div id="modalVideoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 5000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(8px);">
+        <div style="width: 100%; max-width: 720px; background: var(--bg-card); padding: 22px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: 0 25px 50px rgba(0,0,0,0.8); position: relative;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-circle-play" style="color: var(--primary-light); font-size: 1.2rem;"></i>
+                    <h4 id="videoModalTitulo" style="font-size: 1.05rem; color: var(--text-main); margin: 0; font-weight: 700;">Execução do Exercício</h4>
+                </div>
+                <button type="button" onclick="fecharModalVideoAluno()" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition);" onmouseover="this.style.color='#fff'; this.style.background='var(--accent-danger)';" onmouseout="this.style.color='var(--text-muted)'; this.style.background='rgba(255,255,255,0.08)';">✕</button>
+            </div>
 
-        <!-- Onde a API do YouTube vai injetar o player seguro -->
-        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px;">
-            <div id="playerYoutubeOficial" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+            <div class="cf-player" id="cfPlayerAluno">
+                <video id="playerVideoCustom" class="cf-player-video" playsinline preload="metadata" disablepictureinpicture controlslist="nodownload noplaybackrate">
+                    Seu navegador não suporta a reprodução de vídeo nativa.
+                </video>
+
+                <div class="cf-player-loading" id="cfPlayerLoading">
+                    <span class="cf-spinner"></span>
+                    <span>Carregando vídeo...</span>
+                </div>
+
+                <div class="cf-player-center-play" id="cfPlayerCenterPlay" title="Reproduzir/Pausar">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+
+                <div class="cf-player-controls">
+                    <div class="cf-player-progress-wrap">
+                        <input id="cfPlayerProgress" class="cf-player-progress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Progresso do vídeo">
+                    </div>
+                    <div class="cf-player-bottom">
+                        <div class="cf-player-left">
+                            <button type="button" class="cf-player-btn" id="cfPlayerPlay" title="Reproduzir/Pausar"><i class="fa-solid fa-play"></i></button>
+                            <button type="button" class="cf-player-btn" id="cfPlayerMute" title="Silenciar"><i class="fa-solid fa-volume-high"></i></button>
+                            <input id="cfPlayerVolume" class="cf-player-volume" type="range" min="0" max="1" value="1" step="0.05" aria-label="Volume">
+                            <span id="cfPlayerTime" class="cf-player-time">00:00 / 00:00</span>
+                        </div>
+                        <div class="cf-player-right">
+                            <button type="button" class="cf-player-btn cf-speed-btn" id="cfPlayerSpeed" title="Velocidade">1x</button>
+                            <button type="button" class="cf-player-btn" id="cfPlayerPiP" title="Picture-in-Picture"><i class="fa-solid fa-clone"></i></button>
+                            <button type="button" class="cf-player-btn" id="cfPlayerFullscreen" title="Tela cheia"><i class="fa-solid fa-expand"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.78rem; color: var(--text-muted);">
+                <span><i class="fa-solid fa-shield-halved" style="color: var(--accent-success);"></i> Player Corpofitness</span>
+                <span id="statusCarregamentoVideo">Carregando mídia...</span>
+            </div>
         </div>
     </div>
-</div>
-
-<!-- Carrega a API oficial do YouTube se já não estiver carregada -->
-<script src="https://www.youtube.com/iframe_api"></script>
 
     <footer>
         <p>© 2026 Corpofitness Premium. Todos os direitos reservados.</p>
@@ -222,66 +319,121 @@
     <script>
     let dadosTreinoGlobal = { A: [], B: [], C: [], D: [] };
     let bibliotecaVideosGlobal = {}; 
+    let bibliotecaPorIdGlobal = {}; 
     let blocoAtivo = 'A';
+    let alunoLogadoId = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-        let alunoLogadoId = sessionStorage.getItem('corpofitness_aluno_id') || '1';
+        // Captura ID via URL (?aluno_id=X) ou da sessão
+        const urlParams = new URLSearchParams(window.location.search);
+        alunoLogadoId = urlParams.get('aluno_id') || sessionStorage.getItem('corpofitness_aluno_id');
 
+        // Se não houver ID definido, busca o primeiro aluno ativo no banco
+        if (!alunoLogadoId) {
+            const { data: primeiroAluno } = await _supabase.from('alunos').select('id, nome').limit(1).maybeSingle();
+            if (primeiroAluno) {
+                alunoLogadoId = primeiroAluno.id;
+            } else {
+                alunoLogadoId = '1';
+            }
+        }
+
+        await carregarBibliotecaExercicios();
+        await carregarAvaliacaoFisica();
+        await carregarPlanoTreino();
+        inscreverRealtimeSupabase();
+    });
+
+    async function carregarBibliotecaExercicios() {
         try {
-            // 1. Carrega o cache da biblioteca de exercícios
-            const { data: biblioteca } = await _supabase.from('biblioteca_exercicios').select('nome, video_url');
+            const { data: biblioteca } = await _supabase.from('biblioteca_exercicios').select('id, nome, video_url');
             if (biblioteca) {
+                bibliotecaVideosGlobal = {};
+                bibliotecaPorIdGlobal = {};
                 biblioteca.forEach(item => {
                     if (item.nome && item.video_url) {
                         bibliotecaVideosGlobal[item.nome.trim().toLowerCase()] = item.video_url;
                     }
+                    if (item.id) {
+                        bibliotecaPorIdGlobal[String(item.id)] = item.video_url || '';
+                    }
                 });
             }
+        } catch (e) {
+            console.error("Erro ao carregar biblioteca de exercícios:", e);
+        }
+    }
 
-            // 2. Carregar Avaliação Física do Aluno
-            const { data: aval } = await _supabase.from('avaliacoes_fisicas').select('*').eq('aluno_id', alunoLogadoId).maybeSingle();
+    async function carregarAvaliacaoFisica() {
+        try {
+            const { data: aval } = await _supabase.from('avaliacoes_fisicas')
+                .select('*')
+                .eq('aluno_id', alunoLogadoId)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
             if (aval) {
                 document.getElementById('resPeso').textContent = (aval.peso || '--') + ' kg';
                 document.getElementById('resGordura').textContent = (aval.gordura || '--') + ' %';
                 document.getElementById('resMassa').textContent = (aval.massa || '--') + ' kg';
             }
+        } catch (err) {
+            console.error("Erro ao carregar avaliação do aluno:", err);
+        }
+    }
 
-            // 3. Carregar Plano de Treino da tabela treinos_alunos
-            const { data: treinoList } = await _supabase.from('treinos_alunos').select('*').eq('aluno_id', alunoLogadoId).eq('dia', 'Geral');
+    async function carregarPlanoTreino() {
+        try {
+            const { data: treinoList } = await _supabase.from('treinos_alunos')
+                .select('*')
+                .eq('aluno_id', alunoLogadoId);
             
             if (treinoList && treinoList.length > 0) {
-                const treino = treinoList[0];
-                document.getElementById('resObjetivo').textContent = treino.objetivo || 'Hipertrofia';
+                // Tenta buscar o treino geral ou o primeiro registro retornado
+                const treino = treinoList.find(t => t.dia === 'Geral') || treinoList[0];
+                document.getElementById('resObjetivo').textContent = treino.objetivo || 'Hipertrofia Geral';
                 
                 if (treino.conteudo) {
-                    try {
-                        const payload = JSON.parse(treino.conteudo);
-                        if (payload && payload.exercicios) {
-                            dadosTreinoGlobal = payload.exercicios;
-                        } else if (payload && (payload.A || payload.B || payload.C || payload.D)) {
-                            dadosTreinoGlobal = payload;
-                        }
-                    } catch (e) {
-                        console.log("Erro ao interpretar o JSON do treino:", e);
+                    let payload = treino.conteudo;
+                    if (typeof payload === 'string') {
+                        payload = JSON.parse(payload);
+                    }
+                    
+                    if (payload.exercicios) {
+                        dadosTreinoGlobal = payload.exercicios;
+                    } else if (payload.A || payload.B || payload.C || payload.D) {
+                        dadosTreinoGlobal = payload;
                     }
                 }
             } else {
                 document.getElementById('resObjetivo').textContent = 'Hipertrofia Geral';
             }
-
         } catch (err) {
-            console.error("Erro ao carregar dados do aluno:", err);
+            console.error("Erro ao carregar treino do aluno:", err);
             document.getElementById('resObjetivo').textContent = 'Hipertrofia Geral';
         }
 
-        // Renderiza a tabela na tela após carregar os dados com sucesso
         renderizarTabelaAluno();
-    });
+    }
 
-    function mudarBlocoTreino(bloco) {
+    // Escuta atualizações no Supabase em tempo real (Painel Admin -> Portal Aluno)
+    function inscreverRealtimeSupabase() {
+        _supabase
+            .channel('mudancas_treinos')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'treinos_alunos' }, () => carregarPlanoTreino())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'avaliacoes_fisicas' }, () => carregarAvaliacaoFisica())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'biblioteca_exercicios' }, async () => {
+                await carregarBibliotecaExercicios();
+                renderizarTabelaAluno();
+            })
+            .subscribe();
+    }
+
+    function mudarBlocoTreino(bloco, evt) {
         blocoAtivo = bloco;
         document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
+        if (evt && evt.target) evt.target.classList.add('active');
         renderizarTabelaAluno();
     }
 
@@ -290,15 +442,23 @@
         tbody.innerHTML = '';
         
         const lista = dadosTreinoGlobal[blocoAtivo] || [];
-        if (lista.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Nenhum exercício cadastrado para o Treino ${blocoAtivo}.</td></tr>`;
+        if (!Array.isArray(lista) || lista.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Nenhum exercício cadastrado no Treino ${blocoAtivo}.</td></tr>`;
             return;
         }
 
         lista.forEach(item => {
             let videoUrlFinal = item.video_url;
-            if (!videoUrlFinal || videoUrlFinal.trim() === "") {
-                const nomeLower = (item.exercicio || "").trim().toLowerCase();
+            
+            // Associação de vídeo por id ou nome do exercício
+            if (!videoUrlFinal || String(videoUrlFinal).trim() === "") {
+                const bibliotecaId = item.biblioteca_id || item.exercicio_id || item.exercise_id;
+                if (bibliotecaId && bibliotecaPorIdGlobal[String(bibliotecaId)]) {
+                    videoUrlFinal = bibliotecaPorIdGlobal[String(bibliotecaId)];
+                }
+            }
+            if (!videoUrlFinal || String(videoUrlFinal).trim() === "") {
+                const nomeLower = (item.exercicio || item.nome || "").trim().toLowerCase();
                 if (bibliotecaVideosGlobal[nomeLower]) {
                     videoUrlFinal = bibliotecaVideosGlobal[nomeLower];
                 }
@@ -306,92 +466,216 @@
 
             let botaoAjudaVideo = '';
             if (videoUrlFinal && videoUrlFinal.trim() !== "") {
-                botaoAjudaVideo = `<button type="button" onclick="abrirVideoDuvida('${item.exercicio.replace(/'/g, "\\'")}', '${videoUrlFinal}')" title="Dúvida na execução?" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--text-muted); border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; cursor: pointer; margin-left: 8px; display: inline-flex; align-items: center; justify-content: center; transition: var(--transition);" onmouseover="this.style.background='var(--primary)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.color='var(--text-muted)';">?</button>`;
+                const urlTratada = videoUrlFinal.replace(/'/g, "\\'");
+                const nomeTratado = (item.exercicio || item.nome || '').replace(/'/g, "\\'");
+                botaoAjudaVideo = `<button type="button" onclick="abrirVideoDuvida('${nomeTratado}', '${urlTratada}')" title="Ver execução em vídeo" style="background: rgba(37,99,235,0.15); border: 1px solid var(--primary-light); color: var(--primary-light); border-radius: 20px; padding: 4px 10px; font-size: 0.75rem; font-weight:700; cursor: pointer; margin-left: 8px; display: inline-flex; align-items: center; gap: 5px; transition: var(--transition);" onmouseover="this.style.background='var(--primary)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(37,99,235,0.15)'; this.style.color='var(--primary-light)';"><i class="fa-solid fa-play"></i> Vídeo</button>`;
             }
 
             tbody.innerHTML += `
                 <tr>
                     <td>
                         <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <span><strong>${item.exercicio}</strong></span>
+                            <span><strong>${item.exercicio || item.nome || 'Exercício'}</strong></span>
                             ${botaoAjudaVideo}
                         </div>
                     </td>
-                    <td>${item.series}</td>
-                    <td>${item.reps}</td>
-                    <td><span style="color: var(--accent-success); font-weight: 700;">${item.carga}</span></td>
-                    <td><span style="font-size: 0.78rem; color: var(--primary-light);">${item.metodo}</span></td>
+                    <td>${item.series || '--'}</td>
+                    <td>${item.reps || '--'}</td>
+                    <td><span style="color: var(--accent-success); font-weight: 700;">${item.carga || '--'}</span></td>
+                    <td><span style="font-size: 0.78rem; color: var(--primary-light);">${item.metodo || 'Normal'}</span></td>
                 </tr>
             `;
         });
     }
 
-let linkVideoAtualGlobal = "";
+    /* ENGINE DO PLAYER PERSONALIZADO */
+    let cfPlayerInitialized = false;
 
-let playerYoutubeInstance = null;
-
-// Função obrigatória chamada pela API do YouTube quando ela estiver pronta
-function onYouTubeIframeAPIReady() {
-    // A API carrega o ambiente base
-}
-
-window.abrirVideoDuvida = function(nomeExercicio, urlVideo) {
-    if (!urlVideo || urlVideo.trim() === "") {
-        alert("Vídeo demonstrativo não cadastrado para este exercício.");
-        return;
+    function formatarTempoVideo(segundos) {
+        if (!Number.isFinite(segundos)) return '00:00';
+        segundos = Math.max(0, Math.floor(segundos));
+        const h = Math.floor(segundos / 3600);
+        const m = Math.floor((segundos % 3600) / 60);
+        const s = segundos % 60;
+        if (h > 0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
 
-    document.getElementById('videoModalTitulo').textContent = `Execução: ${nomeExercicio}`;
-    document.getElementById('modalVideoAluno').style.display = 'flex';
+    function atualizarEstadoPlayerCF() {
+        const v = document.getElementById('playerVideoCustom');
+        const play = document.getElementById('cfPlayerPlay');
+        const time = document.getElementById('cfPlayerTime');
+        const progress = document.getElementById('cfPlayerProgress');
+        const mute = document.getElementById('cfPlayerMute');
+        const wrapper = document.getElementById('cfPlayerAluno');
 
-    // Extrai o ID do vídeo do YouTube independentemente do formato do link
-    let videoId = "";
-    if (urlVideo.includes('v=')) {
-        videoId = urlVideo.split('v=')[1].split('&')[0];
-    } else if (urlVideo.includes('youtu.be/')) {
-        videoId = urlVideo.split('youtu.be/')[1].split('?')[0];
-    } else if (urlVideo.includes('embed/')) {
-        videoId = urlVideo.split('embed/')[1].split('?')[0];
+        if (!v) return;
+
+        if (play) play.innerHTML = v.paused ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-pause"></i>';
+        if (wrapper) wrapper.classList.toggle('show-center-play', v.paused);
+        if (time) time.textContent = `${formatarTempoVideo(v.currentTime)} / ${formatarTempoVideo(v.duration)}`;
+
+        if (progress && Number.isFinite(v.duration) && v.duration > 0) {
+            progress.value = ((v.currentTime / v.duration) * 100).toFixed(2);
+        }
+
+        if (mute) mute.innerHTML = v.muted || v.volume === 0 ? '<i class="fa-solid fa-volume-xmark"></i>' : '<i class="fa-solid fa-volume-high"></i>';
     }
 
-    if (!videoId) {
-        alert("Link do YouTube inválido.");
-        return;
-    }
+    function inicializarPlayerCF() {
+        if (cfPlayerInitialized) return;
+        const v = document.getElementById('playerVideoCustom');
+        if (!v) return;
+        cfPlayerInitialized = true;
 
-    // Se o player já existe, apenas carrega o novo vídeo sem recriar o elemento
-    if (playerYoutubeInstance && typeof playerYoutubeInstance.loadVideoById === 'function') {
-        playerYoutubeInstance.loadVideoById(videoId);
-    } else {
-        // Cria a instância oficial do player do YouTube de forma segura
-        playerYoutubeInstance = new YT.Player('playerYoutubeOficial', {
-            height: '100%',
-            width: '100%',
-            videoId: videoId,
-            playerVars: {
-                'autoplay': 1,
-                'controls': 1,
-                'rel': 0,
-                'modestbranding': 1,
-                'playsinline': 1
-            },
-            events: {
-                'onError': function(event) {
-                    // Caso o YouTube ainda restrinja por política do canal, exibe um aviso amigável
-                    console.warn("O YouTube restringiu a incorporação deste vídeo específico. Código de erro:", event.data);
-                }
+        const progress = document.getElementById('cfPlayerProgress');
+        const volume = document.getElementById('cfPlayerVolume');
+        const play = document.getElementById('cfPlayerPlay');
+        const mute = document.getElementById('cfPlayerMute');
+        const speed = document.getElementById('cfPlayerSpeed');
+        const pip = document.getElementById('cfPlayerPiP');
+        const fullscreen = document.getElementById('cfPlayerFullscreen');
+        const center = document.getElementById('cfPlayerCenterPlay');
+        const loading = document.getElementById('cfPlayerLoading');
+        const wrapper = document.getElementById('cfPlayerAluno');
+
+        const togglePlay = () => {
+            if (v.paused) v.play().catch(() => {});
+            else v.pause();
+        };
+
+        play?.addEventListener('click', togglePlay);
+        center?.addEventListener('click', togglePlay);
+        v.addEventListener('click', e => { if (e.target === v) togglePlay(); });
+
+        v.addEventListener('play', atualizarEstadoPlayerCF);
+        v.addEventListener('pause', atualizarEstadoPlayerCF);
+        v.addEventListener('timeupdate', atualizarEstadoPlayerCF);
+        v.addEventListener('loadedmetadata', () => {
+            loading?.classList.remove('show');
+            atualizarEstadoPlayerCF();
+        });
+        v.addEventListener('canplay', () => {
+            loading?.classList.remove('show');
+            const status = document.getElementById('statusCarregamentoVideo');
+            if (status) status.textContent = 'Pronto para reproduzir';
+        });
+        v.addEventListener('waiting', () => loading?.classList.add('show'));
+        v.addEventListener('playing', () => loading?.classList.remove('show'));
+        v.addEventListener('error', () => {
+            loading?.classList.remove('show');
+            const status = document.getElementById('statusCarregamentoVideo');
+            if (status) status.textContent = 'Erro ao carregar o arquivo de vídeo.';
+        });
+        v.addEventListener('ended', atualizarEstadoPlayerCF);
+
+        progress?.addEventListener('input', () => {
+            if (Number.isFinite(v.duration) && v.duration > 0) {
+                v.currentTime = (Number(progress.value) / 100) * v.duration;
             }
         });
-    }
-};
 
-window.fecharModalVideoAluno = function() {
-    document.getElementById('modalVideoAluno').style.display = 'none';
-    if (playerYoutubeInstance && typeof playerYoutubeInstance.stopVideo === 'function') {
-        playerYoutubeInstance.stopVideo(); // Para o vídeo ao fechar o modal
+        volume?.addEventListener('input', () => {
+            v.volume = Number(volume.value);
+            v.muted = v.volume === 0;
+            atualizarEstadoPlayerCF();
+        });
+
+        mute?.addEventListener('click', () => {
+            v.muted = !v.muted;
+            if (!v.muted && v.volume === 0) v.volume = 0.8;
+            if (volume) volume.value = v.muted ? 0 : v.volume;
+            atualizarEstadoPlayerCF();
+        });
+
+        speed?.addEventListener('click', () => {
+            const speeds = [1, 1.25, 1.5, 1.75, 2, 0.75];
+            const current = speeds.indexOf(v.playbackRate);
+            const next = speeds[(current + 1) % speeds.length];
+            v.playbackRate = next;
+            speed.textContent = `${next}x`;
+        });
+
+        pip?.addEventListener('click', async () => {
+            try {
+                if (document.pictureInPictureElement) await document.exitPictureInPicture();
+                else if (document.pictureInPictureEnabled) await v.requestPictureInPicture();
+            } catch (err) {
+                console.warn('Picture-in-Picture indisponível.', err);
+            }
+        });
+
+        fullscreen?.addEventListener('click', async () => {
+            try {
+                if (document.fullscreenElement) await document.exitFullscreen();
+                else if (wrapper?.requestFullscreen) await wrapper.requestFullscreen();
+            } catch (err) {
+                console.warn('Tela cheia indisponível.', err);
+            }
+        });
+
+        document.addEventListener('keydown', e => {
+            const modal = document.getElementById('modalVideoAluno');
+            if (!modal || modal.style.display !== 'flex') return;
+
+            if (e.key === 'Escape') window.fecharModalVideoAluno();
+            if (e.code === 'Space' && document.activeElement?.tagName !== 'INPUT') {
+                e.preventDefault();
+                togglePlay();
+            }
+        });
+
+        wrapper?.addEventListener('dblclick', () => fullscreen?.click());
+        atualizarEstadoPlayerCF();
     }
-};
+
+    window.abrirVideoDuvida = function(nomeExercicio, urlVideo) {
+        if (!urlVideo || String(urlVideo).trim() === "") {
+            alert("Vídeo demonstrativo não cadastrado para este exercício.");
+            return;
+        }
+
+        inicializarPlayerCF();
+
+        const videoPlayer = document.getElementById('playerVideoCustom');
+        const modal = document.getElementById('modalVideoAluno');
+        const statusTxt = document.getElementById('statusCarregamentoVideo');
+        const loading = document.getElementById('cfPlayerLoading');
+
+        document.getElementById('videoModalTitulo').textContent = `Execução: ${nomeExercicio}`;
+        if (statusTxt) statusTxt.textContent = "Carregando mídia...";
+        if (loading) loading.classList.add('show');
+
+        videoPlayer.pause();
+        videoPlayer.removeAttribute('src');
+        videoPlayer.load();
+        videoPlayer.src = String(urlVideo).trim();
+        modal.style.display = 'flex';
+        videoPlayer.load();
+
+        const playPromise = videoPlayer.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                // Previne bloqueios autônomos de navegação
+            });
+        }
+    };
+
+    window.fecharModalVideoAluno = function() {
+        const videoPlayer = document.getElementById('playerVideoCustom');
+        const modal = document.getElementById('modalVideoAluno');
+
+        if (videoPlayer) {
+            videoPlayer.pause();
+            videoPlayer.currentTime = 0;
+            videoPlayer.removeAttribute('src');
+            videoPlayer.load();
+        }
+
+        if (modal) modal.style.display = 'none';
+        document.getElementById('cfPlayerLoading')?.classList.remove('show');
+        atualizarEstadoPlayerCF();
+    };
     </script>
-
 </body>
 </html>

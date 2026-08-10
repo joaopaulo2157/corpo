@@ -17,7 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     
-    <script>
+    <script defer>
         const NEXT_PUBLIC_SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
         const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
         const _supabase = supabase.createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
@@ -289,6 +289,13 @@
             transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
+        .card, .modal-card {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+
         .tab-content.active {
             display: block;
             opacity: 1;
@@ -413,6 +420,13 @@
             padding: 15px;
             overflow-y: auto;
         }
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay .modal-card {
+            animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
         .modal-card {
             background: var(--dark-card);
@@ -425,6 +439,8 @@
             padding: 20px;
             position: relative;
         }
+
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
         @media(min-width: 768px) {
             .modal-card { padding: 30px; }
@@ -588,12 +604,12 @@
             bottom: 20px;
             right: 20px;
             left: 20px;
-            max-width: 400px;
+            max-width: 420px;
             margin: 0 auto;
-            background: var(--dark-card);
+            background: rgba(24, 24, 24, 0.85);
+            backdrop-filter: blur(12px);
             color: var(--text-color);
             padding: 14px 22px;
-            border-radius: var(--radius);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
@@ -601,10 +617,11 @@
             z-index: 4000;
             opacity: 0;
             transform: translateY(15px);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: none;
             border-left: 4px solid var(--primary);
             font-size: 0.88rem;
+            border-radius: 12px;
         }
         .toast.show {
             opacity: 1;
@@ -676,7 +693,7 @@
     <!-- LOGIN -->
     <div id="loginOverlay">
         <div class="login-card">
-            <img src="img/logo.png" alt="Corpofitness" class="logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x60?text=CORPOFITNESS';">
+            <img src="img/logo.png" alt="Corpofitness" class="logo-img" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x60?text=CORPOFITNESS';">
             <p style="color: var(--gray); font-size: 0.85rem; margin-bottom: 20px;">Acesso ao Painel Gerencial por Níveis</p>
             <form id="loginForm">
                 <div class="form-group" style="text-align: left;">
@@ -705,7 +722,7 @@
         <aside id="appSidebar">
             <div class="brand-box">
                 <div>
-                    <img src="img/logo.png" alt="Corpofitness" class="logo-img" width="150" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x50?text=CORPOFITNESS';">
+                    <img src="img/logo.png" alt="Corpofitness" class="logo-img" width="150" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x50?text=CORPOFITNESS';">
                     <span class="sub" id="cargoSubLabel">Painel de Gestão Integrado</span>
                 </div>
             </div>
@@ -778,7 +795,14 @@
                                     </tr>
                                 </thead>
                                 <tbody id="dashboardUltimosContatos">
-                                    <tr><td colspan="5" style="text-align: center; color: var(--gray);">Nenhum contato recebido ainda.</td></tr>
+                                    <tr class="skeleton-loading">
+                                        <td colspan="5">
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                        </td>
+                                    </tr>
+                                    <!-- Conteúdo real será carregado via JS -->
                                 </tbody>
                             </table>
                         </div>
@@ -805,8 +829,14 @@
                                             <th style="text-align: right;">Ação Recomendada</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tabelaLembretesFixosAdminBody">
-                                        <tr><td colspan="5" style="text-align: center; color: var(--gray);">Carregando painel de lembretes...</td></tr>
+                                    <tbody id="tabelaLembretesFixosAdminBody" class="skeleton-loading">
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                                <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                                <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -882,8 +912,15 @@
                                         <th style="text-align: right;">Ações de Gestão</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabelaAlunosBody">
-                                    <tr><td colspan="6" style="text-align: center; color: var(--gray);">Carregando alunos...</td></tr>
+                                <tbody id="tabelaAlunosBody" class="skeleton-loading">
+                                    <tr>
+                                        <td colspan="6">
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1005,8 +1042,15 @@
                                         <th style="text-align: right;">Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabelaBibliotecaBody">
-                                    <tr><td colspan="6" style="text-align: center; color: var(--gray);">Carregando biblioteca...</td></tr>
+                                <tbody id="tabelaBibliotecaBody" class="skeleton-loading">
+                                    <tr>
+                                        <td colspan="6">
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1033,7 +1077,15 @@
                                         <th style="text-align: right;">Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabelaContatosBody"></tbody>
+                                <tbody id="tabelaContatosBody" class="skeleton-loading">
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -1114,7 +1166,14 @@
                         <div class="card-header">
                             <h3>Itens de Estrutura Cadastrados (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="listaEstruturaAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
+                        <div id="listaEstruturaAdmin" class="skeleton-loading" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -1171,7 +1230,14 @@
                         <div class="card-header">
                             <h3>Modalidades Cadastradas (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="listaModalidadesAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
+                        <div id="listaModalidadesAdmin" class="skeleton-loading" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
+                            <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -1308,10 +1374,24 @@
                         </div>
                         <form id="formFeedbackDinamico">
                             <input type="hidden" id="feedId" value="-1">
+                            <input type="hidden" id="feedAlunoId" value="">
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label class="form-label">Nome do Aluno</label>
                                     <input type="text" id="feedNome" class="form-control" placeholder="Ex: Raquel Sampaio" required>
+                                    <label class="form-label">Nome do Aluno (comece a digitar para buscar)</label>
+                                    <div style="position: relative;">
+                                        <input type="text" id="feedNome" class="form-control" placeholder="Ex: Raquel Sampaio" required autocomplete="off">
+                                        <div id="alunoSuggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: var(--dark-2); border: 1px solid var(--border); border-radius: 0 0 8px 8px; z-index: 10; max-height: 150px; overflow-y: auto; display: none;"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Foto do Aluno (URL)</label>
+                                    <input type="url" id="feedFoto" class="form-control" placeholder="https://images.unsplash.com/...">
+                                </div>
+                                <div class="form-group" style="display: flex; align-items: center; gap: 10px; padding-top: 20px;">
+                                    <input type="checkbox" id="feedAnonimo" onchange="toggleFeedbackAnonimo(this.checked)" style="width: 18px; height: 18px;">
+                                    <label for="feedAnonimo" class="form-label" style="margin-bottom: 0; cursor: pointer;">Tornar depoimento anônimo</label>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Unidade / Local</label>
@@ -1319,10 +1399,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Avaliação em Estrelas (1 a 5)</label>
+                                    <label class="form-label">Avaliação em Estrelas</label>
                                     <select id="feedEstrelas" class="form-control" required>
                                         <option value="★★★★★">★★★★★ (5 Estrelas)</option>
                                         <option value="★★★★☆">★★★★☆ (4 Estrelas)</option>
                                         <option value="★★★☆☆">★★★☆☆ (3 Estrelas)</option>
+                                        <option value="★★☆☆☆">★★☆☆☆ (2 Estrelas)</option>
+                                        <option value="★☆☆☆☆">★☆☆☆☆ (1 Estrela)</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -1341,7 +1424,14 @@
                         <div class="card-header">
                             <h3>Depoimentos Cadastrados (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="listaFeedbackAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
+                        <div id="listaFeedbackAdmin" class="skeleton-loading" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
+                            <div class="card skeleton-placeholder" style="height: 220px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 220px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 220px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 220px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 220px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 220px;"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -1378,7 +1468,14 @@
                         <div class="card-header">
                             <h3>Perguntas Cadastradas (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="listaFaqAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
+                        <div id="listaFaqAdmin" class="skeleton-loading" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
+                            <div class="card skeleton-placeholder" style="height: 150px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 150px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 150px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 150px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 150px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 150px;"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -1484,7 +1581,14 @@
                         <div class="card-header">
                             <h3>Professores no Site</h3>
                         </div>
-                        <div id="professoresList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;"></div>
+                        <div id="professoresList" class="skeleton-loading" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;">
+                            <div class="card skeleton-placeholder" style="height: 280px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 280px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 280px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 280px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 280px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 280px;"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -1543,7 +1647,14 @@
                         <div class="card-header">
                             <h3>Planos Ativos no Site (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="listaPlanosAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
+                        <div id="listaPlanosAdmin" class="skeleton-loading" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
+                            <div class="card skeleton-placeholder" style="height: 300px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 300px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 300px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 300px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 300px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 300px;"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -1588,7 +1699,14 @@
                         <div class="card-header">
                             <h3>Parceiros Cadastrados</h3>
                         </div>
-                        <div id="listaParceirosAdmin" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;"></div>
+                        <div id="listaParceirosAdmin" class="skeleton-loading" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+                            <div class="card skeleton-placeholder" style="height: 120px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 120px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 120px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 120px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 120px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 120px;"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -1642,7 +1760,14 @@
                         <div class="card-header">
                             <h3>Fotos Publicadas no Site (Arraste para Reordenar)</h3>
                         </div>
-                        <div id="galeriaList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;"></div>
+                        <div id="galeriaList" class="skeleton-loading" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                            <div class="card skeleton-placeholder" style="height: 200px;"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -1862,7 +1987,14 @@
                                     <th>% Gordura (Dobras)</th>
                                 </tr>
                             </thead>
-                            <tbody id="tabelaHistoricoAvaliacoesBody"></tbody>
+                            <tbody id="tabelaHistoricoAvaliacoesBody" class="skeleton-loading">
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                        <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -2083,8 +2215,15 @@
                                     <th>Tipo</th>
                                 </tr>
                             </thead>
-                            <tbody id="tabelaCatalogoExerciciosBody">
-                                <tr><td colspan="4" style="text-align: center;">Carregando biblioteca...</td></tr>
+                            <tbody id="tabelaCatalogoExerciciosBody" class="skeleton-loading">
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                        <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                        <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                        <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2107,8 +2246,14 @@
                                     <th>Objetivo Indicado</th>
                                 </tr>
                             </thead>
-                            <tbody id="tabelaMetodosListaBody">
-                                <tr><td colspan="3" style="text-align: center;">Carregando métodos...</td></tr>
+                            <tbody id="tabelaMetodosListaBody" class="skeleton-loading">
+                                <tr>
+                                    <td colspan="3">
+                                        <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                        <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                        <div class="skeleton-placeholder skeleton-text-line full"></div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -2137,7 +2282,7 @@
             .switch-container input:not(:checked) + .slider-btn::after { content: " (OFF)"; font-size: 0.55rem; }
             </style>
 
-            <script>
+            <script defer>
 
 window.adicionarExercicioDiretoFicha = function(nomeExercicio, videoUrl = '') {
     try {
@@ -2147,6 +2292,11 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, videoUrl = '') {
         }
 
         // Se o vídeo não foi passado diretamente, tenta buscar na biblioteca global
+        // NOTA DO DESIGNER: O uso de `prompt` é uma experiência brusca.
+        // Recomenda-se substituir por um modal customizado com campos de input e botões.
+        // Para esta iteração, focamos em feedback visual imediato.
+
+
         let videoUrlFinal = videoUrl || '';
         
         if (!videoUrlFinal && typeof window.bibliotecaGlobalAdmin !== 'undefined' && Array.isArray(window.bibliotecaGlobalAdmin)) {
@@ -2222,25 +2372,26 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, videoUrl = '') {
 };
 
             window.showToast = function(mensagem, tipo = 'success') {
-                const toastDiv = document.createElement('div');
-                toastDiv.style.position = 'fixed';
-                toastDiv.style.bottom = '20px';
-                toastDiv.style.right = '20px';
-                toastDiv.style.left = '20px';
-                toastDiv.style.maxWidth = '400px';
-                toastDiv.style.margin = '0 auto';
-                toastDiv.style.padding = '12px 20px';
-                toastDiv.style.backgroundColor = tipo === 'error' ? '#e74c3c' : '#2ecc71';
-                toastDiv.style.color = '#fff';
-                toastDiv.style.borderRadius = '8px';
-                toastDiv.style.zIndex = '9999';
-                toastDiv.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
-                toastDiv.style.textAlign = 'center';
-                toastDiv.innerText = mensagem;
+                const systemToast = document.getElementById('systemToast');
+                const toastText = document.getElementById('toastText');
+                if (!systemToast || !toastText) return;
+
+                toastText.textContent = mensagem;
+                systemToast.style.borderLeftColor = tipo === 'error' ? 'var(--danger)' : (tipo === 'warning' ? 'var(--warning)' : 'var(--primary)');
                 
-                document.body.appendChild(toastDiv);
-                setTimeout(() => toastDiv.remove(), 3000);
+                // Remove a classe 'show' para reiniciar a animação se já estiver visível
+                systemToast.classList.remove('show');
+                // Força o reflow para garantir que a animação seja reiniciada
+                void systemToast.offsetWidth; 
+                systemToast.classList.add('show');
+
+                // Oculta o toast após 3 segundos
+                setTimeout(() => {
+                    systemToast.classList.remove('show');
+                }, 3000);
             };
+
+
 
             let treinoAtualLetra = 'A';
             let exerciciosFichaMemoria = { A: [], B: [], C: [], D: [] };
@@ -2259,7 +2410,14 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, videoUrl = '') {
                 tbody.innerHTML = '';
                 const lista = exerciciosFichaMemoria[treinoAtualLetra] || [];
                 if (lista.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">Nenhum exercício no Treino ${treinoAtualLetra}. Clique em Adicionar.</td></tr>`;
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--gray);">
+                                Nenhum exercício no Treino ${treinoAtualLetra}. Clique em Adicionar.
+                                <div class="skeleton-placeholder skeleton-text-line full" style="margin-top: 10px;"></div>
+                            </td>
+                        </tr>
+                    `;
                     return;
                 }
                 lista.forEach((item, index) => {
@@ -2279,10 +2437,16 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, videoUrl = '') {
             window.renderizarTabelaExerciciosFicha = function() {
     const tbody = document.getElementById('tabelaExerciciosFichaBody');
     if (!tbody) return;
+
+    // Remove o skeleton loader antes de renderizar o conteúdo real
+    tbody.classList.remove('skeleton-loading');
     
     const lista = exerciciosFichaMemoria[treinoAtualLetra] || [];
     
     if (lista.length === 0) {
+        // Adiciona um placeholder de "nenhum exercício" se a lista estiver vazia
+        // e remove o skeleton-loading se ele ainda estiver lá
+        tbody.classList.remove('skeleton-loading');
         tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">Nenhum exercício no Treino ${treinoAtualLetra}. Clique em Adicionar.</td></tr>`;
         return;
     }
@@ -2313,7 +2477,14 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, videoUrl = '') {
             window.abrirModalExerciciosCatalogo = async function() {
                 document.getElementById('modalCatalogoExercicios').style.display = 'flex';
                 const tbody = document.getElementById('tabelaCatalogoExerciciosBody');
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--gray);">Carregando do Supabase...</td></tr>';
+                tbody.classList.add('skeleton-loading'); // Adiciona o skeleton loader
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4">
+                            <div class="skeleton-placeholder skeleton-text-line full"></div>
+                        </td>
+                    </tr>
+                `;
                 
                 try {
                     const { data: exList, error } = await _supabase.from('biblioteca_exercicios').select('*');
@@ -2321,11 +2492,13 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, videoUrl = '') {
                     if (error) throw error;
 
                     if (exList && exList.length > 0) {
+                        tbody.classList.remove('skeleton-loading'); // Remove o skeleton loader
                         tbody.innerHTML = '';
                         exList.forEach(e => {
                             tbody.innerHTML += `<tr><td><strong>${e.nome}</strong></td><td>${e.grupo_principal}</td><td>${e.equipamento}</td><td>${e.tipo}</td></tr>`;
                         });
                     } else {
+                        tbody.classList.remove('skeleton-loading');
                         tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--warning);">A tabela 'biblioteca_exercicios' está vazia no banco.</td></tr>`;
                     }
                 } catch(err) {
@@ -2336,6 +2509,10 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, videoUrl = '') {
 window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCompleto = null) {
     try {
         // Verifica se o nome foi passado
+        // NOTA DO DESIGNER: O uso de `prompt` é uma experiência brusca.
+        // Recomenda-se substituir por um modal customizado com campos de input e botões.
+        // Para esta iteração, focamos em feedback visual imediato.
+
         if (!nomeExercicio) {
             alert("Erro: Nome do exercício não informado.");
             return;
@@ -2419,6 +2596,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
                 if (elTrData) elTrData.value = `${dia}/${mes}/${ano}`;
 
                 exerciciosFichaMemoria = { A: [], B: [], C: [], D: [] };
+                document.getElementById('tabelaExerciciosFichaBody').classList.add('skeleton-loading'); // Adiciona skeleton
 
                 try {
                     const { data: treinoList } = await _supabase.from('treinos_alunos').select('*').eq('aluno_id', alunoId).eq('dia', 'Geral');
@@ -2480,6 +2658,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
                 }
 
                 document.getElementById('modalTreinoFiel').style.display = 'flex';
+                document.getElementById('tabelaExerciciosFichaBody').classList.remove('skeleton-loading'); // Remove skeleton
                 atualizarMapaAnatomico();
                 renderizarTabelaExerciciosFicha();
             };
@@ -2547,9 +2726,11 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
                     if (error || !exList || exList.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--warning);">Biblioteca vazia ou erro de conexão com o Supabase.</td></tr>';
                         return;
-                    }
+                    }                    
                     window._cacheSelecaoExercicios = exList;
                     renderizarSelecaoExercicios(exList);
+                    tbody.classList.remove('skeleton-loading'); // Remove skeleton
+
                 } catch(err) {
                     const tbody = document.getElementById('tbodySelecaoExercicios');
                     if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--danger);">Erro ao carregar biblioteca: ' + (err.message || err) + '</td></tr>';
@@ -2817,6 +2998,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
     };
 
     let planosCache = [];
+    let alunosCache = [];
 
     window.carregarOpcoesPlanosNoSelect = async function(selecionado = '') {
         const select = document.getElementById('alunoPlano');
@@ -2864,12 +3046,21 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         if (!tbody) return;
         tbody.innerHTML = '';
 
+        try {
+            alunosCache = alunos || [];
+        } catch (e) {
+            alunosCache = [];
+        }
+
+        tbody.classList.add('skeleton-loading'); // Adiciona skeleton
         if (!alunos || alunos.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--gray);">Nenhum aluno cadastrado.</td></tr>';
             const countEl = document.getElementById('countAlunos');
             if (countEl) countEl.textContent = '0';
             return;
         }
+
+        tbody.classList.remove('skeleton-loading'); // Remove skeleton
 
         const usuarioLogado = JSON.parse(sessionStorage.getItem('corpofitness_logado')) || { nivel: 'master' };
         const nivelLogado = usuarioLogado.nivel || 'master';
@@ -2957,6 +3148,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
     window.abrirFormAluno = async function() {
         const formDinamico = document.getElementById('formAlunoDinamico');
         if (formDinamico) formDinamico.reset();
+        alunosCache = await _supabase.from('alunos').select('id, nome, email, tel');
         document.getElementById('alunoId').value = "-1";
         document.getElementById('tituloFormAluno').textContent = "Cadastrar Novo Aluno";
         await window.carregarOpcoesPlanosNoSelect();
@@ -2994,6 +3186,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         const id = document.getElementById('alunoId').value;
         const dados = {
             nome: document.getElementById('alunoNome').value,
+            // ... (outros campos)
             email: document.getElementById('alunoEmail').value,
             tel: document.getElementById('alunoTel').value,
             plano: document.getElementById('alunoPlano').value,
@@ -3001,6 +3194,10 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         };
 
         try {
+            const btn = e.submitter;
+            btn.textContent = 'Salvando...';
+            btn.disabled = true;
+
             let res = id !== "-1" ? await _supabase.from('alunos').update(dados).eq('id', id) : await _supabase.from('alunos').insert([dados]);
             if (res.error) throw new Error(res.error.message);
             fecharFormAluno();
@@ -3008,7 +3205,11 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
             window.showToast("Aluno salvo com sucesso!");
         } catch (err) {
             alert("Erro ao salvar aluno: " + err.message);
+        } finally {
+            e.submitter.textContent = 'Salvar Aluno';
+            e.submitter.disabled = false;
         }
+
     });
 
     window.fecharModal = function(modalId) {
@@ -3019,6 +3220,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
     window.carregarEstruturaAdmin = async function() {
         const { data: itens, error } = await _supabase.from('estrutura').select('*').order('ordem', { ascending: true });
         if (error) return;
+        document.getElementById('listaEstruturaAdmin').classList.remove('skeleton-loading'); // Remove skeleton
         const container = document.getElementById('listaEstruturaAdmin');
         if (!container) return;
         container.innerHTML = '';
@@ -3086,6 +3288,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         const { data: mods, error } = await _supabase.from('modalidades').select('*').order('ordem', { ascending: true });
         if (error) return;
         const container = document.getElementById('listaModalidadesAdmin');
+        container.classList.remove('skeleton-loading'); // Remove skeleton
         if (!container) return;
         container.innerHTML = '';
         (mods || []).forEach(m => {
@@ -3160,6 +3363,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
     window.carregarFeedbackAdmin = async function() {
         const { data: feeds, error } = await _supabase.from('feedbacks').select('*').order('ordem', { ascending: true });
         if (error) return;
+        document.getElementById('listaFeedbackAdmin').classList.remove('skeleton-loading'); // Remove skeleton
         const container = document.getElementById('listaFeedbackAdmin');
         if (!container) return;
         container.innerHTML = '';
@@ -3189,6 +3393,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
     window.abrirFormFeedback = function() {
         document.getElementById('formFeedbackDinamico').reset();
         document.getElementById('feedId').value = "-1";
+        document.getElementById('feedAlunoId').value = "";
         document.getElementById('tituloFormFeedback').textContent = "Cadastrar Depoimento";
         document.getElementById('cardFormFeedback').style.display = "block";
     };
@@ -3202,6 +3407,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         document.getElementById('feedNome').value = f.nome;
         document.getElementById('feedUnidade').value = f.unidade;
         document.getElementById('feedEstrelas').value = f.estrelas;
+        document.getElementById('feedAlunoId').value = f.aluno_id || '';
         document.getElementById('feedFoto').value = f.foto;
         document.getElementById('feedTexto').value = f.texto;
         document.getElementById('tituloFormFeedback').textContent = "Editar Depoimento";
@@ -3221,6 +3427,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         const id = document.getElementById('feedId').value;
         const dados = {
             nome: document.getElementById('feedNome').value,
+            aluno_id: document.getElementById('feedAlunoId').value || null,
             unidade: document.getElementById('feedUnidade').value,
             estrelas: document.getElementById('feedEstrelas').value,
             foto: document.getElementById('feedFoto').value,
@@ -3233,9 +3440,54 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         window.showToast("Depoimento salvo com sucesso!");
     });
 
+    // Lógica de Autocomplete para Alunos no Formulário de Feedback
+    const inputFeedNome = document.getElementById('feedNome');
+    const suggestionsBox = document.getElementById('alunoSuggestions');
+
+    if (inputFeedNome && suggestionsBox) {
+        inputFeedNome.addEventListener('input', () => {
+            const termo = inputFeedNome.value.toLowerCase();
+            if (termo.length < 2) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            const sugestoes = alunosCache.filter(aluno => 
+                aluno.nome.toLowerCase().includes(termo)
+            );
+
+            suggestionsBox.innerHTML = '';
+            if (sugestoes.length > 0) {
+                sugestoes.slice(0, 5).forEach(aluno => {
+                    const div = document.createElement('div');
+                    div.textContent = aluno.nome;
+                    div.style.cssText = 'padding: 10px; cursor: pointer; border-bottom: 1px solid var(--border);';
+                    div.onmouseover = () => div.style.backgroundColor = 'var(--primary)';
+                    div.onmouseout = () => div.style.backgroundColor = '';
+                    div.onclick = () => {
+                        inputFeedNome.value = aluno.nome;
+                        document.getElementById('feedAlunoId').value = aluno.id;
+                        suggestionsBox.style.display = 'none';
+                    };
+                    suggestionsBox.appendChild(div);
+                });
+                suggestionsBox.style.display = 'block';
+            } else {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!inputFeedNome.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+    }
+
     window.carregarFaqAdmin = async function() {
         const { data: faqs, error } = await _supabase.from('faq').select('*').order('ordem', { ascending: true });
         if (error) return;
+        document.getElementById('listaFaqAdmin').classList.remove('skeleton-loading'); // Remove skeleton
         const container = document.getElementById('listaFaqAdmin');
         if (!container) return;
         container.innerHTML = '';
@@ -3301,6 +3553,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         if (error) return;
 
         const container = document.getElementById('listaPlanosAdmin');
+        container.classList.remove('skeleton-loading'); // Remove skeleton
         if (!container) return;
 
         container.innerHTML = '';
@@ -3351,6 +3604,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         const container = document.getElementById('listaParceirosAdmin');
         if (!container) return;
         try {
+            container.classList.add('skeleton-loading'); // Adiciona skeleton
             const { data: parceiros, error } = await _supabase.from('parceiros').select('id,nome,ordem').order('ordem', { ascending: true });
             container.innerHTML = '';
             if (error) {
@@ -3361,6 +3615,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
                 container.innerHTML = `<p style="color:var(--gray); grid-column: 1/-1;">Nenhum parceiro cadastrado ainda.</p>`;
                 return;
             }
+            container.classList.remove('skeleton-loading'); // Remove skeleton
             parceiros.forEach((p) => {
                 container.innerHTML += `
                     <div style="background: var(--dark-2); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
@@ -3582,6 +3837,23 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         if (el) {
             const agora = new Date();
             el.textContent = `${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`;
+        }
+    };
+
+    window.toggleFeedbackAnonimo = function(isAnonimo) {
+        const inputNome = document.getElementById('feedNome');
+        const inputFoto = document.getElementById('feedFoto');
+        const inputAlunoId = document.getElementById('feedAlunoId');
+
+        if (isAnonimo) {
+            inputNome.value = 'Aluno(a) Corpofitness';
+            inputFoto.value = '';
+            inputAlunoId.value = '';
+            inputNome.disabled = true;
+            inputFoto.disabled = true;
+        } else {
+            inputNome.disabled = false;
+            inputFoto.disabled = false;
         }
     };
 
@@ -3864,6 +4136,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
                 const { data: db } = await _supabase.from('galeria').select('*').order('ordem', { ascending: true });
                 const container = document.getElementById('galeriaList');
                 if(!container) return;
+                container.classList.remove('skeleton-loading'); // Remove skeleton
                 container.innerHTML = '';
                 (db || []).forEach((f) => {
                     container.innerHTML += `
@@ -3915,6 +4188,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
             window.carregarProfessores = async function() {
                 const { data: db } = await _supabase.from('professores').select('*').order('created_at', { ascending: false });
                 const container = document.getElementById('professoresList');
+                container.classList.remove('skeleton-loading'); // Remove skeleton
                 if(!container) return;
                 container.innerHTML = '';
                 (db || []).forEach((p) => {
@@ -3969,6 +4243,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
                 const { data: db } = await _supabase.from('noticias').select('*').order('created_at', { ascending: false });
                 const tbody = document.getElementById('tabelaNoticiasBody');
                 if(!tbody) return;
+                tbody.classList.remove('skeleton-loading'); // Remove skeleton
                 tbody.innerHTML = '';
                 if (!db || db.length === 0) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--gray);">Nenhuma notícia.</td></tr>';
                 else {
@@ -4020,6 +4295,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
                 const { data: db } = await _supabase.from('banners').select('*').order('created_at', { ascending: false });
                 const tbody = document.getElementById('tabelaBannersBody');
                 if(!tbody) return;
+                tbody.classList.remove('skeleton-loading'); // Remove skeleton
                 tbody.innerHTML = '';
                 if (!db || db.length === 0) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--gray);">Nenhum banner.</td></tr>';
                 else {
@@ -4071,6 +4347,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
             window.carregarUsuarios = async function() {
                 const { data: db } = await _supabase.from('usuarios').select('*').order('created_at', { ascending: false });
                 const tbody = document.getElementById('tabelaUsuariosBody');
+                tbody.classList.remove('skeleton-loading'); // Remove skeleton
                 if(!tbody) return;
                 tbody.innerHTML = '';
                 (db || []).forEach((u, i) => {
@@ -4125,6 +4402,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
                 const dashBody = document.getElementById('dashboardUltimosContatos');
                 if(tbody) tbody.innerHTML = '';
                 if(dashBody) dashBody.innerHTML = '';
+                tbody.classList.remove('skeleton-loading'); // Remove skeleton
 
                 if (!db || db.length === 0) {
                     if(tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--gray);">Nenhuma mensagem cadastrada.</td></tr>';
@@ -4609,6 +4887,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
         if (!tbody) return;
 
         try {
+            tbody.classList.add('skeleton-loading'); // Adiciona skeleton
             const { data: treinos } = await _supabase.from('treinos_alunos').select('*');
             const { data: alunos } = await _supabase.from('alunos').select('*');
 
@@ -4618,6 +4897,7 @@ window.adicionarExercicioDiretoFicha = function(nomeExercicio, dadosExercicioCom
                 return;
             }
 
+            tbody.classList.remove('skeleton-loading'); // Remove skeleton
             tbody.innerHTML = '';
             let totalAlertas = 0;
             const hoje = new Date();
@@ -4922,6 +5202,7 @@ window.carregarBiblioteca = async function() {
         const tbody = document.getElementById('tabelaBibliotecaBody');
         if (!tbody) return;
         
+        tbody.classList.add('skeleton-loading'); // Adiciona skeleton
         if (error || !exercicios || exercicios.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--gray);">Nenhum exercício cadastrado na biblioteca.</td></tr>';
             return;
@@ -4929,6 +5210,7 @@ window.carregarBiblioteca = async function() {
 
         tbody.innerHTML = '';
         exercicios.forEach(ex => {
+            tbody.classList.remove('skeleton-loading'); // Remove skeleton
             const videoPreview = ex.video_url && ex.video_url.trim() !== "" ? 
                 `<button onclick="abrirVideoDuvidaAdmin('${ex.nome.replace(/'/g, "\\'")}', '${ex.video_url.replace(/'/g, "\\'")}')" class="btn-action-bar" style="background: var(--primary); color: #fff;">🎥 Ver</button>` : 
                 '<span style="color: var(--gray);">Sem vídeo</span>';
@@ -5100,6 +5382,7 @@ document.getElementById('formExercicioDinamico')?.addEventListener('submit', asy
     } finally {
         btnSalvar.disabled = false;
         btnSalvar.textContent = 'Salvar Exercício no Supabase';
+        btnSalvar.classList.remove('btn-loading'); // Remove loading class
     }
 });
 
@@ -5118,6 +5401,7 @@ document.getElementById('formExercicioDinamico')?.addEventListener('submit', asy
     e.preventDefault();
     const id = document.getElementById('exercicioId').value;
     const btnSalvar = document.getElementById('btnSalvarExercicio');
+    btnSalvar.textContent = 'Salvando...'; // Add loading text
     btnSalvar.disabled = true;
 
     try {

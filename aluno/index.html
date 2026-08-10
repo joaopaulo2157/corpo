@@ -6,223 +6,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal do Aluno | Corpofitness Premium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
+
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <script>
-        const NEXT_PUBLIC_SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
-        const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
-        const _supabase = supabase.createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
-    </script>
 
+    <!-- 1. Critical CSS: Estilos essenciais para a tela de login serem carregados instantaneamente -->
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-light: #3b82f6;
-            --primary-glow: rgba(37, 99, 235, 0.15);
-            --bg-main: #090d16;
-            --bg-surface: #111827;
-            --bg-card: #1f2937;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
-            --accent-success: #10b981;
-            --accent-warning: #f59e0b;
-            --accent-danger: #ef4444;
-            --radius-lg: 20px;
-            --radius-md: 12px;
+            --primary: #2563eb; --primary-light: #3b82f6; --primary-glow: rgba(37, 99, 235, 0.15);
+            --bg-main: #090d16; --bg-surface: #111827; --bg-card: #1f2937;
+            --border-color: rgba(255, 255, 255, 0.08); --text-main: #f9fafb; --text-muted: #9ca3af;
+            --accent-danger: #ef4444; --radius-lg: 20px; --radius-md: 12px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
-
+        body { background-color: var(--bg-main); color: var(--text-main); }
         #alunoLoginOverlay {
             position: fixed; inset: 0;
             background: radial-gradient(circle at 50% 20%, #1e3a8a 0%, var(--bg-main) 70%);
             display: flex; align-items: center; justify-content: center;
             z-index: 9999; padding: 20px;
         }
-
         .login-card {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            padding: 45px 35px;
-            border-radius: var(--radius-lg);
-            width: 100%; max-width: 420px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            text-align: center;
+            background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color); padding: 45px 35px; border-radius: var(--radius-lg);
+            width: 100%; max-width: 420px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); text-align: center;
         }
-
-        .login-logo {
-            font-family: 'Anton', sans-serif;
-            font-size: 2rem;
-            letter-spacing: 1px;
-            color: var(--text-main);
-            margin-bottom: 8px;
-        }
+        .login-logo { font-family: 'Anton', sans-serif; font-size: 2rem; letter-spacing: 1px; color: var(--text-main); margin-bottom: 8px; }
         .login-logo span { color: var(--primary-light); }
-
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-label { display: block; font-weight: 600; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
         .form-control {
-            width: 100%; padding: 14px 18px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: 0.95rem; color: var(--text-main);
-            transition: var(--transition);
+            width: 100%; padding: 14px 18px; background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color); border-radius: var(--radius-md);
+            font-size: 0.95rem; color: var(--text-main); transition: var(--transition);
         }
-        .form-control:focus {
-            outline: none; border-color: var(--primary-light);
-            background: rgba(255, 255, 255, 0.07);
-            box-shadow: 0 0 0 4px var(--primary-glow);
-        }
-
+        .form-control:focus { outline: none; border-color: var(--primary-light); background: rgba(255, 255, 255, 0.07); box-shadow: 0 0 0 4px var(--primary-glow); }
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: #ffffff; border: none; padding: 14px 24px;
-            border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 600;
-            cursor: pointer; width: 100%; transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #ffffff; border: none;
+            padding: 14px 24px; border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; width: 100%; transition: var(--transition); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
         .btn-primary:hover { transform: translateY(-2px); }
-
-        #alunoAppContainer { display: none; flex-direction: column; min-height: 100vh; }
-
-        header {
-            background: rgba(17, 24, 39, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 16px 40px; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 100;
-        }
-
-        .brand-title { font-family: 'Anton', sans-serif; font-size: 1.4rem; letter-spacing: 1px; }
-        .brand-title span { color: var(--primary-light); }
-
-        .header-actions { display: flex; align-items: center; gap: 16px; }
-
-        .user-pill {
-            display: flex; align-items: center; gap: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            padding: 6px 16px 6px 6px; border-radius: 50px;
-        }
-        .user-avatar {
-            width: 36px; height: 36px; background: var(--primary);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 0.85rem;
-        }
-
-        .btn-sair {
-            background: transparent; color: var(--accent-danger);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 8px 16px; border-radius: 20px; font-size: 0.82rem;
-            font-weight: 600; cursor: pointer; transition: var(--transition);
-        }
-        .btn-sair:hover { background: rgba(239, 68, 68, 0.1); }
-
-        .main-content {
-            padding: 40px; max-width: 1280px; width: 100%; margin: 0 auto; flex-grow: 1;
-        }
-
-        .notice-banner {
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(16, 185, 129, 0.1));
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 16px 24px; border-radius: var(--radius-md);
-            margin-bottom: 30px; display: flex; align-items: center; gap: 15px;
-        }
-        .notice-banner i { color: var(--primary-light); font-size: 1.2rem; }
-
-        .welcome-card-header {
-            background: var(--bg-surface); border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg); padding: 30px; margin-bottom: 25px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;
-        }
-        .welcome-banner h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; }
-        .welcome-banner p { color: var(--text-muted); font-size: 0.95rem; }
-
-        .btn-treino-portal {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: #ffffff; padding: 14px 26px; border-radius: 50px;
-            font-size: 0.95rem; font-weight: 700; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 10px;
-            box-shadow: 0 8px 20px var(--primary-glow); transition: var(--transition);
-        }
-        .btn-treino-portal:hover { transform: translateY(-2px); box-shadow: 0 12px 25px var(--primary-glow); }
-
-        .dashboard-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px; margin-bottom: 24px;
-        }
-
-        .card {
-            background: var(--bg-surface); border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg); padding: 28px; transition: var(--transition);
-        }
-
-        .card-header {
-            display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
-        }
-        .card-title {
-            font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--text-main);
-        }
-        .card-title i { color: var(--primary-light); font-size: 1.1rem; }
-
-        .metrics-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
-        }
-        .metric-box {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            padding: 16px; border-radius: var(--radius-md); text-align: center;
-        }
-        .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
-        .metric-value { font-size: 1.3rem; font-weight: 700; color: var(--text-main); }
-
-        .professor-box {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            padding: 20px; border-radius: var(--radius-md); display: flex;
-            align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;
-        }
-        .btn-whatsapp {
-            background: #25d366; color: #ffffff; border: none; padding: 10px 20px;
-            border-radius: var(--radius-md); font-weight: 600; font-size: 0.88rem;
-            display: inline-flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none;
-            transition: var(--transition);
-        }
-        .btn-whatsapp:hover { background: #20ba5a; }
-
-        footer {
-            text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.82rem;
-            border-top: 1px solid var(--border-color); background: var(--bg-surface); margin-top: auto;
-        }
-
-        /* RESPONSIVIDADE TOTAL PARA CELULARES E TABLETS */
-        @media (max-width: 768px) {
-            header { padding: 12px 15px; flex-direction: column; gap: 10px; text-align: center; }
-            .main-content { padding: 15px; }
-            .welcome-card-header { padding: 20px; flex-direction: column; text-align: center; }
-            .metrics-grid { grid-template-columns: 1fr; }
-            .dashboard-grid { grid-template-columns: 1fr; }
-            table { width: 100%; display: block; overflow-x: auto; }
-        }
+        #alunoAppContainer { display: none; } /* Esconde o app principal inicialmente */
     </style>
+
+    <!-- 2. Carregamento assíncrono do CSS completo -->
+    <link rel="stylesheet" href="css/style.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/style.css"></noscript>
 </head>
 <body>
     <div id="alunoLoginOverlay">
@@ -252,7 +90,7 @@
     <div id="alunoAppContainer">
         <header>
             <div class="brand-title">
-                <img src="../img/logo.png" alt="Corpofitness Premium" class="logo-img" width="150" onerror="this.src='https://via.placeholder.com/150x45?text=CORPOFITNESS';">
+                <img src="img/logo.png" alt="Corpofitness Premium" class="logo-img" width="150" loading="lazy" onerror="this.src='https://via.placeholder.com/150x45?text=CORPOFITNESS';">
             </div>
             <div class="header-actions">
                 <div class="user-pill">
@@ -269,7 +107,7 @@
                     <h1 id="tituloBoasVindas">Bem-vindo de volta! 💪</h1>
                     <p>Acompanhe seu Treino por aqui.</p>
                 </div>
-                <a href="treinos.html" class="btn-treino-portal">
+                <a href="treinos.html" class="btn-treino-portal" style="margin-left: 10px;">
                     <i class="fa-solid fa-dumbbell"></i> Acessar Meu Plano de Treino ↗
                 </a>
             </div>
@@ -277,46 +115,48 @@
             <div class="dashboard-grid">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Progresso Corporal (Bioimpedância)</div>
+                        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Sua Evolução</div>
                     </div>
-                    <div class="metrics-grid" style="margin-bottom: 20px;">
-                        <div class="metric-box">
-                            <div class="metric-label">Peso Atual</div>
-                            <div class="metric-value" id="lblPeso">-- kg</div>
-                        </div>
-                        <div class="metric-box">
-                            <div class="metric-label">Altura</div>
-                            <div class="metric-value" id="lblAltura">-- m</div>
-                        </div>
-                        <div class="metric-box">
-                            <div class="metric-label">% Gordura</div>
-                            <div class="metric-value" id="lblGordura">-- %</div>
-                        </div>
-                        <div class="metric-box">
-                            <div class="metric-label">Massa Magra</div>
-                            <div class="metric-value" id="lblMassa">-- kg</div>
-                        </div>
+                    <div class="chart-container" id="containerGraficoPeso">
+                        <canvas id="graficoEvolucaoPeso"></canvas>
                     </div>
-                    <p style="font-size: 0.82rem; color: var(--text-muted); text-align: center;">Medidas aferidas pelo professor responsável.</p>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title"><i class="fa-solid fa-headset"></i> Suporte & Professor</div>
+                        <div class="card-title"><i class="fa-solid fa-bullseye"></i> Metas Ativas</div>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 16px;">
-                        <p style="font-size: 0.9rem; color: var(--text-muted);">Dúvidas sobre o plano, renovações ou exercícios? Fale com nossa equipe técnica.</p>
-                        <div class="professor-box">
-                            <div>
-                                <strong style="display: block; font-size: 0.95rem; color: var(--text-main);">Professor / Recepção</strong>
-                                <span style="font-size: 0.8rem; color: var(--text-muted);">Atendimento via WhatsApp</span>
-                            </div>
-                            <a href="https://wa.me/5500000000000?text=Olá,%20sou%20aluno%20da%20Corpofitness." target="_blank" class="btn-whatsapp">
-                                <i class="fa-brands fa-whatsapp" style="font-size: 1.1rem;"></i> Chamar no WhatsApp
-                            </a>
-                        </div>
+                    <div class="goals-grid" id="containerMetas">
+                        <!-- Metas serão carregadas aqui -->
+                        <div class="skeleton-placeholder" style="height: 180px; border-radius: var(--radius-md);"></div>
+                        <div class="skeleton-placeholder" style="height: 180px; border-radius: var(--radius-md);"></div>
                     </div>
                 </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fa-solid fa-scale-balanced"></i> Última Avaliação Corporal</div>
+                </div>
+                <div class="metrics-grid" style="margin-bottom: 20px;">
+                    <div class="metric-box">
+                        <div class="metric-label">Peso Atual</div>
+                        <div class="metric-value" id="lblPeso"><div class="skeleton-placeholder skeleton-text-line short" style="margin: 5px auto;"></div></div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Altura</div>
+                        <div class="metric-value" id="lblAltura"><div class="skeleton-placeholder skeleton-text-line short" style="margin: 5px auto;"></div></div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">% Gordura</div>
+                        <div class="metric-value" id="lblGordura"><div class="skeleton-placeholder skeleton-text-line short" style="margin: 5px auto;"></div></div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Massa Magra</div>
+                        <div class="metric-value" id="lblMassa"><div class="skeleton-placeholder skeleton-text-line short" style="margin: 5px auto;"></div></div>
+                    </div>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); text-align: center;">Medidas aferidas pelo professor responsável.</p>
             </div>
         </div>
 
@@ -339,7 +179,7 @@
     </div>
 
     <!-- POP-UP DE ALERTA DE VENCIMENTO DE 3 MESES PARA O ALUNO -->
-    <div id="modalPopUpVencimentoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
+    <div id="modalPopUpVencimentoAluno" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.4s ease; pointer-events: none;">
         <div style="background: var(--bg-card, #1f2937); border: 1px solid var(--accent-warning, #f59e0b); border-radius: var(--radius-lg, 20px); width: 100%; max-width: 450px; padding: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.7); position: relative;">
             <div style="font-size: 3rem; color: var(--accent-warning, #f59e0b); margin-bottom: 15px;">
                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -355,6 +195,10 @@
     </div>
 
     <script>
+        const NEXT_PUBLIC_SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
+        const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
+        const _supabase = supabase.createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+
     let alunoAtualId = null;
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -393,6 +237,7 @@
                     }
 
                     sessionStorage.setItem('corpofitness_aluno_logado', JSON.stringify(aluno));
+                    sessionStorage.setItem('corpofitness_aluno_id', aluno.id); // Garante que o ID está na sessão
                     carregarPortalAluno(aluno);
 
                 } catch (err) {
@@ -413,13 +258,28 @@
         document.getElementById('headerAvatar').textContent = aluno.nome.substring(0, 2).toUpperCase();
         document.getElementById('tituloBoasVindas').textContent = `Olá, ${aluno.nome.split(' ')[0]}! 💪`;
 
+        // Ativa o skeleton antes de buscar os dados
+        document.getElementById('lblPeso').innerHTML = '<div class="skeleton-placeholder skeleton-text-line short" style="margin: 5px auto;"></div>';
+        document.getElementById('lblAltura').innerHTML = '<div class="skeleton-placeholder skeleton-text-line short" style="margin: 5px auto;"></div>';
+        document.getElementById('lblGordura').innerHTML = '<div class="skeleton-placeholder skeleton-text-line short" style="margin: 5px auto;"></div>';
+        document.getElementById('lblMassa').innerHTML = '<div class="skeleton-placeholder skeleton-text-line short" style="margin: 5px auto;"></div>';
+
         try {
-            const { data: av } = await _supabase.from('avaliacoes_fisicas').select('*').eq('aluno_id', aluno.id).single();
+            // Carrega os gráficos e metas
+            carregarGraficoEvolucao(aluno.id);
+            carregarMetas(aluno.id);
+
+            const { data: av } = await _supabase.from('avaliacoes_fisicas').select('*').eq('aluno_id', aluno.id).order('created_at', { ascending: false }).limit(1).single();
             if (av) {
                 document.getElementById('lblPeso').textContent = (av.peso || '--') + ' kg';
                 document.getElementById('lblAltura').textContent = (av.altura || '--') + ' m';
                 document.getElementById('lblGordura').textContent = (av.gordura || '--') + ' %';
                 document.getElementById('lblMassa').textContent = (av.massa || '--') + ' kg';
+            } else {
+                document.getElementById('lblPeso').textContent = '-- kg';
+                document.getElementById('lblAltura').textContent = '-- m';
+                document.getElementById('lblGordura').textContent = '-- %';
+                document.getElementById('lblMassa').textContent = '-- kg';
             }
         } catch (err) {}
 
@@ -489,13 +349,17 @@
                 } else {
                     textoPopUp.innerHTML = `O seu ciclo atual de 3 meses completará o prazo em <strong>${formatoVenc}</strong> (faltam ${diasRestantes} dias). Prepare-se para a sua reavaliação corporal com o professor.`;
                 }
-                modalPopUp.style.display = 'flex';
+                modalPopUp.style.display = 'flex'; // Torna visível para a animação
+                setTimeout(() => {
+                    modalPopUp.style.opacity = '1';
+                    modalPopUp.style.pointerEvents = 'auto';
+                }, 50); // Pequeno delay para garantir a transição
             } else {
                 modalPopUp.style.display = 'none';
             }
 
         } catch (err) {
-            console.error("Erro ao verificar pop-up de vencimento do aluno:", err);
+            // Silencia o erro se o aluno não tiver treinos, o que é um estado válido.
         }
     };
 
@@ -503,6 +367,105 @@
         const modalPopUp = document.getElementById('modalPopUpVencimentoAluno');
         if (modalPopUp) modalPopUp.style.display = 'none';
     };
+
+    async function carregarGraficoEvolucao(alunoId) {
+        const container = document.getElementById('containerGraficoPeso');
+        const ctx = document.getElementById('graficoEvolucaoPeso').getContext('2d');
+
+        try {
+            const { data, error } = await _supabase
+                .from('avaliacoes_fisicas')
+                .select('created_at, peso, gordura')
+                .eq('aluno_id', alunoId)
+                .order('created_at', { ascending: true });
+
+            if (error) throw error;
+
+            if (!data || data.length < 2) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 40px 0;">Registre pelo menos duas avaliações para ver seu gráfico de progresso.</p>';
+                return;
+            }
+
+            const labels = data.map(d => new Date(d.created_at).toLocaleDateString('pt-BR'));
+            const pesos = data.map(d => d.peso);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Evolução do Peso (kg)',
+                        data: pesos,
+                        borderColor: 'var(--primary-light)',
+                        backgroundColor: 'var(--primary-glow)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#fff',
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: false, ticks: { color: 'var(--text-muted)' }, grid: { color: 'var(--border-color)' } },
+                        x: { ticks: { color: 'var(--text-muted)' }, grid: { color: 'var(--border-color)' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+        } catch (err) {
+            container.innerHTML = '<p style="text-align: center; color: var(--accent-danger);">Erro ao carregar dados do gráfico.</p>';
+        }
+    }
+
+    async function carregarMetas(alunoId) {
+        const container = document.getElementById('containerMetas');
+        container.innerHTML = `
+            <div class="skeleton-placeholder" style="height: 180px; border-radius: var(--radius-md);"></div>
+            <div class="skeleton-placeholder" style="height: 180px; border-radius: var(--radius-md);"></div>
+        `;
+
+        // Simulação de dados de metas, pois a tabela ainda não existe
+        setTimeout(() => {
+            const metasSimuladas = [
+                { label: 'Frequência Semanal', atual: 3, total: 5 },
+                { label: 'Desafio do Mês', atual: 12, total: 20 }
+            ];
+
+            container.innerHTML = '';
+            metasSimuladas.forEach(meta => {
+                const percentual = (meta.atual / meta.total) * 100;
+                container.innerHTML += `
+                    <div>
+                        <svg class="progress-ring" width="120" height="120" viewBox="0 0 120 120">
+                            <circle class="progress-ring-circle-bg" stroke="var(--bg-card)" stroke-width="10" fill="transparent" r="50" cx="60" cy="60"/>
+                            <circle class="progress-ring-circle" stroke="var(--primary-light)" stroke-width="10" fill="transparent" r="50" cx="60" cy="60"
+                                style="stroke-dasharray: ${2 * Math.PI * 50}; stroke-dashoffset: ${2 * Math.PI * 50 * (1 - percentual / 100)};"
+                            />
+                            <text x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="20" font-weight="bold" fill="var(--text-main)">
+                                ${meta.atual}/${meta.total}
+                            </text>
+                        </svg>
+                        <div class="progress-ring-label">${meta.label}</div>
+                    </div>
+                `;
+            });
+
+            // Adiciona estilos para o anel de progresso
+            const style = document.createElement('style');
+            style.textContent = `
+                .progress-ring-circle {
+                    transition: stroke-dashoffset 0.8s ease-out;
+                    transform: rotate(-90deg);
+                    transform-origin: 50% 50%;
+                }
+            `;
+            document.head.appendChild(style);
+
+        }, 1500);
+    }
     </script>
 </body>
 </html>

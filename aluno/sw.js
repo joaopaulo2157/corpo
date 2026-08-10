@@ -5,6 +5,7 @@ const CACHE_NAME = 'corpofitness-aluno-v1';
 const STATIC_ASSETS = [
     'index.html',
     'treinos.html',
+    'metas.html',
     'progresso.html',
     'agendamentos.html',
     'financeiro.html',

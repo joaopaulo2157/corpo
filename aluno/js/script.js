@@ -1,22 +1,4 @@
-function mostrarToast(mensagem, tipo = 'info') {
-    let container = document.getElementById('toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        document.body.appendChild(container);
-    }
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${tipo}`;
-    
-    let icone = 'fa-info-circle';
-    if (tipo === 'success') icone = 'fa-check-circle';
-    if (tipo === 'error') icone = 'fa-triangle-exclamation';
-
-    toast.innerHTML = `<i class="fa-solid ${icone}"></i> <span>${mensagem}</span>`;
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
-}
+// Este arquivo JS está vazio porque o script principal do portal do aluno
+// foi movido para o final do aluno/index.html para melhor performance.
+// Scripts específicos de outras páginas (treinos.html, progresso.html, etc.)
+// permanecem em seus respectivos arquivos HTML.

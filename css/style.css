@@ -1626,10 +1626,17 @@ DEPOIMENTOS
 
         .track-down {
             animation: scrollDown 34s linear infinite;
+            animation: scrollDown 32s linear infinite;
         }
 
         .track-up-slow {
             animation: scrollUp 32s linear infinite;
+            animation: scrollUpSlow 36s linear infinite;
+        }
+
+        @keyframes scrollUpSlow {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
         }
 
         .depo-track-vertical:hover {
@@ -1644,6 +1651,8 @@ DEPOIMENTOS
         @keyframes scrollDown {
             0% { transform: translateY(-50%); }
             100% { transform: translateY(0); }
+            0% { transform: translateY(-50%); } /* Inicia da metade para o loop */
+            100% { transform: translateY(0); } /* Termina no início */
         }
 
         /* Estilo Individual do Card de Depoimento */
@@ -2378,256 +2387,6 @@ ANIMAÇÕES UTILITÁRIAS
 }
 
 /*==================================================
-RESPONSIVO — TABLETS & MOBILE
-==================================================*/
-@media (max-width: 991px) {
-    header .container {
-        min-height: 90px;
-        padding-top: 12px;
-        padding-bottom: 12px;
-    }
-
-    header.scrolled .container {
-        min-height: 90px;
-        padding-top: 12px;
-        padding-bottom: 12px;
-    }
-
-    .logo-img {
-        width: 150px;
-        max-height: 68px;
-    }
-
-    nav {
-        position: fixed;
-        top: 90px;
-        left: -100%;
-        width: 100%;
-        height: calc(100vh - 90px);
-        background: rgba(8, 19, 31, 0.97);
-        backdrop-filter: blur(24px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-        z-index: 999;
-    }
-
-    nav.active {
-        left: 0;
-    }
-
-    nav ul {
-        flex-direction: column;
-        gap: 32px;
-        text-align: center;
-    }
-
-    nav a {
-        font-size: 1.35rem;
-    }
-
-    .menu-mobile {
-        display: block;
-    }
-
-    .btn-header {
-        display: none;
-    }
-
-    .hero {
-        text-align: center;
-    }
-
-    .hero-content {
-        margin: 0 auto;
-        padding-top: 110px;
-    }
-
-    .hero-buttons {
-        justify-content: center;
-    }
-
-    .hero-info {
-        justify-content: center;
-    }
-
-    .contador .container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .contato-grid {
-        grid-template-columns: 1fr;
-        gap: 50px;
-    }
-
-    .footer-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    section {
-        padding: 90px 0;
-    }
-
-    .hero {
-        min-height: 96vh;
-        height: auto;
-        padding-bottom: 80px;
-    }
-
-    .hero h1 {
-        font-size: clamp(2.8rem, 12vw, 3.6rem);
-    }
-
-    .hero p {
-        font-size: 1.05rem;
-    }
-
-    .hero-buttons {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .hero-buttons .btn-primary,
-    .hero-buttons .btn-secondary {
-        width: 100%;
-        margin-left: 0;
-    }
-
-    .btn-secondary {
-        margin-left: 0;
-    }
-
-    .contador {
-        margin-top: 0;
-        padding: 40px 0;
-    }
-
-    .contador .container {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-
-    .cards,
-    .planos,
-    .prof-grid,
-    .modalidades-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .destaque {
-        transform: none;
-    }
-
-    .destaque:hover {
-        transform: translateY(-12px);
-    }
-
-    .galeria-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .footer-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
-        gap: 40px;
-    }
-
-    .footer-brand p {
-        margin: 0 auto;
-    }
-
-    .footer-social {
-        justify-content: center;
-    }
-
-    .footer-bottom {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
-
-    .hero-info {
-        gap: 14px;
-    }
-
-    .numero {
-        padding: 32px 20px;
-    }
-
-    .hero-line {
-        justify-content: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 0 18px;
-    }
-
-    header .container {
-        min-height: 82px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
-    header.scrolled .container {
-        min-height: 82px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
-    .logo-img {
-        width: 135px;
-        max-height: 60px;
-    }
-
-    h2 {
-        font-size: 1.75rem;
-    }
-
-    .tag {
-        font-size: 0.7rem;
-        padding: 9px 18px;
-    }
-
-    .hero p {
-        font-size: 0.98rem;
-    }
-
-    .hero-box h3 {
-        font-size: 1.25rem;
-    }
-
-    .numero h2 {
-        font-size: 2.3rem;
-    }
-
-    .card,
-    .plano,
-    .formulario {
-        padding: 30px 24px;
-    }
-
-    .whatsapp {
-        width: 56px;
-        height: 56px;
-        font-size: 26px;
-        right: 18px;
-        bottom: 18px;
-    }
-
-    #topo {
-        width: 48px;
-        height: 48px;
-        right: 22px;
-        bottom: 90px;
-    }
-}
-
-/*==================================================
 EFEITOS DE BLUR & GLASSMORPHISM REFINADOS
 ==================================================*/
 .card,
@@ -2808,8 +2567,78 @@ PARCEIROS / MARCAS (FULL-BLEED + FUNDO MAIS CLARO)
 .faq-grid {
     display: flex;
     flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 15px;
     margin-top: 40px;
+}
+
+.faq-item {
+    background: rgba(25, 25, 25, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    border-color: rgba(77, 163, 255, 0.4);
+}
+
+.faq-question {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    gap: 15px;
+}
+
+.faq-icon {
+    transition: transform 0.3s ease;
+    color: var(--primary-light, #4da3ff);
+    font-size: 0.9rem;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease-in-out, padding 0.35s ease;
+    padding: 0 24px;
+    color: #b0b0b0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Estado Ativo (Quando aberto) */
+.faq-item.active {
+    background: rgba(30, 30, 30, 0.9);
+    border-color: rgba(77, 163, 255, 0.6);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-item.active .faq-answer {
+    max-height: 300px; /* Altura máxima estimada para caber o texto */
+    padding: 0 24px 20px 24px;
+}
+
+@media (min-width: 768px) {
+    .faq-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
 }
 
 .faq-item {
@@ -3215,6 +3044,53 @@ SKELETON LOADING SHIMMER EFFECT
 @keyframes shimmer {
     100% { transform: translateX(100%); }
 }
+
+/*==================================================
+SKELETON SCREENS & LOADING STATES (NEW)
+==================================================*/
+.skeleton-loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-loading::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+.skeleton-placeholder {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.skeleton-text-line {
+    height: 16px;
+    width: 80%;
+    margin-bottom: 10px;
+}
+
+.skeleton-text-line.short {
+    width: 40%;
+}
+
+.skeleton-text-line.full {
+    width: 100%;
+}
+
+.skeleton-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
 
 /*==================================================
 LIGHTBOX GALERIA PREMIUM (GLASSMORPHISM)

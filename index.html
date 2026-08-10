@@ -19,7 +19,7 @@
     <meta property="og:url" content="https://corpofitnesspremium.com.br/">
     <meta property="og:title" content="Corpofitness Premium | Transforme Seu Coração e Corpo">
     <meta property="og:description" content="A melhor infraestrutura de São José da Tapera! Equipamentos modernos, ambiente climatizado e acompanhamento profissional. Garantia de resultados reais.">
-    <meta property="og:image" content="https://corpofitnesspremium.com.br/img/og-share.jpg">
+    <meta property="og:image" content="banner/banner_promo.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:locale" content="pt_BR">
@@ -30,7 +30,7 @@
     <meta name="twitter:url" content="https://corpofitnesspremium.com.br/">
     <meta name="twitter:title" content="Corpofitness Premium | Transforme Seu Coração e Corpo">
     <meta name="twitter:description" content="A melhor infraestrutura de São José da Tapera! Equipamentos modernos, ambiente climatizado e acompanhamento profissional.">
-    <meta name="twitter:image" content="https://corpofitnesspremium.com.br/img/og-share.jpg">
+    <meta name="twitter:image" content="banner/banner_promo.jpg">
 
     <!-- PRECONNECT PARA CDNS EXTERNAS (REDUZ LATÊNCIA) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,7 +48,7 @@
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 
     <!-- FONT AWESOME & LIBS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
@@ -64,7 +64,7 @@
       "name": "Corpofitness Premium",
       "url": "https://corpofitnesspremium.com.br",
       "logo": "https://corpofitnesspremium.com.br/img/logo.png",
-      "image": "https://corpofitnesspremium.com.br/img/og-share.jpg",
+      "image": "banner/banner_promo.jpg",
       "description": "Academia completa com musculação, treino funcional, cross training e cardio em São José da Tapera / AL.",
       "telephone": "+5582996786183",
       "email": "corpofitness@gmail.com",
@@ -148,7 +148,7 @@
     <!-- 1. LOADER -->
     <div id="loader" role="status" aria-label="Carregando página">
         <div class="loader-content">
-            <div class="logo">
+            <div class="logo" role="img" aria-label="Logo Corpofitness Premium">
                 <img src="img/logo.png" alt="Corpofitness Premium" class="logo-img" decoding="async" width="170" height="78" onerror="this.src='https://via.placeholder.com/200x60?text=CORPOFITNESS';">
             </div>
             <div class="loader-line"></div>
@@ -171,7 +171,7 @@
     <header role="banner">
         <div class="container">
             <div class="logo">
-                <a href="#inicio" aria-label="Corpofitness Premium - Voltar para o início">
+                <a href="#inicio" aria-label="Corpofitness Premium - Voltar para o início" aria-current="page">
                     <img src="img/logo.png" alt="Corpofitness Premium" class="logo-img" decoding="async" width="170" height="78" onerror="this.src='https://via.placeholder.com/200x60?text=CORPOFITNESS';">
                 </a>
             </div>
@@ -298,7 +298,14 @@
                     <h2>ORGANIZADA A PARTIR DAS MODALIDADES</h2>
                     <p>Cada área foi criada para acomodar perfeitamente o treino que você escolheu, unindo técnica, conforto e performance.</p>
                 </div>
-                <div class="cards" id="containerEstruturaSite">
+                <div class="cards skeleton-loading" id="containerEstruturaSite">
+                    <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                    <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                    <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                    <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                    <div class="card skeleton-placeholder" style="height: 250px;"></div>
+                    <div class="card skeleton-placeholder" style="height: 250px;"></div>
+
                     <!-- Carregado via JS -->
                 </div>
             </div>
@@ -313,9 +320,12 @@
                     <p>Deslize e conheça todas as nossas opções de alta performance estruturadas para o seu desenvolvimento completo.</p>
                 </div>
                 
-                <div class="swiper swiper-modalidades-auto" data-aos="fade-up">
+                <div class="swiper swiper-modalidades-auto skeleton-loading" data-aos="fade-up">
                     <div class="swiper-wrapper" id="containerModalidadesSite">
-                        <!-- Carregado via JS -->
+                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
+                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
+                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
+                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
                     </div>
                 </div>
             </div>
@@ -329,7 +339,14 @@
                     <h2>CONHEÇA O ESPAÇO DA ACADEMIA CORPO FITNESS</h2>
                     <p>Ambiente moderno, totalmente arejado e planejado em cada detalhe.</p>
                 </div>
-                <div class="galeria-grid" id="containerGaleriaSite" role="region" aria-live="polite"></div>
+                <div class="galeria-grid skeleton-loading" id="containerGaleriaSite" role="region" aria-live="polite">
+                    <div class="galeria-item skeleton-placeholder" style="height: 280px;"></div>
+                    <div class="galeria-item skeleton-placeholder" style="height: 280px;"></div>
+                    <div class="galeria-item skeleton-placeholder" style="height: 280px;"></div>
+                    <div class="galeria-item skeleton-placeholder" style="height: 280px;"></div>
+                    <div class="galeria-item skeleton-placeholder" style="height: 280px;"></div>
+                    <div class="galeria-item skeleton-placeholder" style="height: 280px;"></div>
+                </div>
             </div>
         </section>
 
@@ -343,7 +360,13 @@
                     <p class="planos-subtitle-desc-anexo">Comece a cuidar da sua saúde hoje mesmo! Na Corpo Fitness, temos o pacote de serviços ideal para que você alcance seus objetivos de saúde e bem-estar. É só comparar e escolher o plano com o melhor custo-benefício.</p>
                 </div>
 
-                <div class="planos-grid-anexo" id="containerPlanosSite">
+                <div class="planos-grid-anexo skeleton-loading" id="containerPlanosSite">
+                    <div class="plano-card-anexo skeleton-placeholder" style="height: 400px;"></div>
+                    <div class="plano-card-anexo skeleton-placeholder" style="height: 400px;"></div>
+                    <div class="plano-card-anexo skeleton-placeholder" style="height: 400px;"></div>
+                    <div class="plano-card-anexo skeleton-placeholder" style="height: 400px;"></div>
+                    <div class="plano-card-anexo skeleton-placeholder" style="height: 400px;"></div>
+                    <div class="plano-card-anexo skeleton-placeholder" style="height: 400px;"></div>
                     <!-- Planos dinâmicos do Supabase -->
                 </div>
 
@@ -367,7 +390,12 @@
                 <div class="titulo" data-aos="fade-up">
                     <span>PARCERIAS DE SUCESSO</span>
                 </div>
-                <div class="swiper swiper-parceiros" data-aos="fade-up" data-aos-delay="100">
+                <div class="swiper swiper-parceiros skeleton-loading" data-aos="fade-up" data-aos-delay="100">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide parceiro skeleton-placeholder" style="width: 150px; height: 80px;"></div>
+                        <div class="swiper-slide parceiro skeleton-placeholder" style="width: 150px; height: 80px;"></div>
+                        <div class="swiper-slide parceiro skeleton-placeholder" style="width: 150px; height: 80px;"></div>
+                    </div>
                     <div class="swiper-wrapper" id="containerParceirosSite"></div>
                 </div>
             </div>
@@ -387,8 +415,13 @@
                     </div>
                 </div>
 
-                <div class="swiper swiper-professores" data-aos="fade-up" data-aos-delay="150">
-                    <div class="swiper-wrapper" id="containerProfessoresSite"></div>
+                <div class="swiper swiper-professores skeleton-loading" data-aos="fade-up" data-aos-delay="150">
+                    <div class="swiper-wrapper" id="containerProfessoresSite">
+                        <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
+                        <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
+                        <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
+                        <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
+                    </div>
 
                     <div class="equipe-swiper-nav">
                         <div class="swiper-button-prev-custom equipe-prev"><i class="fas fa-chevron-left"></i></div>
@@ -421,7 +454,13 @@
                     <div class="depo-gradient-overlay-top" aria-hidden="true"></div>
                     <div class="depo-gradient-overlay-bottom" aria-hidden="true"></div>
 
-                    <div class="depo-col-grid" id="containerFeedbacksSite">
+                    <div class="depo-col-grid skeleton-loading" id="containerFeedbacksSite">
+                        <div class="depo-track-vertical">
+                            <div class="depo-card-item skeleton-placeholder" style="height: 180px;"></div>
+                            <div class="depo-card-item skeleton-placeholder" style="height: 180px;"></div>
+                            <div class="depo-card-item skeleton-placeholder" style="height: 180px;"></div>
+                        </div>
+                        <div class="depo-track-vertical"></div><div class="depo-track-vertical"></div>
                         <!-- Carregado via JS em colunas dinâmicas -->
                     </div>
                 </div>
@@ -437,7 +476,13 @@
                     <h2>NOTÍCIAS E DICAS DE TREINO</h2>
                     <p>Fique por dentro das novidades, avisos e dicas exclusivas da nossa equipe para potencializar seus resultados.</p>
                 </div>
-                <div class="noticias-grid" id="containerNoticiasSite">
+                <div class="noticias-grid skeleton-loading" id="containerNoticiasSite">
+                    <div class="noticia-card skeleton-placeholder" style="height: 250px;"></div>
+                    <div class="noticia-card skeleton-placeholder" style="height: 250px;"></div>
+                    <div class="noticia-card skeleton-placeholder" style="height: 250px;"></div>
+                    <div class="noticia-card skeleton-placeholder" style="height: 250px;"></div>
+                    <div class="noticia-card skeleton-placeholder" style="height: 250px;"></div>
+                    <div class="noticia-card skeleton-placeholder" style="height: 250px;"></div>
                     <!-- Notícias serão carregadas aqui via JavaScript -->
                 </div>
             </div>
@@ -451,6 +496,12 @@
                     <h2>O QUE VOCÊ PRECISA SABER</h2>
                 </div>
                 <div class="faq-grid" id="containerFaqSite">
+                    <div class="faq-item skeleton-placeholder" style="height: 100px;"></div>
+                    <div class="faq-item skeleton-placeholder" style="height: 100px;"></div>
+                    <div class="faq-item skeleton-placeholder" style="height: 100px;"></div>
+                    <div class="faq-item skeleton-placeholder" style="height: 100px;"></div>
+                    <div class="faq-item skeleton-placeholder" style="height: 100px;"></div>
+                    <div class="faq-item skeleton-placeholder" style="height: 100px;"></div>
                     <!-- Carregado via JS -->
                 </div>
             </div>        
@@ -601,7 +652,7 @@
     <script src="js/script.js"></script>
 
     <script>
-        const FALLBACK_IMG = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600';
+        const FALLBACK_IMG = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80';
 
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('img').forEach(img => {
@@ -616,6 +667,7 @@
             async function carregarEstruturaSite() {
                 const container = document.querySelector('#containerEstruturaSite');
                 if (!container) return;
+                container.classList.add('skeleton-loading'); // Adiciona skeleton
                 const { data: itens } = await _supabase.from('estrutura').select('*').order('ordem', { ascending: true });
                 if (itens && itens.length > 0) {
                     container.innerHTML = '';
@@ -628,12 +680,14 @@
                             </div>
                         `;
                     });
+                    container.classList.remove('skeleton-loading'); // Remove skeleton
                 }
             }
 
             // 2. CARREGAR MODALIDADES DINÂMICAS
             async function carregarModalidadesSite() {
                 const container = document.querySelector('#containerModalidadesSite');
+                container.classList.add('skeleton-loading'); // Adiciona skeleton
                 if (!container) return;
                 const { data: mods } = await _supabase.from('modalidades').select('*').order('ordem', { ascending: true });
                 if (mods && mods.length > 0) {
@@ -653,12 +707,14 @@
                             </div>
                         `;
                     });
+                    container.classList.remove('skeleton-loading'); // Remove skeleton
                 }
             }
 
             // 3. CARREGAR FEEDBACKS / QUEM JÁ TREINA DINÂMICO
             async function carregarFeedbacksSite() {
                 const container = document.querySelector('#containerFeedbacksSite');
+                container.classList.add('skeleton-loading'); // Adiciona skeleton
                 if (!container) return;
                 const { data: feeds } = await _supabase.from('feedbacks').select('*').order('ordem', { ascending: true });
                 if (feeds && feeds.length > 0) {
@@ -688,7 +744,7 @@
                     });
 
                     // Duplica os itens para garantir o efeito loop infinito suave
-                    feeds.forEach((f) => {
+                    feeds.forEach((f, index) => {
                         const cardHtml = `
                             <div class="depo-card-item">
                                 <div class="depo-card-user">
@@ -712,12 +768,14 @@
                     col3 += '</div>';
 
                     container.innerHTML = col1 + col2 + col3;
+                    container.classList.remove('skeleton-loading'); // Remove skeleton
                 }
             }
 
 // 4. CARREGAR FAQ DINÂMICO
             async function carregarFaqSite() {
                 const container = document.querySelector('#containerFaqSite');
+                container.classList.add('skeleton-loading'); // Adiciona skeleton
                 if (!container) return;
                 const { data: faqs } = await _supabase.from('faq').select('*').order('ordem', { ascending: true });
                 if (faqs && faqs.length > 0) {
@@ -755,12 +813,14 @@
                             }
                         });
                     });
+                    container.classList.remove('skeleton-loading'); // Remove skeleton
                 }
             }
 
             // 5. CARREGAR PLANOS DINÂMICOS
             async function carregarPlanosSite() {
                 const container = document.querySelector('#containerPlanosSite');
+                container.classList.add('skeleton-loading'); // Adiciona skeleton
                 if (!container) return;
                 const { data: planos } = await _supabase.from('planos').select('*').order('ordem', { ascending: true });
                 if (planos && planos.length > 0) {
@@ -792,12 +852,14 @@
                             </div>
                         `;
                     });
+                    container.classList.remove('skeleton-loading'); // Remove skeleton
                 }
             }
 
             async function carregarGaleria() {
                 const container = document.querySelector('#containerGaleriaSite');
                 if (!container) return;
+                container.classList.add('skeleton-loading'); // Adiciona skeleton
                 const { data: fotos } = await _supabase.from('galeria').select('*').order('ordem', { ascending: true });
                 if (fotos && fotos.length > 0) {
                     container.innerHTML = '';
@@ -815,12 +877,14 @@
                             </div>
                         `;
                     });
+                    container.classList.remove('skeleton-loading'); // Remove skeleton
                 }
             }
 
             async function carregarProfessores() {
                 const container = document.querySelector('#containerProfessoresSite');
                 if (!container) return;
+                container.classList.add('skeleton-loading'); // Adiciona skeleton
                 const { data: professores } = await _supabase.from('professores').select('*').order('created_at', { ascending: false });
                 if (professores && professores.length > 0) {
                     container.innerHTML = ''; 
@@ -841,6 +905,7 @@
                             </div>
                         `;
                     });
+                    container.classList.remove('skeleton-loading'); // Remove skeleton
                 }
 
                 if (typeof Swiper !== 'undefined') {
@@ -876,6 +941,7 @@
             async function carregarParceirosSite() {
                 const container = document.querySelector('#containerParceirosSite');
                 if (!container) return;
+                container.classList.add('skeleton-loading'); // Adiciona skeleton
                 const { data: parceiros } = await _supabase.from('parceiros').select('*').order('ordem', { ascending: true });
                 if (parceiros && parceiros.length > 0) {
                     const parent = document.querySelector('.swiper-parceiros');
@@ -902,6 +968,7 @@
                         const speed = 90;
                         const duration = Math.max(18, Math.round(originalWidth / speed));
                         track.style.setProperty('--marquee-duration', duration + 's');
+                        container.classList.remove('skeleton-loading'); // Remove skeleton
                     });
                 }
             }
@@ -927,6 +994,7 @@
             async function carregarNoticiasSite() {
                 const container = document.querySelector('#containerNoticiasSite');
                 if (!container) return;
+                container.classList.add('skeleton-loading'); // Adiciona skeleton
 
                 try {
                     const { data: noticias, error } = await _supabase.from('noticias').select('*').order('created_at', { ascending: false }).limit(3);
@@ -952,6 +1020,7 @@
                             </div>
                         `;
                     });
+                    container.classList.remove('skeleton-loading'); // Remove skeleton
                 } catch (err) {
                     container.innerHTML = '<p style="text-align: center; color: var(--gray-soft);">Erro ao carregar notícias.</p>';
                 }

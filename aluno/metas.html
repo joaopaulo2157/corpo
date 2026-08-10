@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Metas | Corpofitness Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="alunoAppContainer">
+        <header>
+            <div class="brand-title">
+                <img src="../img/logo.png" alt="Corpofitness Premium" class="logo-img" width="150" loading="lazy" onerror="this.src='https://via.placeholder.com/150x45?text=CORPOFITNESS';">
+            </div>
+            <div class="header-actions">
+                <div class="user-pill">
+                    <div class="user-avatar" id="headerAvatar">--</div>
+                    <span id="headerAlunoNome" style="font-size: 0.88rem; font-weight: 600; padding-right: 6px;">Carregando...</span>
+                </div>
+                <a href="index.html" class="btn-secondary" style="text-decoration: none; display: none; @media(min-width: 600px){display: inline-flex;}">
+                    <i class="fa-solid fa-arrow-left"></i> Dashboard
+                </a>
+                <button class="btn-sair" onclick="logoutAluno()">Sair</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 25px;">
+                <i class="fa-solid fa-bullseye" style="color: var(--primary-light);"></i> Minhas Metas de Saúde
+            </h1>
+
+            <div class="goals-page-grid">
+                <!-- Formulário para Adicionar/Editar Meta -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-plus-circle"></i> <span id="formMetaTitle">Adicionar Nova Meta</span></div>
+                    </div>
+                    <form id="formMeta">
+                        <input type="hidden" id="metaId" value="">
+                        <div class="form-group">
+                            <label for="metaTitulo" class="form-label">Título da Meta</label>
+                            <input type="text" id="metaTitulo" class="form-control" placeholder="Ex: Correr 5km, Perder 2kg" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="metaDescricao" class="form-label">Descrição (Opcional)</label>
+                            <textarea id="metaDescricao" class="form-control" rows="3" placeholder="Detalhes de como você vai alcançar essa meta..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="metaDataVencimento" class="form-label">Data de Vencimento</label>
+                            <input type="date" id="metaDataVencimento" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="metaProgresso" class="form-label">Progresso (%)</label>
+                            <input type="range" id="metaProgresso" class="form-control" min="0" max="100" value="0" oninput="document.getElementById('metaProgressoValue').innerText = this.value + '%'">
+                            <span id="metaProgressoValue" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 5px; display: block;">0%</span>
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="metaConcluida" style="width: 18px; height: 18px;">
+                            <label for="metaConcluida" class="form-label" style="margin-bottom: 0;">Meta Concluída?</label>
+                        </div>
+                        <button type="submit" class="btn-primary" id="btnSalvarMeta">Salvar Meta</button>
+                        <button type="button" class="btn-secondary" id="btnCancelarEdicao" style="margin-top: 10px; display: none;">Cancelar Edição</button>
+                    </form>
+                </div>
+
+                <!-- Lista de Metas -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-list-check"></i> Todas as Metas</div>
+                    </div>
+                    <div id="listaMetas" class="skeleton-loading">
+                        <div class="goal-card skeleton-placeholder" style="height: 150px;"></div>
+                        <div class="goal-card skeleton-placeholder" style="height: 150px;"></div>
+                        <div class="goal-card skeleton-placeholder" style="height: 150px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2026 Corpofitness. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const NEXT_PUBLIC_SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
+        const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
+        const _supabase = supabase.createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+
+        let alunoAtualId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const alunoLogado = JSON.parse(sessionStorage.getItem('corpofitness_aluno_logado'));
+            if (!alunoLogado) {
+                // Redirecionar para a página de login se não estiver logado
+                window.location.href = 'index.html'; // Ou para uma página de login específica
+                return;
+            }
+            alunoAtualId = alunoLogado.id;
+
+            // CORREÇÃO: Exibe o contêiner principal do aplicativo
+            document.getElementById('alunoAppContainer').style.display = 'flex';
+            
+            document.getElementById('headerAlunoNome').textContent = alunoLogado.nome;
+            document.getElementById('headerAvatar').textContent = alunoLogado.nome.substring(0, 2).toUpperCase();
+
+            await carregarMetas();
+            inscreverRealtimeSupabase();
+        });
+
+        function logoutAluno() {
+            sessionStorage.removeItem('corpofitness_aluno_logado');
+            window.location.href = 'index.html'; // Redireciona para a página principal ou de login
+        }
+
+        async function carregarMetas() {
+            const listaMetasDiv = document.getElementById('listaMetas');
+            listaMetasDiv.classList.add('skeleton-loading');
+            listaMetasDiv.innerHTML = `
+                <div class="goal-card skeleton-placeholder" style="height: 150px;"></div>
+                <div class="goal-card skeleton-placeholder" style="height: 150px;"></div>
+            `;
+
+            try {
+                const { data: metas, error } = await _supabase
+                    .from('metas_alunos') // Assumindo que você terá uma tabela 'metas_alunos'
+                    .select('*')
+                    .eq('aluno_id', alunoAtualId)
+                    .order('data_vencimento', { ascending: true });
+
+                if (error) throw error;
+
+                listaMetasDiv.classList.remove('skeleton-loading');
+                listaMetasDiv.innerHTML = '';
+
+                if (metas.length === 0) {
+                    listaMetasDiv.innerHTML = '<p class="goal-empty-state">Nenhuma meta cadastrada ainda. Use o formulário ao lado para adicionar sua primeira meta!</p>';
+                    return;
+                }
+
+                metas.forEach(meta => {
+                    const dataVencimento = meta.data_vencimento ? new Date(meta.data_vencimento).toLocaleDateString('pt-BR') : 'Sem data';
+                    const progresso = meta.progresso || 0;
+                    const statusClass = meta.concluida ? 'completed' : 'pending';
+                    const statusText = meta.concluida ? 'Concluída' : 'Pendente';
+
+                    listaMetasDiv.innerHTML += `
+                        <div class="goal-card ${statusClass}">
+                            <div class="goal-card-header">
+                                <h3 class="goal-card-title">${meta.titulo}</h3>
+                                <span class="goal-card-status ${statusClass}">${statusText}</span>
+                            </div>
+                            <p class="goal-card-description">${meta.descricao || 'Nenhuma descrição.'}</p>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                                <i class="fa-solid fa-calendar-alt"></i> Vencimento: ${dataVencimento}
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">
+                                Progresso: ${progresso}%
+                                <div class="goal-progress-bar">
+                                    <div class="goal-progress-fill" style="width: ${progresso}%;"></div>
+                                </div>
+                            </div>
+                            <div class="goal-card-footer">
+                                <div class="goal-actions">
+                                    <button class="btn-secondary" onclick="editarMeta('${meta.id}')"><i class="fa-solid fa-pen"></i> Editar</button>
+                                    <button class="btn-secondary ${meta.concluida ? 'btn-secondary' : 'btn-primary'}" onclick="toggleConcluida('${meta.id}', ${meta.concluida})">
+                                        <i class="fa-solid ${meta.concluida ? 'fa-xmark' : 'fa-check'}"></i> ${meta.concluida ? 'Reabrir' : 'Concluir'}
+                                    </button>
+                                    <button class="btn-secondary btn-danger" onclick="removerMeta('${meta.id}')"><i class="fa-solid fa-trash"></i> Excluir</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error("Erro ao carregar metas:", err);
+                listaMetasDiv.classList.remove('skeleton-loading');
+                listaMetasDiv.innerHTML = '<p class="goal-empty-state" style="color: var(--accent-danger);">Erro ao carregar metas. Tente novamente mais tarde.</p>';
+            }
+        }
+
+        function inscreverRealtimeSupabase() {
+            _supabase
+                .channel('metas_alunos_changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'metas_alunos', filter: `aluno_id=eq.${alunoAtualId}` }, () => carregarMetas())
+                .subscribe();
+        }
+
+        document.getElementById('formMeta').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const metaId = document.getElementById('metaId').value;
+            const titulo = document.getElementById('metaTitulo').value;
+            const descricao = document.getElementById('metaDescricao').value;
+            const dataVencimento = document.getElementById('metaDataVencimento').value;
+            const progresso = document.getElementById('metaProgresso').value;
+            const concluida = document.getElementById('metaConcluida').checked;
+
+            const btnSalvar = document.getElementById('btnSalvarMeta');
+            btnSalvar.disabled = true;
+            btnSalvar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
+
+            try {
+                const dados = {
+                    aluno_id: alunoAtualId,
+                    titulo,
+                    descricao,
+                    data_vencimento: dataVencimento || null,
+                    progresso: parseInt(progresso),
+                    concluida
+                };
+
+                if (metaId) {
+                    await _supabase.from('metas_alunos').update(dados).eq('id', metaId);
+                } else {
+                    await _supabase.from('metas_alunos').insert([dados]);
+                }
+                
+                document.getElementById('formMeta').reset();
+                document.getElementById('metaId').value = '';
+                document.getElementById('formMetaTitle').textContent = 'Adicionar Nova Meta';
+                document.getElementById('btnCancelarEdicao').style.display = 'none';
+                document.getElementById('metaProgressoValue').innerText = '0%';
+                await carregarMetas();
+            } catch (err) {
+                console.error("Erro ao salvar meta:", err);
+                alert('Erro ao salvar meta. Tente novamente.');
+            } finally {
+                btnSalvar.disabled = false;
+                btnSalvar.innerHTML = 'Salvar Meta';
+            }
+        });
+
+        window.editarMeta = async function(id) {
+            const { data: meta, error } = await _supabase.from('metas_alunos').select('*').eq('id', id).single();
+            if (error) { console.error("Erro ao buscar meta para edição:", error); return; }
+
+            document.getElementById('metaId').value = meta.id;
+            document.getElementById('metaTitulo').value = meta.titulo;
+            document.getElementById('metaDescricao').value = meta.descricao;
+            document.getElementById('metaDataVencimento').value = meta.data_vencimento;
+            document.getElementById('metaProgresso').value = meta.progresso;
+            document.getElementById('metaProgressoValue').innerText = meta.progresso + '%';
+            document.getElementById('metaConcluida').checked = meta.concluida;
+
+            document.getElementById('formMetaTitle').textContent = 'Editar Meta';
+            document.getElementById('btnCancelarEdicao').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        document.getElementById('btnCancelarEdicao').addEventListener('click', () => {
+            document.getElementById('formMeta').reset();
+            document.getElementById('metaId').value = '';
+            document.getElementById('formMetaTitle').textContent = 'Adicionar Nova Meta';
+            document.getElementById('btnCancelarEdicao').style.display = 'none';
+            document.getElementById('metaProgressoValue').innerText = '0%';
+            document.getElementById('metaConcluida').checked = false;
+        });
+
+        window.toggleConcluida = async function(id, statusAtual) {
+            try {
+                await _supabase.from('metas_alunos').update({ concluida: !statusAtual, progresso: !statusAtual ? 100 : 0 }).eq('id', id);
+                await carregarMetas();
+            } catch (err) {
+                console.error("Erro ao atualizar status da meta:", err);
+                alert('Erro ao atualizar status da meta.');
+            }
+        };
+
+        window.removerMeta = async function(id) {
+            if (confirm('Tem certeza que deseja excluir esta meta?')) {
+                try {
+                    await _supabase.from('metas_alunos').delete().eq('id', id);
+                    await carregarMetas();
+                } catch (err) {
+                    console.error("Erro ao remover meta:", err);
+                    alert('Erro ao remover meta.');
+                }
+            }
+        };
+    </script>
+</body>
+</html>

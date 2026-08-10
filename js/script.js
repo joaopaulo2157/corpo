@@ -963,6 +963,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const textoOriginal = btnSubmit.innerHTML;
 
             btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            btnSubmit.classList.add('btn-loading'); // Add loading class
             btnSubmit.style.pointerEvents = 'none';
 
             setTimeout(() => {
@@ -970,6 +971,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 formContato.reset();
                 btnSubmit.innerHTML = textoOriginal;
                 btnSubmit.style.pointerEvents = 'all';
+                btnSubmit.classList.remove('btn-loading'); // Remove loading class
             }, 1200);
         });
     }

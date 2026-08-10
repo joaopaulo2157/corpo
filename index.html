@@ -208,10 +208,6 @@
         <section class="hero" id="inicio" aria-label="Apresentação da Corpofitness">
             <video id="heroVideo" class="hero-video-parallax" autoplay muted loop playsinline preload="metadata" poster="img/hero-poster.jpg" aria-hidden="true">
                 <source src="videos/academia.mp4" type="video/mp4">
-            <!-- O vídeo só será carregado em telas maiores que 768px -->
-            <video id="heroVideo" class="hero-video-parallax" autoplay muted loop playsinline preload="auto" poster="img/hero-poster.jpg" aria-hidden="true">
-                <source src="videos/academia.mp4" type="video/mp4" media="(min-width: 769px)">
-                <!-- Navegadores que não suportam a tag video verão nada, o poster é o fallback -->
             </video>
             <div class="hero-poster" aria-hidden="true"></div>
             
@@ -325,11 +321,15 @@
                 </div>
                 
                 <div class="swiper swiper-modalidades-auto skeleton-loading" data-aos="fade-up">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
+                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
+                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
+                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
+                    </div>
+
                     <div class="swiper-wrapper" id="containerModalidadesSite">
-                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
-                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
-                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
-                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
+                        <!-- Carregado via JS -->
                     </div>
                 </div>
             </div>
@@ -420,12 +420,13 @@
                 </div>
 
                 <div class="swiper swiper-professores skeleton-loading" data-aos="fade-up" data-aos-delay="150">
-                    <div class="swiper-wrapper" id="containerProfessoresSite">
+                    <div class="swiper-wrapper">
                         <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
                         <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
                         <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
                         <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
                     </div>
+                    <div class="swiper-wrapper" id="containerProfessoresSite"></div>
 
                     <div class="equipe-swiper-nav">
                         <div class="swiper-button-prev-custom equipe-prev"><i class="fas fa-chevron-left"></i></div>

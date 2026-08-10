@@ -208,6 +208,10 @@
         <section class="hero" id="inicio" aria-label="Apresentação da Corpofitness">
             <video id="heroVideo" class="hero-video-parallax" autoplay muted loop playsinline preload="metadata" poster="img/hero-poster.jpg" aria-hidden="true">
                 <source src="videos/academia.mp4" type="video/mp4">
+            <!-- O vídeo só será carregado em telas maiores que 768px -->
+            <video id="heroVideo" class="hero-video-parallax" autoplay muted loop playsinline preload="auto" poster="img/hero-poster.jpg" aria-hidden="true">
+                <source src="videos/academia.mp4" type="video/mp4" media="(min-width: 769px)">
+                <!-- Navegadores que não suportam a tag video verão nada, o poster é o fallback -->
             </video>
             <div class="hero-poster" aria-hidden="true"></div>
             

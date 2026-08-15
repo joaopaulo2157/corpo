@@ -1739,3 +1739,153 @@ window.carregarPlanosAdmin = async function() {
         window.showToast("Erro de conexão com o banco de dados. Verifique sua internet.");
     }
 };
+// 2. CARREGAR MODALIDADES DINÂMICAS + SWIPER AUTOMÁTICO/INFINITO
+let swiperModalidades = null;
+
+async function carregarModalidadesSite() {
+    const swiperEl = document.querySelector('#swiperModalidadesAuto');
+    const container = document.querySelector('#containerModalidadesSite');
+
+    if (!swiperEl || !container) return;
+
+    swiperEl.classList.add('skeleton-loading');
+
+    try {
+        const { data: mods, error } = await _supabase
+            .from('modalidades')
+            .select('*')
+            .order('ordem', { ascending: true });
+
+        if (error) throw error;
+
+        if (!mods || mods.length === 0) {
+            container.innerHTML = `
+                <div class="modalidades-status">
+                    Nenhuma modalidade cadastrada no momento.
+                </div>
+            `;
+            return;
+        }
+
+        const slides = [];
+        const minimoParaLoop = Math.max(8, mods.length);
+        let indice = 0;
+
+        while (slides.length < minimoParaLoop) {
+            slides.push(mods[indice % mods.length]);
+            indice++;
+        }
+
+        container.innerHTML = slides.map((m) => `
+            <div class="swiper-slide">
+                <div class="modalidade" tabindex="0">
+                    <i class="${m.icone || 'fas fa-dumbbell'}" aria-hidden="true"></i>
+
+                    <h3>${m.nome || 'Modalidade'}</h3>
+
+                    <p>"${m.descricao || ''}"</p>
+
+                    ${m.nivel
+                        ? `<p><strong>Níveis:</strong> ${m.nivel}</p>`
+                        : ''
+                    }
+
+                    ${m.duracao
+                        ? `<p><strong>Duração:</strong> ${m.duracao}</p>`
+                        : ''
+                    }
+
+                    ${m.equipamento
+                        ? `<p><strong>Equipamento:</strong> ${m.equipamento}</p>`
+                        : ''
+                    }
+
+                    ${m.beneficios
+                        ? `<p><strong>Benefícios:</strong> ${m.beneficios}</p>`
+                        : ''
+                    }
+                </div>
+            </div>
+        `).join('');
+
+        if (swiperEl.swiper) {
+            swiperEl.swiper.destroy(true, true);
+        }
+
+        if (swiperModalidades) {
+            swiperModalidades.destroy(true, true);
+            swiperModalidades = null;
+        }
+
+        if (typeof Swiper === 'undefined') {
+            throw new Error('Biblioteca Swiper não foi carregada.');
+        }
+
+        swiperModalidades = new Swiper(swiperEl, {
+            slidesPerView: 1.18,
+            spaceBetween: 18,
+
+            loop: true,
+            loopAdditionalSlides: 4,
+
+            speed: 5500,
+
+            grabCursor: true,
+
+            watchSlidesProgress: true,
+
+            observer: true,
+            observeParents: true,
+
+            autoplay: {
+                delay: 0,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+                waitForTransition: false
+            },
+
+            breakpoints: {
+                576: {
+                    slidesPerView: 1.65,
+                    spaceBetween: 20
+                },
+
+                768: {
+                    slidesPerView: 2.35,
+                    spaceBetween: 22
+                },
+
+                992: {
+                    slidesPerView: 3.15,
+                    spaceBetween: 24
+                },
+
+                1200: {
+                    slidesPerView: 4,
+                    spaceBetween: 25
+                }
+            }
+        });
+
+        requestAnimationFrame(() => {
+            swiperModalidades?.update();
+            swiperModalidades?.autoplay?.start();
+        });
+
+    } catch (err) {
+
+        console.error('Erro ao carregar modalidades:', err);
+
+        container.innerHTML = `
+            <div class="modalidades-status">
+                Não foi possível carregar as modalidades.
+                Tente novamente em instantes.
+            </div>
+        `;
+
+    } finally {
+
+        swiperEl.classList.remove('skeleton-loading');
+
+    }
+}

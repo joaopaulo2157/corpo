@@ -379,6 +379,113 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /*==================================================
+    12. RENDERIZAR BANNERS PROMOCIONAIS
+    ==================================================*/
+    function renderizarBannersSite() {
+        const banners = JSON.parse(localStorage.getItem("corpofitness_banners")) || [];
+
+        const areaTopo = document.getElementById("banner-area-topo");
+        const areaMeio = document.getElementById("banner-area-meio");
+        const areaFooter = document.getElementById("banner-area-footer");
+
+        if (areaTopo) areaTopo.innerHTML = "";
+        if (areaMeio) areaMeio.innerHTML = "";
+        if (areaFooter) areaFooter.innerHTML = "";
+
+        banners.forEach(b => {
+            if (!b.img) return;
+
+            const bannerHTML = `
+                <div class="banner-promocional-item" style="
+                    width: 100%;
+                    border-radius: 18px;
+                    overflow: hidden;
+                    margin-bottom: 24px;
+                    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+                    transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+                ">
+                    <img src="${b.img}" 
+                         alt="${b.titulo || 'Banner promocional'}" 
+                         style="width:100%; height:auto; display:block; object-fit:cover;"
+                         loading="lazy">
+                </div>
+            `;
+
+            if (b.posicao === "topo" && areaTopo) areaTopo.innerHTML += bannerHTML;
+            if (b.posicao === "meio" && areaMeio) areaMeio.innerHTML += bannerHTML;
+            if (b.posicao === "footer" && areaFooter) areaFooter.innerHTML += bannerHTML;
+        });
+    }
+
+    /*==================================================
+    13. RENDERIZAR PLANOS DINÂMICOS
+    ==================================================*/
+    function renderizarPlanosSite() {
+        const container = document.getElementById("containerPlanosSite");
+        if (!container) return;
+
+        const defaultPlanos = [
+            {
+                nome: "BRONZE",
+                valor: "89",
+                sufixo: "/mês",
+                badge: "",
+                destaque: "nao",
+                itens: ["Musculação", "Área Cardio", "Alongamento", "Acesso padrão"]
+            },
+            {
+                nome: "PREMIUM",
+                valor: "129",
+                sufixo: "/mês",
+                badge: "MAIS VENDIDO",
+                destaque: "sim",
+                itens: ["Musculação completa", "Cross Training", "Funcional", "Avaliação física", "Acesso ilimitado"]
+            },
+            {
+                nome: "BLACK",
+                valor: "179",
+                sufixo: "/mês",
+                badge: "",
+                destaque: "nao",
+                itens: ["Tudo do Premium", "Nutricionista", "Personal Trainer", "Massagem"]
+            }
+        ];
+
+        const planos = JSON.parse(localStorage.getItem("corpofitness_planos_full")) || defaultPlanos;
+
+        container.innerHTML = "";
+
+        planos.forEach((p, index) => {
+            const itensHTML = p.itens
+                .map(item => `<li>${item}</li>`)
+                .join("");
+
+            const badgeHTML = p.badge
+                ? `<span class="badge">${p.badge}</span>`
+                : "";
+
+            const classeDestaque = p.destaque === "sim" ? "plano destaque" : "plano";
+
+            container.innerHTML += `
+                <div class="${classeDestaque}" data-aos="fade-up" data-aos-delay="${index * 80}">
+                    ${badgeHTML}
+                    <h3>${p.nome}</h3>
+                    <div class="valor">
+                        R$${p.valor}<small>${p.sufixo}</small>
+                    </div>
+                    <ul>
+                        ${itensHTML}
+                    </ul>
+                    <a href="#contato">Escolher Plano</a>
+                </div>
+            `;
+        });
+    }
+
+    renderizarBannersSite();
+    renderizarPlanosSite();
+
+    /*==================================================
     14. FORMULÁRIO DE CONTATO (LOCALSTORAGE)
     ==================================================*/
     const formContatoSite = document.getElementById("formContatoSite");
@@ -423,6 +530,72 @@ document.addEventListener("DOMContentLoaded", () => {
                 formContatoSite.reset();
             }, 2800);
         });
+    }
+
+    /*==================================================
+    15. HERO DINÂMICO (PAINEL ADMIN)
+    ==================================================*/
+    const heroSaved = JSON.parse(localStorage.getItem("corpofitness_hero"));
+
+    if (heroSaved) {
+        const h1 = document.querySelector(".hero h1");
+        const p = document.querySelector(".hero p");
+        const videoSource = document.querySelector(".hero video source");
+
+        if (h1 && heroSaved.t1) {
+            const newHTML = buildHeroTitle(heroSaved.t1, heroSaved.t2);
+            if (newHTML && h1.innerHTML.trim() !== newHTML.trim()) {
+                h1.classList.add('split-title');
+                h1.innerHTML = newHTML;
+                runSplitTitle();
+            }
+        }
+
+        if (p && heroSaved.sub) {
+            p.textContent = heroSaved.sub;
+        }
+
+        if (videoSource && heroSaved.video) {
+            videoSource.src = heroSaved.video;
+            const videoEl = videoSource.parentElement;
+            if (videoEl) {
+                try { videoEl.load(); videoEl.play().catch(()=>{}); } catch(e){}
+            }
+        }
+    }
+
+    /*==================================================
+    16. PROFESSORES DINÂMICOS
+    ==================================================*/
+    const profSaved = JSON.parse(localStorage.getItem("corpofitness_professores"));
+
+    if (profSaved && Array.isArray(profSaved) && profSaved.length > 0) {
+        const profGrid = document.querySelector(".prof-grid") || document.getElementById("containerProfessoresSite");
+
+        if (profGrid) {
+            profGrid.innerHTML = "";
+
+            profSaved.forEach((p, index) => {
+                const foto = p.foto || p.img || "https://via.placeholder.com/400x500?text=Professor";
+                const nome = p.nome || "Professor";
+                const especialidade = p.esp || p.especialidade || "Especialista";
+
+                profGrid.innerHTML += `
+                    <div class="professor" data-aos="fade-up" data-aos-delay="${index * 100}">
+                        <img src="${foto}" alt="${nome}" loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/400x500?text=${encodeURIComponent(nome)}'">
+                        <div class="prof-info">
+                            <h3>${nome}</h3>
+                            <p>${especialidade}</p>
+                            <div class="social">
+                                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
     }
 
     /*==================================================
@@ -490,6 +663,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    carregarGaleriaNoSite();
+
     /*==================================================
     18. ACTIVE NAV LINK ON SCROLL (EXTRA PREMIUM)
     ==================================================*/
@@ -516,6 +691,185 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.addEventListener("scroll", atualizarLinkAtivo, { passive: true });
+
+    /*==================================================
+    19. FUNÇÕES ADMINISTRATIVAS (PLANOS)
+    ==================================================*/
+    function obterPlanos() {
+        const defaultPlanos = [
+            {
+                nome: "BRONZE",
+                valor: "89",
+                sufixo: "/mês",
+                badge: "",
+                destaque: "nao",
+                itens: ["Musculação", "Área Cardio", "Alongamento", "Acesso padrão"]
+            },
+            {
+                nome: "PREMIUM",
+                valor: "129",
+                sufixo: "/mês",
+                badge: "MAIS VENDIDO",
+                destaque: "sim",
+                itens: ["Musculação completa", "Cross Training", "Funcional", "Avaliação física", "Acesso ilimitado"]
+            },
+            {
+                nome: "BLACK",
+                valor: "179",
+                sufixo: "/mês",
+                badge: "",
+                destaque: "nao",
+                itens: ["Tudo do Premium", "Nutricionista", "Personal Trainer", "Massagem"]
+            }
+        ];
+
+        const salvos = localStorage.getItem("corpofitness_planos_full");
+        return salvos ? JSON.parse(salvos) : defaultPlanos;
+    }
+
+    function carregarPlanosAdmin() {
+        const planos = obterPlanos();
+        const container = document.getElementById("listaPlanosAdmin");
+        if (!container) return;
+
+        container.innerHTML = "";
+
+        planos.forEach((p, index) => {
+            const itensHTML = p.itens
+                .map(i => `<li style="font-size:0.8rem; color:var(--gray); margin:3px 0;">✔ ${i}</li>`)
+                .join("");
+
+            container.innerHTML += `
+                <div style="
+                    background: var(--dark-2);
+                    padding: 20px;
+                    border-radius: 14px;
+                    border: 1px solid ${p.destaque === "sim" ? "var(--primary)" : "var(--border)"};
+                    position: relative;
+                ">
+                    ${p.badge ? `<span style="background:var(--primary); font-size:0.65rem; padding:3px 10px; border-radius:10px; font-weight:bold; position:absolute; top:12px; right:12px;">${p.badge}</span>` : ""}
+                    <h3 style="font-size:1.2rem; color:#fff; margin-bottom:8px;">${p.nome}</h3>
+                    <div style="font-size:1.8rem; font-weight:bold; color:var(--primary-light); margin:10px 0;">
+                        R$${p.valor}<small style="font-size:0.8rem; color:var(--gray);">${p.sufixo}</small>
+                    </div>
+                    <ul style="list-style:none; margin-bottom:16px;">${itensHTML}</ul>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="editarPlano(${index})" class="btn-action-bar" style="flex:1;">✏️ Editar</button>
+                        <button onclick="removerPlano(${index})" class="btn-action-bar btn-danger">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    window.editarPlano = function (index) {
+        const planos = obterPlanos();
+        const p = planos[index];
+        if (!p) return;
+
+        const setValue = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.value = value;
+        };
+
+        setValue("planoIndex", index);
+        setValue("planoNome", p.nome);
+        setValue("planoValor", p.valor);
+        setValue("planoSufixo", p.sufixo);
+        setValue("planoBadge", p.badge || "");
+        setValue("planoDestaque", p.destaque || "nao");
+        setValue("planoItens", p.itens.join("\n"));
+
+        const titulo = document.getElementById("tituloFormPlano");
+        if (titulo) titulo.textContent = "Editar Plano";
+
+        const card = document.getElementById("cardFormPlano");
+        if (card) {
+            card.style.display = "block";
+            window.scrollTo({
+                top: card.offsetTop - 90,
+                behavior: "smooth"
+            });
+        }
+    };
+
+    window.removerPlano = function (index) {
+        if (confirm("Tem certeza que deseja excluir este plano?")) {
+            let planos = obterPlanos();
+            planos.splice(index, 1);
+            localStorage.setItem("corpofitness_planos_full", JSON.stringify(planos));
+            carregarPlanosAdmin();
+            if (typeof showToast === "function") showToast("Plano excluído!");
+        }
+    };
+
+    function abrirFormPlano() {
+        const form = document.getElementById("formPlanoDinamico");
+        if (form) form.reset();
+
+        const indexEl = document.getElementById("planoIndex");
+        if (indexEl) indexEl.value = "-1";
+
+        const titulo = document.getElementById("tituloFormPlano");
+        if (titulo) titulo.textContent = "Cadastrar Novo Plano";
+
+        const card = document.getElementById("cardFormPlano");
+        if (card) {
+            card.style.display = "block";
+            window.scrollTo({
+                top: card.offsetTop - 90,
+                behavior: "smooth"
+            });
+        }
+    }
+
+    function fecharFormPlano() {
+        const card = document.getElementById("cardFormPlano");
+        if (card) card.style.display = "none";
+    }
+
+    window.abrirFormPlano = abrirFormPlano;
+    window.fecharFormPlano = fecharFormPlano;
+
+    const formPlano = document.getElementById("formPlanoDinamico");
+
+    if (formPlano) {
+        formPlano.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            let planos = obterPlanos();
+            const index = parseInt(document.getElementById("planoIndex")?.value || "-1");
+
+            const itensArray = (document.getElementById("planoItens")?.value || "")
+                .split("\n")
+                .map(item => item.trim())
+                .filter(item => item.length > 0);
+
+            const novoPlano = {
+                nome: document.getElementById("planoNome")?.value || "",
+                valor: document.getElementById("planoValor")?.value || "",
+                sufixo: document.getElementById("planoSufixo")?.value || "/mês",
+                badge: document.getElementById("planoBadge")?.value || "",
+                destaque: document.getElementById("planoDestaque")?.value || "nao",
+                itens: itensArray
+            };
+
+            if (index >= 0) {
+                planos[index] = novoPlano;
+                if (typeof showToast === "function") showToast("Plano atualizado com sucesso!");
+            } else {
+                planos.push(novoPlano);
+                if (typeof showToast === "function") showToast("Novo plano cadastrado!");
+            }
+
+            localStorage.setItem("corpofitness_planos_full", JSON.stringify(planos));
+            fecharFormPlano();
+            carregarPlanosAdmin();
+            renderizarPlanosSite();
+        });
+    }
+
+    carregarPlanosAdmin();
 
 });
 

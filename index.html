@@ -319,17 +319,8 @@
                     <h2>TREINE CONFORME O SEU OBJETIVO</h2>
                     <p>Deslize e conheça todas as nossas opções de alta performance estruturadas para o seu desenvolvimento completo.</p>
                 </div>
-                
-                <div class="swiper swiper-modalidades-auto skeleton-loading" data-aos="fade-up">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
-                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
-                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
-                        <div class="swiper-slide card skeleton-placeholder" style="height: 300px;"></div>
-                    </div>
-
+                <div class="swiper swiper-modalidades-auto skeleton-loading" data-aos="fade-up" id="swiperModalidadesAuto">
                     <div class="swiper-wrapper" id="containerModalidadesSite">
-                        <!-- Carregado via JS -->
                     </div>
                 </div>
             </div>
@@ -419,15 +410,23 @@
                     </div>
                 </div>
 
+                <!-- CAROUSEL SWIPER DA EQUIPE -->
                 <div class="swiper swiper-professores skeleton-loading" data-aos="fade-up" data-aos-delay="150">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
-                        <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
-                        <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
-                        <div class="swiper-slide professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
+                    <div class="swiper-wrapper" id="containerProfessoresSite">
+                        <!-- Placeholders -->
+                        <div class="swiper-slide">
+                            <div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
+                        </div>
                     </div>
-                    <div class="swiper-wrapper" id="containerProfessoresSite"></div>
-
                     <div class="equipe-swiper-nav">
                         <div class="swiper-button-prev-custom equipe-prev"><i class="fas fa-chevron-left"></i></div>
                         <div class="swiper-button-next-custom equipe-next"><i class="fas fa-chevron-right"></i></div>
@@ -963,7 +962,7 @@
 
                 if (typeof Swiper !== 'undefined') {
                     new Swiper('.swiper-professores', {
-                        slidesPerView: 'auto',
+                        slidesPerView: 1,
                         spaceBetween: 20,
                         loop: professores.length > 3, // Ativa o loop apenas se houver slides suficientes
                         grabCursor: true,

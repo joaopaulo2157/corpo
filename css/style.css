@@ -1765,7 +1765,7 @@ PROFESSORES
     border: 1px solid rgba(255, 255, 255, 0.041);
     box-shadow: 0 26px 60px rgba(0, 0, 0, 0.28);
     transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
-    min-height: 460px;
+    min-height: 260px;
 }
 
 .team-card::before,
@@ -2922,6 +2922,21 @@ section:nth-child(odd)::after {
 @keyframes orbSection {
     from { transform: translateY(-20px) scale(1); }
     to { transform: translateY(30px) scale(1.2); }
+}
+
+/* ==================================================
+   AJUSTES GERAIS DE RESPONSIVIDADE
+   ================================================== */
+@media (max-width: 768px) {
+    .contato-grid, .footer-grid, .cards, .planos, .prof-grid, .modalidades-grid, .faq-grid, .noticias-grid {
+        grid-template-columns: 1fr !important; /* Força coluna única */
+    }
+
+    .destaque {
+        transform: none; /* Remove o scale do plano em destaque no mobile para evitar overflow */
+    }
+
+    section { padding: 80px 0; }
 }
 
 /*==================================================

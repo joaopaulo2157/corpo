@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>Meu Plano de Treino | Corpofitness Premium</title>
-    <link rel="icon" href="favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Anton&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/dist/umd/supabase.min.js"></script>
-    <script src="js/supabase-config.js"></script>
-    <script src="js/security.js"></script>
+    <script>
+        const NEXT_PUBLIC_SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
+        const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
+        const _supabase = supabase.createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+    </script>
 
     <style>
         :root {
@@ -198,10 +198,7 @@
 
     <header>
         <div class="brand-title">CORPOFITNESS <span>PORTAL DO ALUNO</span></div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
-            <a href="index.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar ao Início</a>
-            <button type="button" id="btnSair" class="btn-voltar"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
-        </div>
+        <a href="index.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar ao Início</a>
     </header>
 
     <div class="main-content">
@@ -325,38 +322,26 @@
     let bibliotecaPorIdGlobal = {}; 
     let blocoAtivo = 'A';
     let alunoLogadoId = null;
-    const { escapeHtml: esc, safeMediaUrl } = window.CF_SECURITY;
 
     document.addEventListener('DOMContentLoaded', async () => {
-        const { data: { user }, error: authError } = await _supabase.auth.getUser();
-        if (authError || !user) {
-            window.location.replace('login-cliente.html');
-            return;
+        // Captura ID via URL (?aluno_id=X) ou da sessão
+        const urlParams = new URLSearchParams(window.location.search);
+        alunoLogadoId = urlParams.get('aluno_id') || sessionStorage.getItem('corpofitness_aluno_id');
+
+        // Se não houver ID definido, busca o primeiro aluno ativo no banco
+        if (!alunoLogadoId) {
+            const { data: primeiroAluno } = await _supabase.from('alunos').select('id, nome').limit(1).maybeSingle();
+            if (primeiroAluno) {
+                alunoLogadoId = primeiroAluno.id;
+            } else {
+                alunoLogadoId = '1';
+            }
         }
-
-        const { data: aluno, error: alunoError } = await _supabase
-            .from('alunos')
-            .select('id, nome, status')
-            .eq('auth_user_id', user.id)
-            .maybeSingle();
-
-        if (alunoError || !aluno || aluno.status !== 'Ativo') {
-            document.querySelector('.main-content').innerHTML = '<div class="card"><h1>Acesso indisponível</h1><p style="color:var(--text-muted)">Seu cadastro ainda não está vinculado ou ativo. Fale com a recepção da academia.</p></div>';
-            return;
-        }
-
-        alunoLogadoId = aluno.id;
-        document.getElementById('tituloBoasVindas').textContent = `Olá, ${(aluno.nome || 'Aluno').split(' ')[0]}! Seu plano de treino 🏋️`;
 
         await carregarBibliotecaExercicios();
         await carregarAvaliacaoFisica();
         await carregarPlanoTreino();
         inscreverRealtimeSupabase();
-    });
-
-    document.getElementById('btnSair')?.addEventListener('click', async () => {
-        await _supabase.auth.signOut();
-        window.location.replace('login-cliente.html');
     });
 
     async function carregarBibliotecaExercicios() {
@@ -436,8 +421,8 @@
     function inscreverRealtimeSupabase() {
         _supabase
             .channel('mudancas_treinos')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'treinos_alunos', filter: `aluno_id=eq.${alunoLogadoId}` }, () => carregarPlanoTreino())
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'avaliacoes_fisicas', filter: `aluno_id=eq.${alunoLogadoId}` }, () => carregarAvaliacaoFisica())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'treinos_alunos' }, () => carregarPlanoTreino())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'avaliacoes_fisicas' }, () => carregarAvaliacaoFisica())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'biblioteca_exercicios' }, async () => {
                 await carregarBibliotecaExercicios();
                 renderizarTabelaAluno();
@@ -481,26 +466,25 @@
 
             let botaoAjudaVideo = '';
             if (videoUrlFinal && videoUrlFinal.trim() !== "") {
-                botaoAjudaVideo = `<button type="button" class="btn-video-exercicio" data-video="${esc(safeMediaUrl(videoUrlFinal))}" data-exercicio="${esc(item.exercicio || item.nome || '')}" title="Ver execução em vídeo" style="background: rgba(37,99,235,0.15); border: 1px solid var(--primary-light); color: var(--primary-light); border-radius: 20px; padding: 4px 10px; font-size: 0.75rem; font-weight:700; cursor: pointer; margin-left: 8px; display: inline-flex; align-items: center; gap: 5px; transition: var(--transition);"><i class="fa-solid fa-play"></i> Vídeo</button>`;
+                const urlTratada = videoUrlFinal.replace(/'/g, "\\'");
+                const nomeTratado = (item.exercicio || item.nome || '').replace(/'/g, "\\'");
+                botaoAjudaVideo = `<button type="button" onclick="abrirVideoDuvida('${nomeTratado}', '${urlTratada}')" title="Ver execução em vídeo" style="background: rgba(37,99,235,0.15); border: 1px solid var(--primary-light); color: var(--primary-light); border-radius: 20px; padding: 4px 10px; font-size: 0.75rem; font-weight:700; cursor: pointer; margin-left: 8px; display: inline-flex; align-items: center; gap: 5px; transition: var(--transition);" onmouseover="this.style.background='var(--primary)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(37,99,235,0.15)'; this.style.color='var(--primary-light)';"><i class="fa-solid fa-play"></i> Vídeo</button>`;
             }
 
             tbody.innerHTML += `
                 <tr>
                     <td>
                         <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <span><strong>${esc(item.exercicio || item.nome || 'Exercício')}</strong></span>
+                            <span><strong>${item.exercicio || item.nome || 'Exercício'}</strong></span>
                             ${botaoAjudaVideo}
                         </div>
                     </td>
-                    <td>${esc(item.series || '--')}</td>
-                    <td>${esc(item.reps || '--')}</td>
-                    <td><span style="color: var(--accent-success); font-weight: 700;">${esc(item.carga || '--')}</span></td>
-                    <td><span style="font-size: 0.78rem; color: var(--primary-light);">${esc(item.metodo || 'Normal')}</span></td>
+                    <td>${item.series || '--'}</td>
+                    <td>${item.reps || '--'}</td>
+                    <td><span style="color: var(--accent-success); font-weight: 700;">${item.carga || '--'}</span></td>
+                    <td><span style="font-size: 0.78rem; color: var(--primary-light);">${item.metodo || 'Normal'}</span></td>
                 </tr>
             `;
-        });
-        tbody.querySelectorAll('.btn-video-exercicio').forEach((button) => {
-            button.addEventListener('click', () => abrirVideoDuvida(button.dataset.exercicio, button.dataset.video));
         });
     }
 
@@ -665,12 +649,7 @@
         videoPlayer.pause();
         videoPlayer.removeAttribute('src');
         videoPlayer.load();
-        const mediaUrl = safeMediaUrl(urlVideo);
-        if (!mediaUrl) {
-            alert('O endereço do vídeo não é permitido.');
-            return;
-        }
-        videoPlayer.src = mediaUrl;
+        videoPlayer.src = String(urlVideo).trim();
         modal.style.display = 'flex';
         videoPlayer.load();
 

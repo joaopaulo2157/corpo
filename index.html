@@ -223,6 +223,351 @@
                 animation: none !important;
             }
         }
+
+
+        /* ==================================================
+           CONTADORES / ESTATÍSTICAS — RESPONSIVIDADE MOBILE
+           Desktop: 4 colunas | Tablet: 2x2 | Celular: 2x2
+           ================================================== */
+        .contador .container {
+            min-width: 0;
+        }
+
+        .contador .numero {
+            min-width: 0;
+        }
+
+        @media (max-width: 980px) {
+            .contador {
+                margin-top: -45px !important;
+                padding: 38px 0 !important;
+            }
+
+            .contador .container {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 16px !important;
+                padding-left: 18px !important;
+                padding-right: 18px !important;
+            }
+
+            .contador .numero {
+                width: 100% !important;
+                padding: 28px 16px !important;
+                border-radius: 18px !important;
+            }
+
+            .contador .numero h2 {
+                font-size: clamp(2rem, 7vw, 2.8rem) !important;
+                line-height: 1 !important;
+                margin-bottom: 10px !important;
+                white-space: nowrap;
+            }
+
+            .contador .numero span {
+                display: block;
+                font-size: 0.86rem !important;
+                line-height: 1.35 !important;
+                overflow-wrap: anywhere;
+            }
+        }
+
+        @media (max-width: 540px) {
+            .contador {
+                margin-top: -28px !important;
+                padding: 28px 0 34px !important;
+            }
+
+            .contador .container {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 10px !important;
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+            }
+
+            .contador .numero {
+                padding: 22px 8px !important;
+                min-height: 128px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border-radius: 16px !important;
+            }
+
+            .contador .numero h2 {
+                font-size: clamp(1.65rem, 9vw, 2.25rem) !important;
+                letter-spacing: -0.04em;
+            }
+
+            .contador .numero span {
+                max-width: 140px;
+                margin: 0 auto;
+                font-size: clamp(0.68rem, 3.2vw, 0.8rem) !important;
+                line-height: 1.25 !important;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 340px) {
+            .contador .container {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+
+            .contador .numero {
+                min-height: 112px;
+            }
+        }
+
+    
+        /* ==========================================================
+           HEADER / MENU MOBILE — RESPONSIVIDADE DEFINITIVA
+           ========================================================== */
+        .mobile-nav-cta {
+            display: none;
+        }
+
+        @media (max-width: 1080px) {
+            header {
+                background: rgba(5, 11, 21, 0.96) !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            header .container,
+            header.scrolled .container {
+                min-height: 82px !important;
+                height: 82px !important;
+                padding: 8px 20px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: 12px;
+            }
+
+            header .logo {
+                position: relative;
+                z-index: 1003;
+                flex: 0 0 auto;
+            }
+
+            header .logo-img {
+                width: clamp(118px, 34vw, 145px) !important;
+                max-height: 62px !important;
+                object-fit: contain;
+            }
+
+            /* O botão Matricule-se do desktop vai para dentro do menu */
+            header .container > div:has(.btn-header) {
+                display: none !important;
+            }
+
+            .menu-mobile {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 48px !important;
+                height: 48px !important;
+                min-width: 48px !important;
+                padding: 0 !important;
+                border-radius: 14px !important;
+                border: 1px solid rgba(255, 255, 255, 0.12) !important;
+                background: rgba(255, 255, 255, 0.06) !important;
+                color: #fff !important;
+                position: relative;
+                z-index: 1003;
+                transition: background .25s ease, border-color .25s ease, transform .25s ease !important;
+            }
+
+            .menu-mobile:active {
+                transform: scale(.96);
+            }
+
+            .menu-mobile .icon-bars {
+                width: 24px !important;
+                height: 24px !important;
+                max-width: none !important;
+                max-height: none !important;
+                overflow: visible;
+            }
+
+            .menu-mobile .icon-bars rect {
+                transform-box: fill-box;
+                transform-origin: center;
+                transition: transform .28s ease, opacity .2s ease;
+            }
+
+            .menu-mobile.is-open {
+                background: rgba(0, 102, 255, 0.18) !important;
+                border-color: rgba(77, 163, 255, 0.55) !important;
+            }
+
+            .menu-mobile.is-open .icon-bars rect:nth-child(1) {
+                transform: translateY(6px) rotate(45deg);
+            }
+
+            .menu-mobile.is-open .icon-bars rect:nth-child(2) {
+                opacity: 0;
+            }
+
+            .menu-mobile.is-open .icon-bars rect:nth-child(3) {
+                transform: translateY(-6px) rotate(-45deg);
+            }
+
+            #navMenu {
+                position: fixed !important;
+                top: 82px !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                height: calc(100dvh - 82px) !important;
+                max-height: calc(100dvh - 82px) !important;
+                padding: 16px 16px 28px !important;
+                background: rgba(3, 8, 17, 0.985) !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                overflow-y: auto !important;
+                overscroll-behavior: contain;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateY(-12px);
+                transition:
+                    opacity .28s ease,
+                    transform .28s cubic-bezier(.22, 1, .36, 1),
+                    visibility .28s ease !important;
+                z-index: 1001 !important;
+            }
+
+            #navMenu.active {
+                opacity: 1 !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+                transform: translateY(0) !important;
+            }
+
+            #navMenu ul {
+                width: min(100%, 560px) !important;
+                margin: 0 auto !important;
+                padding: 10px 0 24px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 8px !important;
+            }
+
+            #navMenu li {
+                width: 100%;
+            }
+
+            #navMenu a {
+                width: 100% !important;
+                min-height: 54px;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                padding: 14px 18px !important;
+                border-radius: 14px;
+                border: 1px solid transparent;
+                color: #d5dde8 !important;
+                font-size: 1rem !important;
+                font-weight: 600 !important;
+                line-height: 1.2;
+                background: rgba(255, 255, 255, 0.025);
+            }
+
+            #navMenu a::after {
+                display: none !important;
+            }
+
+            #navMenu a:hover,
+            #navMenu a.active {
+                color: #fff !important;
+                background: rgba(0, 102, 255, 0.12) !important;
+                border-color: rgba(77, 163, 255, 0.22) !important;
+                padding-left: 22px !important;
+            }
+
+            #navMenu .mobile-nav-cta {
+                display: block !important;
+                margin-top: 10px;
+            }
+
+            #navMenu .mobile-nav-cta a {
+                justify-content: center !important;
+                gap: 10px;
+                min-height: 58px;
+                color: #fff !important;
+                background: linear-gradient(135deg, #0066ff 0%, #3d9bff 100%) !important;
+                border-color: rgba(255, 255, 255, 0.12) !important;
+                box-shadow: 0 12px 28px rgba(0, 102, 255, 0.22);
+            }
+
+            #navMenu .mobile-nav-cta a:hover {
+                padding-left: 18px !important;
+                transform: none !important;
+            }
+
+            body.mobile-menu-open {
+                overflow: hidden !important;
+                touch-action: none;
+            }
+
+            /* Hero começa abaixo do header menor no mobile */
+            html.mobile-lite .hero {
+                padding-top: 104px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header .container,
+            header.scrolled .container {
+                min-height: 74px !important;
+                height: 74px !important;
+                padding-left: 14px !important;
+                padding-right: 14px !important;
+            }
+
+            header .logo-img {
+                width: 118px !important;
+                max-height: 56px !important;
+            }
+
+            .menu-mobile {
+                width: 44px !important;
+                height: 44px !important;
+                min-width: 44px !important;
+                border-radius: 12px !important;
+            }
+
+            #navMenu {
+                top: 74px !important;
+                height: calc(100dvh - 74px) !important;
+                max-height: calc(100dvh - 74px) !important;
+                padding: 12px 12px 24px !important;
+            }
+
+            #navMenu ul {
+                padding-top: 6px !important;
+            }
+
+            #navMenu a {
+                min-height: 50px;
+                padding: 13px 15px !important;
+                font-size: .96rem !important;
+            }
+
+            html.mobile-lite .hero {
+                padding-top: 94px !important;
+            }
+        }
+
+        /* Fallback para navegadores que não suportam :has() */
+        @media (max-width: 1080px) {
+            .header-desktop-cta {
+                display: none !important;
+            }
+        }
+
     </style>
 
     <!-- ESTRUTURA SCHEMA.ORG (JSON-LD LOCALBUSINESS + GYM) -->
@@ -354,9 +699,10 @@
                     <li><a href="#planos">Planos</a></li>
                     <li><a href="#professores">Equipe</a></li>
                     <li><a href="#contato">Contato</a></li>
+                    <li class="mobile-nav-cta"><a href="#contato"><i class="fas fa-bolt" aria-hidden="true"></i> Quero me matricular</a></li>
                 </ul>
             </nav>
-            <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="header-desktop-cta" style="display: flex; align-items: center; gap: 12px;">
                 <a href="#contato" class="btn-header">
                         Matricule-se <svg class="icon-svg icon-chevron" role="img" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
@@ -1456,5 +1802,86 @@
         };
 
     </script>
+
+    <!-- MENU MOBILE — CONTROLE ÚNICO E SEM CONFLITO COM LISTENERS ANTIGOS -->
+    <script>
+    (() => {
+        const BREAKPOINT = 1080;
+
+        const getParts = () => ({
+            button: document.getElementById('btnMenuMobile'),
+            nav: document.getElementById('navMenu')
+        });
+
+        const setMenu = (open) => {
+            const { button, nav } = getParts();
+            if (!button || !nav) return;
+
+            const shouldOpen = Boolean(open) && window.innerWidth <= BREAKPOINT;
+
+            nav.classList.toggle('active', shouldOpen);
+            button.classList.toggle('is-open', shouldOpen);
+            button.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+            button.setAttribute(
+                'aria-label',
+                shouldOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação'
+            );
+            document.body.classList.toggle('mobile-menu-open', shouldOpen);
+        };
+
+        const toggleMenu = () => {
+            const { nav } = getParts();
+            if (!nav) return;
+            setMenu(!nav.classList.contains('active'));
+        };
+
+        // Captura antes dos handlers antigos existentes em js/script.js.
+        document.addEventListener('click', (event) => {
+            const button = event.target.closest('#btnMenuMobile');
+            if (button) {
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                toggleMenu();
+                return;
+            }
+
+            const navLink = event.target.closest('#navMenu a');
+            if (navLink && window.innerWidth <= BREAKPOINT) {
+                setMenu(false);
+                return;
+            }
+
+            const { nav } = getParts();
+            if (
+                nav &&
+                nav.classList.contains('active') &&
+                window.innerWidth <= BREAKPOINT &&
+                !event.target.closest('#navMenu') &&
+                !event.target.closest('header .logo')
+            ) {
+                setMenu(false);
+            }
+        }, true);
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') setMenu(false);
+        }, true);
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > BREAKPOINT) setMenu(false);
+        }, { passive: true });
+
+        window.addEventListener('orientationchange', () => setMenu(false), { passive: true });
+
+        // Garante estado inicial correto.
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => setMenu(false), { once: true });
+        } else {
+            setMenu(false);
+        }
+    })();
+    </script>
+
 </body>
 </html>

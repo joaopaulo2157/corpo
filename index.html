@@ -133,6 +133,96 @@
                 flex-wrap: nowrap !important;
             }
         }
+
+        /* ==========================================================
+           HERO MOBILE — MODO LEVE / ALTA PERFORMANCE
+           ========================================================== */
+        .hero {
+            isolation: isolate;
+        }
+
+        .hero-poster {
+            position: absolute;
+            inset: 0;
+            background-image: url("img/hero-poster.svg");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            z-index: -3;
+            display: none;
+        }
+
+        @media (max-width: 768px), (pointer: coarse) {
+            html.mobile-lite .noise-texture,
+            html.mobile-lite .blur-orbs-wrapper,
+            html.mobile-lite #heroParticlesCanvas,
+            html.mobile-lite .hero-video-parallax {
+                display: none !important;
+            }
+
+            html.mobile-lite .hero {
+                min-height: 100svh !important;
+                height: auto !important;
+                padding: 118px 0 72px !important;
+                background: #050b15;
+                overflow: hidden;
+            }
+
+            html.mobile-lite .hero-poster {
+                display: block !important;
+                transform: none !important;
+            }
+
+            html.mobile-lite .hero-content {
+                padding-top: 0 !important;
+                transform: none !important;
+                opacity: 1 !important;
+                will-change: auto !important;
+            }
+
+            html.mobile-lite .hero .overlay {
+                transform: none !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background: linear-gradient(
+                    105deg,
+                    rgba(4, 10, 20, 0.94) 0%,
+                    rgba(4, 10, 20, 0.80) 45%,
+                    rgba(4, 10, 20, 0.70) 100%
+                ) !important;
+            }
+
+            html.mobile-lite .hero::after {
+                background: radial-gradient(
+                    circle at 78% 24%,
+                    rgba(0, 102, 255, 0.22),
+                    transparent 42%
+                ) !important;
+            }
+
+            html.mobile-lite .tag,
+            html.mobile-lite .hero-box,
+            html.mobile-lite .btn-secondary,
+            html.mobile-lite header.scrolled {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+            }
+
+            html.mobile-lite .split-title .char {
+                will-change: auto !important;
+                animation-duration: 0.45s !important;
+            }
+
+            html.mobile-lite .whatsapp {
+                animation: none !important;
+            }
+
+            html.mobile-lite .scroll-down-luxury,
+            html.mobile-lite .mouse-icon,
+            html.mobile-lite .wheel {
+                animation: none !important;
+            }
+        }
     </style>
 
     <!-- ESTRUTURA SCHEMA.ORG (JSON-LD LOCALBUSINESS + GYM) -->
@@ -286,13 +376,69 @@
 
         <!-- 3. HERO SECTION -->
         <section class="hero" id="inicio" aria-label="Apresentação da Corpofitness">
-            <video id="heroVideo" class="hero-video-parallax" autoplay muted loop playsinline preload="metadata" poster="img/hero-poster.jpg" aria-hidden="true">
-                <source src="videos/academia.mp4" type="video/mp4">
+            <!--
+                PERFORMANCE:
+                O vídeo não recebe src imediatamente. Em desktop ele é carregado abaixo;
+                em celulares usamos o poster ultraleve e removemos vídeo/canvas antes
+                dos módulos pesados do script principal serem inicializados.
+            -->
+            <video id="heroVideo" class="hero-video-parallax" muted loop playsinline preload="none" poster="img/hero-poster.svg" aria-hidden="true">
+                <source data-src="videos/academia.mp4" type="video/mp4">
             </video>
             <div class="hero-poster" aria-hidden="true"></div>
-            
+
             <div class="overlay hero-overlay-parallax" aria-hidden="true"></div>
             <canvas id="heroParticlesCanvas" class="hero-particles-canvas" aria-hidden="true"></canvas>
+
+            <script>
+                (() => {
+                    const isMobileLite =
+                        window.matchMedia('(max-width: 768px)').matches ||
+                        window.matchMedia('(pointer: coarse)').matches;
+
+                    const video = document.getElementById('heroVideo');
+                    const canvas = document.getElementById('heroParticlesCanvas');
+                    const poster = document.querySelector('.hero-poster');
+
+                    if (isMobileLite) {
+                        document.documentElement.classList.add('mobile-lite');
+
+                        // O loader artificial de 1,4 s aumenta a sensação de travamento no celular.
+                        const loader = document.getElementById('loader');
+                        if (loader) loader.remove();
+
+                        // Impede o script principal de iniciar vídeo/parallax/canvas no celular.
+                        if (video) {
+                            try { video.pause(); } catch (_) {}
+                            video.remove();
+                        }
+                        if (canvas) canvas.remove();
+                        if (poster) poster.style.display = 'block';
+                        return;
+                    }
+
+                    // Desktop: carrega o vídeo somente quando chegamos ao Hero.
+                    if (video) {
+                        const source = video.querySelector('source[data-src]');
+                        if (source && source.dataset.src) {
+                            source.src = source.dataset.src;
+                        }
+
+                        video.setAttribute('autoplay', '');
+                        try {
+                            video.load();
+                            const playPromise = video.play();
+                            if (playPromise && typeof playPromise.catch === 'function') {
+                                playPromise.catch(() => {
+                                    if (poster) poster.style.display = 'block';
+                                });
+                            }
+                        } catch (_) {
+                            if (poster) poster.style.display = 'block';
+                        }
+                    }
+                })();
+            </script>
 
             <div class="container hero-content" data-aos="fade-up">
                 <span class="tag">

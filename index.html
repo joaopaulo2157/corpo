@@ -12,6 +12,7 @@
     <meta name="keywords" content="academia são josé da tapera, musculação tapera al, corpofitness premium, cross training, treino funcional, personal trainer tapera">
     <meta name="author" content="Corpofitness Premium">
     <meta name="robots" content="index, follow">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <link rel="canonical" href="https://corpofitnesspremium.com.br/">
 
     <!-- OPEN GRAPH (FACEBOOK, WHATSAPP, LINKEDIN) -->
@@ -19,7 +20,7 @@
     <meta property="og:url" content="https://corpofitnesspremium.com.br/">
     <meta property="og:title" content="Corpofitness Premium | Transforme Seu Coração e Corpo">
     <meta property="og:description" content="A melhor infraestrutura de São José da Tapera! Equipamentos modernos, ambiente climatizado e acompanhamento profissional. Garantia de resultados reais.">
-    <meta property="og:image" content="banner/banner_promo.jpg">
+    <meta property="og:image" content="https://corpofitnesspremium.com.br/img/social-preview.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:locale" content="pt_BR">
@@ -30,13 +31,12 @@
     <meta name="twitter:url" content="https://corpofitnesspremium.com.br/">
     <meta name="twitter:title" content="Corpofitness Premium | Transforme Seu Coração e Corpo">
     <meta name="twitter:description" content="A melhor infraestrutura de São José da Tapera! Equipamentos modernos, ambiente climatizado e acompanhamento profissional.">
-    <meta name="twitter:image" content="banner/banner_promo.jpg">
+    <meta name="twitter:image" content="https://corpofitnesspremium.com.br/img/social-preview.png">
 
     <!-- PRECONNECT PARA CDNS EXTERNAS (REDUZ LATÊNCIA) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://unpkg.com">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
     <!-- PRELOAD DAS FONTS CRÍTICAS -->
@@ -49,8 +49,8 @@
 
     <!-- FONT AWESOME & LIBS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@14.1.0/swiper-bundle.min.css">
 
     <!-- CSS PRINCIPAL -->
     <link rel="stylesheet" href="css/style.css">
@@ -63,8 +63,8 @@
       "@id": "https://corpofitnesspremium.com.br/#gym",
       "name": "Corpofitness Premium",
       "url": "https://corpofitnesspremium.com.br",
-      "logo": "https://corpofitnesspremium.com.br/img/logo.png",
-      "image": "banner/banner_promo.jpg",
+      "logo": "https://corpofitnesspremium.com.br/img/logo.svg",
+      "image": "https://corpofitnesspremium.com.br/img/social-preview.png",
       "description": "Academia completa com musculação, treino funcional, cross training e cardio em São José da Tapera / AL.",
       "telephone": "+5582996786183",
       "email": "corpofitness@gmail.com",
@@ -111,13 +111,9 @@
     </script>
 
     <!-- CDN do Supabase JS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script>
-        const NEXT_PUBLIC_SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co'; 
-        const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
-        const _supabase = supabase.createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/dist/umd/supabase.min.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/security.js"></script>
 </head>
 <body>
 
@@ -149,14 +145,14 @@
     <div id="loader" role="status" aria-label="Carregando página">
         <div class="loader-content">
             <div class="logo" role="img" aria-label="Logo Corpofitness Premium">
-                <img src="img/logo.png" alt="Corpofitness Premium" class="logo-img" decoding="async" width="170" height="78" onerror="this.src='https://via.placeholder.com/200x60?text=CORPOFITNESS';">
+                <img src="img/logo.svg" alt="Corpofitness Premium" class="logo-img" decoding="async" width="220" height="72">
             </div>
             <div class="loader-line"></div>
         </div>
     </div>
 
     <!-- WHATSAPP FLUTUANTE UI -->
-    <a class="whatsapp" href="https://wa.me/5582996786183" target="_blank" aria-label="Fale conosco diretamente pelo WhatsApp (abre em nova janela)">
+    <a class="whatsapp" href="https://wa.me/5582996786183" target="_blank" rel="noopener noreferrer" aria-label="Fale conosco diretamente pelo WhatsApp (abre em nova janela)">
         <i class="fab fa-whatsapp" aria-hidden="true"></i>
     </a>
 
@@ -172,11 +168,11 @@
         <div class="container">
             <div class="logo">
                 <a href="#inicio" aria-label="Corpofitness Premium - Voltar para o início" aria-current="page">
-                    <img src="img/logo.png" alt="Corpofitness Premium" class="logo-img" decoding="async" width="170" height="78" onerror="this.src='https://via.placeholder.com/200x60?text=CORPOFITNESS';">
+                    <img src="img/logo.svg" alt="Corpofitness Premium" class="logo-img" decoding="async" width="220" height="72">
                 </a>
             </div>
             <nav id="navMenu" aria-label="Menu principal">
-                <ul>
+                <ul class="menu" id="mainMenu">
                     <li><a href="#inicio" class="active">Início</a></li>
                     <li><a href="#estrutura">Estrutura</a></li>
                     <li><a href="#modalidades">Modalidades</a></li>
@@ -191,7 +187,7 @@
                         Matricule-se <svg class="icon-svg icon-chevron" role="img" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
             </div>
-            <button class="menu-mobile" id="btnMenuMobile" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="navMenu">
+            <button class="menu-mobile" id="btnMenuMobile" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="mainMenu">
                 <svg class="icon-svg icon-bars" role="img" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="3" y="5" width="18" height="2" rx="1" fill="#fff" opacity="0.95"/>
                     <rect x="3" y="11" width="18" height="2" rx="1" fill="#fff" opacity="0.85"/>
@@ -206,9 +202,7 @@
 
         <!-- 3. HERO SECTION -->
         <section class="hero" id="inicio" aria-label="Apresentação da Corpofitness">
-            <video id="heroVideo" class="hero-video-parallax" autoplay muted loop playsinline preload="metadata" poster="img/hero-poster.jpg" aria-hidden="true">
-                <source src="videos/academia.mp4" type="video/mp4">
-            </video>
+            <img id="heroVideo" class="hero-video-parallax" src="img/hero-poster.svg" alt="" aria-hidden="true">
             <div class="hero-poster" aria-hidden="true"></div>
             
             <div class="overlay hero-overlay-parallax" aria-hidden="true"></div>
@@ -219,18 +213,18 @@
                     <i class="fas fa-bolt" aria-hidden="true"></i> ACADEMIA PREMIUM
                 </span>
 
-                <h1 class="split-title" aria-label="SUPERE SEUS LIMITES HOJE">
-                    <span class="hero-line">
+                <h1 id="heroTitle" class="split-title" aria-label="SUPERE SEUS LIMITES HOJE">
+                    <span id="heroTitle1" class="hero-line">
                         <span class="word">SUPERE</span>
                         <span class="word">SEUS</span>
                     </span>
-                    <span class="hero-line">
+                    <span id="heroTitle2" class="hero-line">
                         <span class="word">LIMITES</span>
                         <span class="word">HOJE</span>
                     </span>
                 </h1>
 
-                <p class="hero-description">
+                <p id="heroDescription" class="hero-description">
                     Equipamentos de alta tecnologia, biometria facial, ambiente 100% arejado e professores especialistas dedicados à sua evolução diária.
                 </p>
 
@@ -358,7 +352,7 @@
             <div class="container container-planos-anexo">
                 <div class="bg-planos-anexo">
                     <div class="bg-planos-anexo" aria-hidden="true"></div>
-                    <img src="img/bg-planos.jpg" alt="Imagem de fundo para a seção de planos" aria-hidden="false" style="display: none;"></div>
+                    <img src="img/bg-planos.svg" alt="" aria-hidden="true" style="display: none;"></div>
                 <div class="titulo-anexo">
                     <h2 class="planos-main-title-anexo">CONHEÇA NOSSOS <span>PLANOS</span></h2>
                     <p class="planos-subtitle-desc-anexo">Comece a cuidar da sua saúde hoje mesmo! Na Corpo Fitness, temos o pacote de serviços ideal para que você alcance seus objetivos de saúde e bem-estar. É só comparar e escolher o plano com o melhor custo-benefício.</p>
@@ -538,7 +532,7 @@
                         <div class="form-group">
                             <label for="contatoNome" class="sr-only">Seu Nome Completo</label>
                             <div class="input-wrapper">
-                                <input type="text" id="contatoNome" name="nome" placeholder="Seu Nome Completo" required aria-required="true">
+                                <input type="text" id="contatoNome" name="nome" placeholder="Seu Nome Completo" minlength="3" maxlength="120" autocomplete="name" required aria-required="true">
                                 <i class="fas fa-check-circle valid-icon" aria-hidden="true"></i>
                                 <i class="fas fa-exclamation-circle invalid-icon" aria-hidden="true"></i>
                             </div>
@@ -548,7 +542,7 @@
                         <div class="form-group">
                             <label for="contatoEmail" class="sr-only">Seu Melhor E-mail</label>
                             <div class="input-wrapper">
-                                <input type="email" id="contatoEmail" name="email" placeholder="Seu Melhor E-mail" required aria-required="true">
+                                <input type="email" id="contatoEmail" name="email" placeholder="Seu Melhor E-mail" maxlength="254" autocomplete="email" required aria-required="true">
                                 <i class="fas fa-check-circle valid-icon" aria-hidden="true"></i>
                                 <i class="fas fa-exclamation-circle invalid-icon" aria-hidden="true"></i>
                             </div>
@@ -558,7 +552,7 @@
                         <div class="form-group">
                             <label for="contatoTel" class="sr-only">WhatsApp / Telefone com DDD</label>
                             <div class="input-wrapper">
-                                <input type="tel" id="contatoTel" name="telefone" placeholder="WhatsApp (DDD + Número)" maxlength="15" required aria-required="true">
+                                <input type="tel" id="contatoTel" name="telefone" placeholder="WhatsApp (DDD + Número)" minlength="10" maxlength="30" autocomplete="tel" required aria-required="true">
                                 <i class="fas fa-check-circle valid-icon" aria-hidden="true"></i>
                                 <i class="fas fa-exclamation-circle invalid-icon" aria-hidden="true"></i>
                             </div>
@@ -568,14 +562,15 @@
                         <div class="form-group">
                             <label for="contatoMsg" class="sr-only">Sua Mensagem</label>
                             <div class="input-wrapper">
-                                <textarea id="contatoMsg" name="mensagem" placeholder="Como podemos ajudar você? (Modalidade, Plano, Dúvida...)" rows="4" maxlength="300" required aria-required="true"></textarea>
+                                <textarea id="contatoMsg" name="mensagem" placeholder="Como podemos ajudar você? (Modalidade, Plano, Dúvida...)" rows="4" minlength="10" maxlength="1000" required aria-required="true"></textarea>
                             </div>
                             <div class="textarea-footer">
                                 <span class="error-msg" id="errorMsg">Escreva uma mensagem com pelo menos 10 caracteres.</span>
-                                <span class="char-counter"><span id="charCount">0</span>/300</span>
+                                <span class="char-counter"><span id="charCount">0</span>/1000</span>
                             </div>
                         </div>
 
+                        <div class="sr-only" aria-hidden="true"><label for="contatoWebsite">Website</label><input id="contatoWebsite" name="website" tabindex="-1" autocomplete="off"></div>
                         <button type="submit" id="btnSubmitForm" class="btn-primary" style="width: 100%; justify-content: center; border:none; cursor:pointer;">
                             <span>Enviar Mensagem</span> <i class="fas fa-paper-plane" aria-hidden="true"></i>
                         </button>
@@ -599,14 +594,14 @@
             <div class="footer-grid">
                 <div class="footer-brand">
                     <div class="logo">
-                        <img src="img/logo.png" alt="Corpofitness" class="logo-img" decoding="async" width="170" height="78" onerror="this.src='https://via.placeholder.com/200x60?text=CORPOFITNESS';">
+                        <img src="img/logo.svg" alt="Corpofitness" class="logo-img" decoding="async" width="220" height="72">
                     </div>
                     <p>Transformando vidas, desenvolvendo disciplina e garantindo resultados reais todos os dias.</p>
                     <div class="footer-social">
                         <a href="#" aria-label="Nosso perfil no Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
                         <a href="#" aria-label="Nossa página no Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
                         <a href="#" aria-label="Nosso canal no YouTube"><i class="fab fa-youtube" aria-hidden="true"></i></a>
-                        <a href="https://wa.me/5582996786183" target="_blank" aria-label="Chamar no WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+                        <a href="https://wa.me/5582996786183" target="_blank" rel="noopener noreferrer" aria-label="Chamar no WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
@@ -646,42 +641,62 @@
 
             <div class="footer-bottom">
                 <p>© 2026 Corpofitness. Todos os direitos reservados.</p>
-                <p>Desenvolvido por <a href="admin.html" target="_blank">AlfaTech..</a></p>
+                <p>Desenvolvido por <a href="admin.html">AlfaTech..</a></p>
             </div>
         </div>
     </footer>
 
     <!-- SCRIPTS -->
-    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@14.1.0/swiper-bundle.min.js"></script>
     <script src="js/script.js"></script>
 
     <script>
-        const FALLBACK_IMG = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80';
+        const { escapeHtml: esc, safeImageUrl, safeUrl, safeIconClass, normalizeText } = window.CF_SECURITY;
+        const FALLBACK_IMG = window.CF_SECURITY.FALLBACK_IMAGE;
 
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('img').forEach(img => {
                 img.addEventListener('error', function() {
-                    if (this.src.includes('via.placeholder.com')) {
-                        this.src = FALLBACK_IMG;
-                    }
+                    if (this.dataset.fallbackApplied) return;
+                    this.dataset.fallbackApplied = 'true';
+                    this.src = FALLBACK_IMG;
                 });
             });
+
+            async function carregarHeroSite() {
+                const { data: hero } = await _supabase
+                    .from('hero_config')
+                    .select('id,t1,t2,sub,video')
+                    .eq('id', 1)
+                    .maybeSingle();
+                if (!hero) return;
+                const title1 = document.getElementById('heroTitle1');
+                const title2 = document.getElementById('heroTitle2');
+                const title = document.getElementById('heroTitle');
+                const description = document.getElementById('heroDescription');
+                const image = document.getElementById('heroVideo');
+                if (title1 && hero.t1) title1.textContent = normalizeText(hero.t1, 80);
+                if (title2 && hero.t2) title2.textContent = normalizeText(hero.t2, 80);
+                if (title) title.setAttribute('aria-label', `${normalizeText(hero.t1, 80)} ${normalizeText(hero.t2, 80)}`.trim());
+                if (description && hero.sub) description.textContent = normalizeText(hero.sub, 300);
+                if (image && hero.video) image.src = safeImageUrl(hero.video);
+            }
 
             // 1. CARREGAR ESTRUTURA DINÂMICA
             async function carregarEstruturaSite() {
                 const container = document.querySelector('#containerEstruturaSite');
                 if (!container) return;
                 container.classList.add('skeleton-loading'); // Adiciona skeleton
-                const { data: itens } = await _supabase.from('estrutura').select('*').order('ordem', { ascending: true });
+                const { data: itens } = await _supabase.from('estrutura').select('id,titulo,descricao,icone,ordem').order('ordem', { ascending: true });
                 if (itens && itens.length > 0) {
                     container.innerHTML = '';
                     itens.forEach((e, idx) => {
                         container.innerHTML += `
                             <div class="card" tabindex="0" data-aos="fade-up" data-aos-delay="${idx * 100}">
-                                <div class="icon-box"><i class="${e.icone || 'fas fa-dumbbell'}" aria-hidden="true"></i></div>
-                                <h3>${e.titulo}</h3>
-                                <p>${e.descricao}</p>
+                                <div class="icon-box"><i class="${safeIconClass(e.icone)}" aria-hidden="true"></i></div>
+                                <h3>${esc(e.titulo)}</h3>
+                                <p>${esc(e.descricao)}</p>
                             </div>
                         `;
                     });
@@ -694,20 +709,20 @@
                 const container = document.querySelector('#containerModalidadesSite');
                 container.classList.add('skeleton-loading'); // Adiciona skeleton
                 if (!container) return;
-                const { data: mods } = await _supabase.from('modalidades').select('*').order('ordem', { ascending: true });
+                const { data: mods } = await _supabase.from('modalidades').select('id,nome,icone,descricao,nivel,duracao,equipamento,beneficios,ordem').order('ordem', { ascending: true });
                 if (mods && mods.length > 0) {
                     container.innerHTML = '';
                     mods.forEach(m => {
                         container.innerHTML += `
                             <div class="swiper-slide">
                                 <div class="modalidade" tabindex="0">
-                                    <i class="${m.icone || 'fas fa-dumbbell'}" aria-hidden="true"></i>
-                                    <h3>${m.nome}</h3>
-                                    <p>"${m.descricao}"</p>
-                                    <p><strong>Níveis:</strong> ${m.nivel}</p>
-                                    <p><strong>Duração:</strong> ${m.duracao}</p>
-                                    <p><strong>Equipamento:</strong> ${m.equipamento}</p>
-                                    <p><strong>Benefícios:</strong> ${m.beneficios}</p>
+                                    <i class="${safeIconClass(m.icone)}" aria-hidden="true"></i>
+                                    <h3>${esc(m.nome)}</h3>
+                                    <p>"${esc(m.descricao)}"</p>
+                                    <p><strong>Níveis:</strong> ${esc(m.nivel)}</p>
+                                    <p><strong>Duração:</strong> ${esc(m.duracao)}</p>
+                                    <p><strong>Equipamento:</strong> ${esc(m.equipamento)}</p>
+                                    <p><strong>Benefícios:</strong> ${esc(m.beneficios)}</p>
                                 </div>
                             </div>
                         `;
@@ -721,7 +736,7 @@
                 const container = document.querySelector('#containerFeedbacksSite');
                 container.classList.add('skeleton-loading'); // Adiciona skeleton
                 if (!container) return;
-                const { data: feeds } = await _supabase.from('feedbacks').select('*').order('ordem', { ascending: true });
+                const { data: feeds } = await _supabase.from('feedbacks').select('id,nome,foto,estrelas,unidade,texto,ordem').order('ordem', { ascending: true });
                 if (feeds && feeds.length > 0) {
                     container.innerHTML = '';
                     // Monta 3 colunas simulando o carrossel vertical infinito
@@ -733,14 +748,14 @@
                         const cardHtml = `
                             <div class="depo-card-item">
                                 <div class="depo-card-user">
-                                    <img src="${f.foto || FALLBACK_IMG}" alt="${f.nome}">
+                                    <img src="${safeImageUrl(f.foto)}" alt="${esc(f.nome)}">
                                     <div>
-                                        <h4>${f.nome}</h4>
-                                        <div class="depo-estrelas">${f.estrelas || '★★★★★'}</div>
-                                        <span>${f.unidade}</span>
+                                        <h4>${esc(f.nome)}</h4>
+                                        <div class="depo-estrelas">${esc(f.estrelas || '★★★★★')}</div>
+                                        <span>${esc(f.unidade)}</span>
                                     </div>
                                 </div>
-                                <p>"${f.texto}"</p>
+                                <p>"${esc(f.texto)}"</p>
                             </div>
                         `;
                         if (index % 3 === 0) col1 += cardHtml;
@@ -753,14 +768,14 @@
                         const cardHtml = `
                             <div class="depo-card-item">
                                 <div class="depo-card-user">
-                                    <img src="${f.foto || FALLBACK_IMG}" alt="${f.nome}">
+                                    <img src="${safeImageUrl(f.foto)}" alt="${esc(f.nome)}">
                                     <div>
-                                        <h4>${f.nome}</h4>
-                                        <div class="depo-estrelas">${f.estrelas || '★★★★★'}</div>
-                                        <span>${f.unidade}</span>
+                                        <h4>${esc(f.nome)}</h4>
+                                        <div class="depo-estrelas">${esc(f.estrelas || '★★★★★')}</div>
+                                        <span>${esc(f.unidade)}</span>
                                     </div>
                                 </div>
-                                <p>"${f.texto}"</p>
+                                <p>"${esc(f.texto)}"</p>
                             </div>
                         `;
                         if (index % 3 === 0) col1 += cardHtml;
@@ -782,18 +797,18 @@
                 const container = document.querySelector('#containerFaqSite');
                 container.classList.add('skeleton-loading'); // Adiciona skeleton
                 if (!container) return;
-                const { data: faqs } = await _supabase.from('faq').select('*').order('ordem', { ascending: true });
+                const { data: faqs } = await _supabase.from('faq').select('id,pergunta,resposta,ordem').order('ordem', { ascending: true });
                 if (faqs && faqs.length > 0) {
                     container.innerHTML = '';
                     faqs.forEach((f, idx) => {
                         container.innerHTML += `
                             <div class="faq-item" data-aos="fade-up" data-aos-delay="${(idx + 1) * 50}">
                                 <button class="faq-question" aria-expanded="false">
-                                    <span>${f.pergunta}</span>
+                                    <span>${esc(f.pergunta)}</span>
                                     <i class="fas fa-chevron-down faq-icon" aria-hidden="true"></i>
                                 </button>
                                 <div class="faq-answer">
-                                    <p>${f.resposta}</p>
+                                    <p>${esc(f.resposta)}</p>
                                 </div>
                             </div>
                         `;
@@ -825,28 +840,28 @@
             // 5. CARREGAR PLANOS DINÂMICOS
             async function carregarPlanosSite() {
                 const container = document.querySelector('#containerPlanosSite');
-                container.classList.add('skeleton-loading'); // Adiciona skeleton
                 if (!container) return;
-                const { data: planos } = await _supabase.from('planos').select('*').order('ordem', { ascending: true });
+                container.classList.add('skeleton-loading'); // Adiciona skeleton
+                const { data: planos } = await _supabase.from('planos').select('id,nome,valor,sufixo,itens,destaque,badge,ordem').order('ordem', { ascending: true });
                 if (planos && planos.length > 0) {
                     container.innerHTML = '';
                     planos.forEach(p => {
                         const isDestaque = p.destaque === 'sim' ? 'plano-card-anexo destaque-central-anexo' : 'plano-card-anexo';
-                        const badgeHtml = p.badge ? `<div class="badge-custo-beneficio-anexo">${p.badge}</div>` : '';
-                        const itensLi = (p.itens || []).map(i => `<li><i>✓</i> ${i}</li>`).join('');
+                        const badgeHtml = p.badge ? `<div class="badge-custo-beneficio-anexo">${esc(p.badge)}</div>` : '';
+                        const itensLi = (Array.isArray(p.itens) ? p.itens : []).map(i => `<li><i>✓</i> ${esc(i)}</li>`).join('');
 
                         container.innerHTML += `
                             <div class="${isDestaque}">
                                 ${badgeHtml}
                                 <div class="plano-header-info-anexo">
-                                    <h3 class="plano-card-title-anexo">${p.nome}</h3>
+                                    <h3 class="plano-card-title-anexo">${esc(p.nome)}</h3>
                                     <span class="plano-periodo-anexo">A partir de</span>
                                     <div class="plano-valor-box-anexo">
                                         <small>R$</small>
-                                        <span class="valor-num-anexo">${p.valor}</span>
+                                        <span class="valor-num-anexo">${esc(p.valor)}</span>
                                         <span class="asterisco-anexo">*</span>
                                     </div>
-                                    <span class="sub-valor-texto-anexo">${p.sufixo || 'por mês'}</span>
+                                    <span class="sub-valor-texto-anexo">${esc(p.sufixo || 'por mês')}</span>
                                 </div>
                                 <ul class="plano-beneficios-list-anexo">
                                     ${itensLi}
@@ -858,6 +873,30 @@
                         `;
                     });
                     container.classList.remove('skeleton-loading'); // Remove skeleton
+
+                    // INICIALIZAÇÃO CORRETA DO SWIPER APÓS CARREGAR OS DADOS
+                    if (typeof Swiper !== 'undefined') {
+                        new Swiper('.swiper-modalidades-auto', {
+                            slidesPerView: 'auto',
+                            spaceBetween: 25,
+                            loop: true,
+                            grabCursor: true,
+                            speed: 8000,
+                            autoplay: {
+                                delay: 0,
+                                disableOnInteraction: false,
+                                pauseOnMouseEnter: true,
+                            },
+                            freeMode: {
+                                enabled: true,
+                                momentum: false,
+                            },
+                            breakpoints: {
+                                768: { slidesPerView: 3 },
+                                1200: { slidesPerView: 4 }
+                            }
+                        });
+                    }
                 }
             }
 
@@ -865,24 +904,48 @@
                 const container = document.querySelector('#containerGaleriaSite');
                 if (!container) return;
                 container.classList.add('skeleton-loading'); // Adiciona skeleton
-                const { data: fotos } = await _supabase.from('galeria').select('*').order('ordem', { ascending: true });
+                const { data: fotos } = await _supabase.from('galeria').select('id,img,titulo,ordem').order('ordem', { ascending: true });
                 if (fotos && fotos.length > 0) {
                     container.innerHTML = '';
                     fotos.forEach(f => {
-                        const highQualityUrl = f.img || FALLBACK_IMG;
+                        const highQualityUrl = safeImageUrl(f.img);
                         const lowQualityUrl = highQualityUrl.includes('?') 
                             ? `${highQualityUrl}&width=40&quality=30` 
                             : `${highQualityUrl}?width=40&quality=30`;
-                        const altText = f.titulo || 'Foto da galeria da academia';
+                        const altText = esc(f.titulo || 'Foto da galeria da academia');
 
                         container.innerHTML += `
                             <div class="galeria-item" data-aos="zoom-in">
-                                <img src="${lowQualityUrl}" class="galeria-img-placeholder" alt="${altText}" loading="eager" onload="this.classList.add('loaded')">
-                                <img src="${highQualityUrl}" class="galeria-img-hq" alt="${altText}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded'); this.src='${FALLBACK_IMG}'">
+                                <img src="${safeImageUrl(lowQualityUrl)}" class="galeria-img-placeholder" alt="${altText}" loading="eager" onload="this.classList.add('loaded')">
+                                <img src="${highQualityUrl}" class="galeria-img-hq" alt="${altText}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded'); this.src=window.CF_SECURITY.FALLBACK_IMAGE">
                             </div>
                         `;
                     });
                     container.classList.remove('skeleton-loading'); // Remove skeleton
+
+                    // INICIALIZAÇÃO CORRETA DO SWIPER APÓS CARREGAR OS DADOS
+                    if (typeof Swiper !== 'undefined') {
+                        new Swiper('.swiper-modalidades-auto', {
+                            slidesPerView: 'auto', // Permite que os slides tenham larguras diferentes se necessário
+                            spaceBetween: 25,
+                            loop: true,
+                            grabCursor: true,
+                            speed: 8000, // Velocidade da transição
+                            autoplay: {
+                                delay: 0, // Sem atraso para iniciar
+                                disableOnInteraction: false,
+                                pauseOnMouseEnter: true,
+                            },
+                            freeMode: {
+                                enabled: true,
+                                momentum: false,
+                            },
+                            breakpoints: {
+                                768: { slidesPerView: 3 },
+                                1200: { slidesPerView: 4 }
+                            }
+                        });
+                    }
                 }
             }
 
@@ -890,7 +953,7 @@
                 const container = document.querySelector('#containerProfessoresSite');
                 if (!container) return;
                 container.classList.add('skeleton-loading'); // Adiciona skeleton
-                const { data: professores } = await _supabase.from('professores').select('*').order('created_at', { ascending: false });
+                const { data: professores } = await _supabase.from('professores').select('id,nome,esp,bio,foto,created_at').order('created_at', { ascending: false });
                 if (professores && professores.length > 0) {
                     container.innerHTML = ''; 
                     professores.forEach((p, index) => {
@@ -899,12 +962,12 @@
                             <div class="swiper-slide">
                                 <div class="professor-card-lux ${activeClass}" tabindex="0" data-aos="fade-up">
                                     <div class="prof-img-wrapper">
-                                        <img src="${p.foto || FALLBACK_IMG}" alt="Foto de ${p.nome}" loading="lazy" width="400" height="500">
+                                        <img src="${safeImageUrl(p.foto)}" alt="Foto de ${esc(p.nome)}" loading="lazy" width="400" height="500">
                                     </div>
                                     <div class="prof-content-box">
-                                        <span class="prof-role">${p.esp || 'INSTRUTOR DE FITNESS'}</span>
-                                        <h3 class="prof-name">${p.nome || 'Instrutor'}</h3>
-                                        <p class="prof-bio">${p.bio || 'Profissional altamente qualificado para garantir o seu melhor rendimento físico.'}</p>
+                                        <span class="prof-role">${esc(p.esp || 'INSTRUTOR DE FITNESS')}</span>
+                                        <h3 class="prof-name">${esc(p.nome || 'Instrutor')}</h3>
+                                        <p class="prof-bio">${esc(p.bio || 'Profissional altamente qualificado para garantir o seu melhor rendimento físico.')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -915,9 +978,9 @@
 
                 if (typeof Swiper !== 'undefined') {
                     new Swiper('.swiper-professores', {
-                        slidesPerView: 1,
+                        slidesPerView: 'auto',
                         spaceBetween: 20,
-                        loop: true,
+                        loop: professores.length > 3, // Ativa o loop apenas se houver slides suficientes
                         grabCursor: true,
                         navigation: {
                             nextEl: '.equipe-next',
@@ -933,12 +996,12 @@
             }
 
             async function carregarBanners() {
-                const { data: banners } = await _supabase.from('banners').select('*');
+                const { data: banners } = await _supabase.from('banners').select('id,titulo,posicao,img,link');
                 if (!banners) return;
                 banners.forEach(b => {
                     let dest = b.posicao === 'topo' ? document.getElementById('banner-area-topo') : b.posicao === 'meio' ? document.getElementById('banner-area-meio') : document.getElementById('banner-area-footer');
                     if (dest && b.img) {
-                        dest.innerHTML = `<div style="width: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);"><a href="${b.link || '#'}" ${b.link ? 'target="_blank"' : ''}><img src="${b.img}" alt="Banner" style="width:100%; display:block; object-fit:cover;"></a></div>`;
+                        dest.innerHTML = `<div style="width: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);"><a href="${safeUrl(b.link || '#')}" ${b.link ? 'target="_blank" rel="noopener noreferrer"' : ''}><img src="${safeImageUrl(b.img)}" alt="${esc(b.titulo || 'Banner promocional')}" style="width:100%; display:block; object-fit:cover;"></a></div>`;
                     }
                 });
             }
@@ -947,7 +1010,7 @@
                 const container = document.querySelector('#containerParceirosSite');
                 if (!container) return;
                 container.classList.add('skeleton-loading'); // Adiciona skeleton
-                const { data: parceiros } = await _supabase.from('parceiros').select('*').order('ordem', { ascending: true });
+                const { data: parceiros } = await _supabase.from('parceiros').select('id,nome,logo,ordem').order('ordem', { ascending: true });
                 if (parceiros && parceiros.length > 0) {
                     const parent = document.querySelector('.swiper-parceiros');
                     if (!parent) return;
@@ -958,7 +1021,7 @@
                     let items = parceiros.slice();
                     while (items.length < minSlides) items = items.concat(parceiros);
 
-                    const html = items.map(p => `<div class="parceiro"><img src="${p.logo}" alt="${p.nome}"></div>`).join('');
+                    const html = items.map(p => `<div class="parceiro"><img src="${safeImageUrl(p.logo)}" alt="${esc(p.nome)}"></div>`).join('');
                     track.innerHTML = html + html;
 
                     requestAnimationFrame(() => {
@@ -982,16 +1045,24 @@
             if (formContato) {
                 formContato.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    const nome = document.querySelector('#contatoNome')?.value || '';
-                    const email = document.querySelector('#contatoEmail')?.value || '';
-                    const tel = document.querySelector('#contatoTel')?.value || '';
-                    const msg = document.querySelector('#contatoMsg')?.value || '';
+                    if (document.querySelector('#contatoWebsite')?.value || !formContato.reportValidity()) return;
+                    const submitButton = document.querySelector('#btnSubmitForm');
+                    if (submitButton) submitButton.disabled = true;
+                    const nome = normalizeText(document.querySelector('#contatoNome')?.value, 120);
+                    const email = normalizeText(document.querySelector('#contatoEmail')?.value, 254).toLowerCase();
+                    const tel = normalizeText(document.querySelector('#contatoTel')?.value, 30);
+                    const msg = normalizeText(document.querySelector('#contatoMsg')?.value, 1000);
 
-                    const { error } = await _supabase.from('contatos').insert([{ nome, email, tel, msg, status: 'Pendente' }]);
-                    if (!error) {
+                    try {
+                        const { error } = await _supabase.rpc('submit_contact', { p_nome: nome, p_email: email, p_tel: tel, p_msg: msg });
+                        if (error) throw error;
                         const toast = document.querySelector('#toastSuccess');
                         if (toast) { toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 4000); }
                         formContato.reset();
+                    } catch (_) {
+                        window.alert('Não foi possível enviar agora. Tente novamente em alguns minutos ou use o WhatsApp.');
+                    } finally {
+                        if (submitButton) submitButton.disabled = false;
                     }
                 });
             }
@@ -1002,7 +1073,7 @@
                 container.classList.add('skeleton-loading'); // Adiciona skeleton
 
                 try {
-                    const { data: noticias, error } = await _supabase.from('noticias').select('*').order('created_at', { ascending: false }).limit(3);
+                    const { data: noticias, error } = await _supabase.from('noticias').select('id,titulo,cat,conteudo,created_at').order('created_at', { ascending: false }).limit(3);
                     if (error) throw error;
 
                     if (!noticias || noticias.length === 0) {
@@ -1015,9 +1086,9 @@
                         const dataFormatada = new Date(n.created_at).toLocaleDateString('pt-BR');
                         container.innerHTML += `
                             <div class="noticia-card" data-aos="fade-up" data-aos-delay="${index * 100}">
-                                <span class="noticia-categoria">${n.cat || 'Geral'}</span>
-                                <h3>${n.titulo}</h3>
-                                <p>${n.conteudo.substring(0, 120)}...</p>
+                                <span class="noticia-categoria">${esc(n.cat || 'Geral')}</span>
+                                <h3>${esc(n.titulo)}</h3>
+                                <p>${esc(String(n.conteudo || '').substring(0, 120))}...</p>
                                 <div class="noticia-meta">
                                     <span><i class="fas fa-calendar-alt"></i> ${dataFormatada}</span>
                                     <a href="#" class="btn-ler-mais">Ler Mais <i class="fas fa-arrow-right"></i></a>
@@ -1031,6 +1102,7 @@
                 }
             }
 
+            carregarHeroSite();
             carregarEstruturaSite();
             carregarModalidadesSite();
             carregarFeedbacksSite();
@@ -1047,27 +1119,19 @@
             const userArea = document.getElementById('userNavArea');
             if (!userArea) return;
 
-            const paginaAluno = 'aluno/index.html';
-
-            let usuario = JSON.parse(sessionStorage.getItem('corpofitness_usuario')) || 
-                          JSON.parse(sessionStorage.getItem('corpofitness_cliente_logado'));
-
-            if (!usuario) {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if (session && session.user) {
-                    usuario = {
-                        nome: session.user.user_metadata.full_name || session.user.email.split('@')[0],
-                        email: session.user.email
-                    };
-                }
-            }
+            const paginaAluno = 'treinos.html';
+            const { data: { user } } = await _supabase.auth.getUser();
+            const usuario = user ? {
+                nome: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Aluno',
+                email: user.email
+            } : null;
 
             if (usuario) {
                 const primeiroNome = (usuario.nome || 'Aluno').split(' ')[0];
                 userArea.innerHTML = `
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <a href="${paginaAluno}" style="color: var(--primary-light, #4da3ff); font-weight: 600; font-size: 0.95rem; text-decoration: none; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-user-circle"></i> Olá, ${primeiroNome}
+                            <i class="fas fa-user-circle"></i> Olá, ${esc(primeiroNome)}
                         </a>
                         <button onclick="logoutSitePrincipal()" title="Sair da conta" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.3s;">
                             <i class="fas fa-sign-out-alt"></i>
@@ -1084,40 +1148,10 @@
         });
 
         window.logoutSitePrincipal = async function() {
-            sessionStorage.removeItem('corpofitness_usuario');
-            sessionStorage.removeItem('corpofitness_cliente_logado');
             await _supabase.auth.signOut();
-            window.location.reload();
             window.location.href = 'login-cliente.html';
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                if (typeof Swiper !== 'undefined') {
-                    new Swiper('.swiper-modalidades-auto', {
-                        slidesPerView: 1,
-                        spaceBetween: 25,
-                        loop: true,
-                        grabCursor: true,
-                        speed: 5000,
-                        autoplay: {
-                            delay: 0,
-                            disableOnInteraction: false,
-                            pauseOnMouseEnter: true
-                        },
-                        freeMode: {
-                            enabled: true,
-                            momentum: false
-                        },
-                        breakpoints: {
-                            640: { slidesPerView: 2, spaceBetween: 25 },
-                            1024: { slidesPerView: 3, spaceBetween: 30 },
-                            1280: { slidesPerView: 4, spaceBetween: 30 }
-                        }
-                    });
-                }
-            }, 1000);
-        });
     </script>
 </body>
 </html>

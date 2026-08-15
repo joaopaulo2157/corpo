@@ -37,7 +37,6 @@ Cada Pull Request deve seguir estritamente o template abaixo em sua descrição.
 
 **Riscos, Limitações e Próximos Passos:**
 > - **Riscos:** Existe algum risco potencial com esta mudança? (Ex: "A alteração na API de login pode impactar usuários antigos que não limparam o cache.")
-> - **Riscos:** Existe algum risco potencial com esta mudança? (Ex: "A alteração na API de login pode impactar usuários antigos que não limparam o cache.")
 > - **Limitações:** A implementação tem alguma limitação conhecida? (Ex: "A funcionalidade de exportação ainda não suporta o formato PDF.")
 > - **Próximos Passos:** Há alguma tarefa de acompanhamento ou melhoria futura planejada? (Ex: "Refatorar o CSS do modal de avaliação em uma issue separada.")
 
@@ -108,5 +107,3 @@ Toda implementação de interface deve seguir um processo de design estruturado 
 -   **Reutilização:** Priorizar o uso de componentes já existentes no projeto para manter a consistência e acelerar o desenvolvimento.
 -   **Inspiração Externa:** Se um novo padrão for necessário, buscar inspiração em bibliotecas de UI modernas e bem estabelecidas, como `shadcn/ui`, `21st.dev`, `Magic UI` ou `Aceternity UI`, adaptando-os à nossa identidade visual.
 -   **Funcionalidade Acima da Forma:** Evitar a criação de componentes puramente decorativos que não agreguem valor funcional ou não resolvam um problema real do usuário. Cada elemento deve ter um propósito.
-> - **Limitações:** A implementação tem alguma limitação conhecida? (Ex: "A funcionalidade de exportação ainda não suporta o formato PDF.")
-> - **Próximos Passos:** Há alguma tarefa de acompanhamento ou melhoria futura planejada? (Ex: "Refatorar o CSS do modal de avaliação em uma issue separada.")

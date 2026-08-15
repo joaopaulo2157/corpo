@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title">
+  <title id="title">Fundo abstrato esportivo da Corpofitness</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#020617"/><stop offset=".6" stop-color="#0f172a"/><stop offset="1" stop-color="#172554"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#2563eb" stop-opacity=".72"/><stop offset="1" stop-color="#2563eb" stop-opacity="0"/></radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#93c5fd" stroke-opacity=".08"/></pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1260" cy="250" r="520" fill="url(#glow)"/>
+  <rect width="1600" height="900" fill="url(#grid)"/>
+  <g fill="none" stroke="#60a5fa" stroke-opacity=".28" stroke-width="34">
+    <path d="M1040 230v440M1220 150v600"/>
+    <path d="M925 310h410M880 590h500"/>
+  </g>
+  <path d="M930 460h430" stroke="#f8fafc" stroke-opacity=".42" stroke-width="26" stroke-linecap="round"/>
+</svg>

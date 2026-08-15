@@ -94,6 +94,45 @@
                 flex-wrap: nowrap !important;
             }
         }
+
+        /* CORREÇÃO DEFINITIVA: NOSSA EQUIPE SEMPRE EM CARROSSEL HORIZONTAL */
+        .swiper-professores {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden !important;
+            padding: 12px 0 70px !important;
+        }
+
+        .swiper-professores .swiper-wrapper {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: stretch !important;
+            width: max-content;
+            transition-timing-function: linear !important;
+        }
+
+        .swiper-professores .swiper-slide {
+            display: flex !important;
+            flex-direction: column;
+            flex-shrink: 0 !important;
+            height: auto !important;
+            box-sizing: border-box;
+        }
+
+        .swiper-professores .professor-card-lux {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .swiper-professores .swiper-wrapper {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+            }
+        }
     </style>
 
     <!-- ESTRUTURA SCHEMA.ORG (JSON-LD LOCALBUSINESS + GYM) -->
@@ -454,13 +493,11 @@
                 <!-- CAROUSEL SWIPER DA EQUIPE -->
                 <div class="swiper swiper-professores skeleton-loading" data-aos="fade-up" data-aos-delay="150">
                     <div class="swiper-wrapper" id="containerProfessoresSite">
-                        <!-- Placeholders -->
-                        <div class="swiper-slide">
-                            <div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
-                            <div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
-                            <div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
-                            <div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div>
-                        </div>
+                        <!-- Placeholders em slides separados para nunca empilhar verticalmente -->
+                        <div class="swiper-slide"><div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div></div>
+                        <div class="swiper-slide"><div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div></div>
+                        <div class="swiper-slide"><div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div></div>
+                        <div class="swiper-slide"><div class="professor-card-lux skeleton-placeholder" style="height: 450px;"></div></div>
                     </div>
                     <div class="equipe-swiper-nav">
                         <div class="swiper-button-prev-custom equipe-prev"><i class="fas fa-chevron-left"></i></div>
@@ -1001,20 +1038,51 @@
                 }
             }
 
+            // NOSSA EQUIPE — CARROSSEL HORIZONTAL, AUTOMÁTICO E INFINITO
+            let swiperProfessoresAuto = null;
+
             async function carregarProfessores() {
+                const swiperEl = document.querySelector('.swiper-professores');
                 const container = document.querySelector('#containerProfessoresSite');
-                if (!container) return;
-                container.classList.add('skeleton-loading'); // Adiciona skeleton
-                const { data: professores } = await _supabase.from('professores').select('*').order('created_at', { ascending: false });
-                if (professores && professores.length > 0) {
-                    container.innerHTML = ''; 
-                    professores.forEach((p, index) => {
-                        const activeClass = index === 1 ? 'active-card' : '';
-                        container.innerHTML += `
+                if (!swiperEl || !container) return;
+
+                swiperEl.classList.add('skeleton-loading');
+
+                try {
+                    const { data: professores, error } = await _supabase
+                        .from('professores')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+
+                    if (!professores || professores.length === 0) {
+                        container.innerHTML = `
+                            <div style="width:100%; text-align:center; padding:36px 20px; color:var(--gray-soft);">
+                                Nenhum profissional cadastrado no momento.
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    const slides = [];
+                    const minimoParaLoop = Math.max(8, professores.length);
+                    let indice = 0;
+
+                    while (slides.length < minimoParaLoop) {
+                        slides.push(professores[indice % professores.length]);
+                        indice++;
+                    }
+
+                    container.innerHTML = slides.map((p, index) => {
+                        const originalIndex = index % professores.length;
+                        const activeClass = originalIndex === 1 ? 'active-card' : '';
+
+                        return `
                             <div class="swiper-slide">
-                                <div class="professor-card-lux ${activeClass}" tabindex="0" data-aos="fade-up">
+                                <div class="professor-card-lux ${activeClass}" tabindex="0">
                                     <div class="prof-img-wrapper">
-                                        <img src="${p.foto || FALLBACK_IMG}" alt="Foto de ${p.nome}" loading="lazy" width="400" height="500">
+                                        <img src="${p.foto || FALLBACK_IMG}" alt="Foto de ${p.nome || 'profissional da equipe'}" loading="lazy" width="400" height="500" onerror="this.src='${FALLBACK_IMG}'">
                                     </div>
                                     <div class="prof-content-box">
                                         <span class="prof-role">${p.esp || 'INSTRUTOR DE FITNESS'}</span>
@@ -1024,26 +1092,61 @@
                                 </div>
                             </div>
                         `;
-                    });
-                    container.classList.remove('skeleton-loading'); // Remove skeleton
-                }
+                    }).join('');
 
-                if (typeof Swiper !== 'undefined') {
-                    new Swiper('.swiper-professores', {
-                        slidesPerView: 1,
-                        spaceBetween: 20,
-                        loop: professores.length > 3, // Ativa o loop apenas se houver slides suficientes
+                    if (swiperEl.swiper) {
+                        swiperEl.swiper.destroy(true, true);
+                    }
+                    if (swiperProfessoresAuto) {
+                        swiperProfessoresAuto.destroy(true, true);
+                        swiperProfessoresAuto = null;
+                    }
+
+                    if (typeof Swiper === 'undefined') {
+                        throw new Error('Biblioteca Swiper não foi carregada.');
+                    }
+
+                    swiperProfessoresAuto = new Swiper(swiperEl, {
+                        slidesPerView: 1.12,
+                        spaceBetween: 18,
+                        loop: true,
+                        loopAdditionalSlides: 4,
                         grabCursor: true,
+                        speed: 6000,
+                        observer: true,
+                        observeParents: true,
+                        watchSlidesProgress: true,
+                        autoplay: {
+                            delay: 0,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: true,
+                            waitForTransition: false
+                        },
                         navigation: {
                             nextEl: '.equipe-next',
-                            prevEl: '.equipe-prev',
+                            prevEl: '.equipe-prev'
                         },
                         breakpoints: {
-                            576: { slidesPerView: 2, spaceBetween: 20 },
-                            992: { slidesPerView: 3, spaceBetween: 24 },
-                            1200: { slidesPerView: 4, spaceBetween: 30 }
+                            576: { slidesPerView: 1.55, spaceBetween: 20 },
+                            768: { slidesPerView: 2.25, spaceBetween: 22 },
+                            992: { slidesPerView: 3.15, spaceBetween: 24 },
+                            1200: { slidesPerView: 4, spaceBetween: 28 }
                         }
                     });
+
+                    requestAnimationFrame(() => {
+                        swiperProfessoresAuto?.update();
+                        swiperProfessoresAuto?.autoplay?.start();
+                    });
+                } catch (err) {
+                    console.error('Erro ao carregar equipe:', err);
+                    container.innerHTML = `
+                        <div style="width:100%; text-align:center; padding:36px 20px; color:var(--gray-soft);">
+                            Não foi possível carregar nossa equipe. Tente novamente em instantes.
+                        </div>
+                    `;
+                } finally {
+                    swiperEl.classList.remove('skeleton-loading');
                 }
             }
 

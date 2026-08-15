@@ -55,6 +55,47 @@
     <!-- CSS PRINCIPAL -->
     <link rel="stylesheet" href="css/style.css">
 
+    <!-- CORREÇÃO DEFINITIVA: MODALIDADES SEMPRE EM LINHA HORIZONTAL -->
+    <style>
+        #swiperModalidadesAuto {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        #swiperModalidadesAuto .swiper-wrapper {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: stretch !important;
+            width: max-content;
+            transition-timing-function: linear !important;
+        }
+
+        #swiperModalidadesAuto .swiper-slide {
+            display: flex !important;
+            flex-direction: column;
+            flex-shrink: 0 !important;
+            height: auto !important;
+            box-sizing: border-box;
+        }
+
+        #swiperModalidadesAuto .modalidade {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Impede regras genéricas de grid/coluna única de quebrarem o Swiper */
+        @media (max-width: 768px) {
+            #swiperModalidadesAuto .swiper-wrapper {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+            }
+        }
+    </style>
+
     <!-- ESTRUTURA SCHEMA.ORG (JSON-LD LOCALBUSINESS + GYM) -->
     <script type="application/ld+json">
     {
@@ -682,30 +723,109 @@
                 }
             }
 
-            // 2. CARREGAR MODALIDADES DINÂMICAS
+            // 2. CARREGAR MODALIDADES DINÂMICAS + CARROSSEL AUTOMÁTICO/INFINITO
+            let swiperModalidadesAuto = null;
+
             async function carregarModalidadesSite() {
+                const swiperEl = document.querySelector('#swiperModalidadesAuto');
                 const container = document.querySelector('#containerModalidadesSite');
-                container.classList.add('skeleton-loading'); // Adiciona skeleton
-                if (!container) return;
-                const { data: mods } = await _supabase.from('modalidades').select('*').order('ordem', { ascending: true });
-                if (mods && mods.length > 0) {
-                    container.innerHTML = '';
-                    mods.forEach(m => {
-                        container.innerHTML += `
-                            <div class="swiper-slide">
-                                <div class="modalidade" tabindex="0">
-                                    <i class="${m.icone || 'fas fa-dumbbell'}" aria-hidden="true"></i>
-                                    <h3>${m.nome}</h3>
-                                    <p>"${m.descricao}"</p>
-                                    <p><strong>Níveis:</strong> ${m.nivel}</p>
-                                    <p><strong>Duração:</strong> ${m.duracao}</p>
-                                    <p><strong>Equipamento:</strong> ${m.equipamento}</p>
-                                    <p><strong>Benefícios:</strong> ${m.beneficios}</p>
-                                </div>
+                if (!swiperEl || !container) return;
+
+                // O skeleton pertence ao elemento .swiper, não ao .swiper-wrapper.
+                swiperEl.classList.add('skeleton-loading');
+
+                try {
+                    const { data: mods, error } = await _supabase
+                        .from('modalidades')
+                        .select('*')
+                        .order('ordem', { ascending: true });
+
+                    if (error) throw error;
+
+                    if (!mods || mods.length === 0) {
+                        container.innerHTML = `
+                            <div style="width:100%; text-align:center; padding:32px 20px; color:var(--gray-soft);">
+                                Nenhuma modalidade cadastrada no momento.
                             </div>
                         `;
+                        return;
+                    }
+
+                    // Replica os registros apenas quando necessário para manter o loop
+                    // contínuo estável em telas grandes, mesmo com poucos cadastros.
+                    const slides = [];
+                    const minimoParaLoop = Math.max(8, mods.length);
+                    let indice = 0;
+
+                    while (slides.length < minimoParaLoop) {
+                        slides.push(mods[indice % mods.length]);
+                        indice++;
+                    }
+
+                    container.innerHTML = slides.map((m) => `
+                        <div class="swiper-slide">
+                            <div class="modalidade" tabindex="0">
+                                <i class="${m.icone || 'fas fa-dumbbell'}" aria-hidden="true"></i>
+                                <h3>${m.nome || 'Modalidade'}</h3>
+                                ${m.descricao ? `<p>"${m.descricao}"</p>` : ''}
+                                ${m.nivel ? `<p><strong>Níveis:</strong> ${m.nivel}</p>` : ''}
+                                ${m.duracao ? `<p><strong>Duração:</strong> ${m.duracao}</p>` : ''}
+                                ${m.equipamento ? `<p><strong>Equipamento:</strong> ${m.equipamento}</p>` : ''}
+                                ${m.beneficios ? `<p><strong>Benefícios:</strong> ${m.beneficios}</p>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Evita instâncias duplicadas se a rotina for chamada novamente.
+                    if (swiperEl.swiper) {
+                        swiperEl.swiper.destroy(true, true);
+                    }
+                    if (swiperModalidadesAuto) {
+                        swiperModalidadesAuto.destroy(true, true);
+                        swiperModalidadesAuto = null;
+                    }
+
+                    if (typeof Swiper === 'undefined') {
+                        throw new Error('Biblioteca Swiper não foi carregada.');
+                    }
+
+                    swiperModalidadesAuto = new Swiper(swiperEl, {
+                        slidesPerView: 1.15,
+                        spaceBetween: 18,
+                        loop: true,
+                        loopAdditionalSlides: 4,
+                        grabCursor: true,
+                        speed: 6000,
+                        observer: true,
+                        observeParents: true,
+                        watchSlidesProgress: true,
+                        autoplay: {
+                            delay: 0,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: true,
+                            waitForTransition: false
+                        },
+                        breakpoints: {
+                            576: { slidesPerView: 1.6, spaceBetween: 20 },
+                            768: { slidesPerView: 2.35, spaceBetween: 22 },
+                            992: { slidesPerView: 3.15, spaceBetween: 24 },
+                            1200: { slidesPerView: 4, spaceBetween: 25 }
+                        }
                     });
-                    container.classList.remove('skeleton-loading'); // Remove skeleton
+
+                    requestAnimationFrame(() => {
+                        swiperModalidadesAuto?.update();
+                        swiperModalidadesAuto?.autoplay?.start();
+                    });
+                } catch (err) {
+                    console.error('Erro ao carregar modalidades:', err);
+                    container.innerHTML = `
+                        <div style="width:100%; text-align:center; padding:32px 20px; color:var(--gray-soft);">
+                            Não foi possível carregar as modalidades. Tente novamente em instantes.
+                        </div>
+                    `;
+                } finally {
+                    swiperEl.classList.remove('skeleton-loading');
                 }
             }
 
@@ -852,29 +972,6 @@
                     });
                     container.classList.remove('skeleton-loading'); // Remove skeleton
 
-                    // INICIALIZAÇÃO CORRETA DO SWIPER APÓS CARREGAR OS DADOS
-                    if (typeof Swiper !== 'undefined') {
-                        new Swiper('.swiper-modalidades-auto', {
-                            slidesPerView: 'auto',
-                            spaceBetween: 25,
-                            loop: true,
-                            grabCursor: true,
-                            speed: 8000,
-                            autoplay: {
-                                delay: 0,
-                                disableOnInteraction: false,
-                                pauseOnMouseEnter: true,
-                            },
-                            freeMode: {
-                                enabled: true,
-                                momentum: false,
-                            },
-                            breakpoints: {
-                                768: { slidesPerView: 3 },
-                                1200: { slidesPerView: 4 }
-                            }
-                        });
-                    }
                 }
             }
 
@@ -901,29 +998,6 @@
                     });
                     container.classList.remove('skeleton-loading'); // Remove skeleton
 
-                    // INICIALIZAÇÃO CORRETA DO SWIPER APÓS CARREGAR OS DADOS
-                    if (typeof Swiper !== 'undefined') {
-                        new Swiper('.swiper-modalidades-auto', {
-                            slidesPerView: 'auto', // Permite que os slides tenham larguras diferentes se necessário
-                            spaceBetween: 25,
-                            loop: true,
-                            grabCursor: true,
-                            speed: 8000, // Velocidade da transição
-                            autoplay: {
-                                delay: 0, // Sem atraso para iniciar
-                                disableOnInteraction: false,
-                                pauseOnMouseEnter: true,
-                            },
-                            freeMode: {
-                                enabled: true,
-                                momentum: false,
-                            },
-                            breakpoints: {
-                                768: { slidesPerView: 3 },
-                                1200: { slidesPerView: 4 }
-                            }
-                        });
-                    }
                 }
             }
 

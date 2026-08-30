@@ -719,11 +719,14 @@
                     Continuar com Google
                 </button>
 
-                <button type="button" id="btnPrimeiroAcessoMaster" class="btn-action-bar" style="width:100%; margin-top:10px; padding:10px; display:none;">🔐 Criar Primeiro Acesso Master</button>
                 <div id="loginProviderHint" style="margin-top:10px; color:var(--gray); font-size:.7rem; line-height:1.45; text-align:center;">
-                    Se sua conta foi criada pelo Google, use <strong style="color:var(--text-color);">Continuar com Google</strong>. Nesse caso ela não possui senha própria no Supabase.
+                    Se sua conta foi criada pelo Google, use <strong style="color:var(--text-color);">Continuar com Google</strong>.
                 </div>
-                <div id="loginSecurityInfo" style="margin-top:12px; padding:9px 10px; border-radius:9px; background:rgba(30,136,229,.08); border:1px solid rgba(30,136,229,.22); color:var(--gray); font-size:.72rem; line-height:1.5;">Acesso protegido por Supabase Auth. Credenciais não são armazenadas no HTML nem na tabela de usuários do sistema.</div>
+                <div id="loginSecurityInfo" style="margin-top:12px; padding:10px 11px; border-radius:9px; background:rgba(30,136,229,.08); border:1px solid rgba(30,136,229,.22); color:var(--gray); font-size:.72rem; line-height:1.55;">
+                    🔒 <strong style="color:var(--text-color);">Acesso restrito.</strong><br>
+                    Somente pessoas previamente cadastradas e ativas pelo administrador Master podem acessar este painel.
+                    Ter uma conta Google ou uma conta no Supabase <strong style="color:var(--text-color);">não concede acesso administrativo automaticamente</strong>.
+                </div>
             </form>
         </div>
 
@@ -4306,43 +4309,94 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
             return data;
         }
 
+        const NIVEIS_ADMIN_PERMITIDOS = Object.freeze(['master', 'professor', 'recepcao']);
+
+        function perfilAdministrativoValido(perfil) {
+            return !!(
+                perfil &&
+                perfil.user_id &&
+                perfil.ativo !== false &&
+                NIVEIS_ADMIN_PERMITIDOS.includes(String(perfil.nivel || '').toLowerCase())
+            );
+        }
+
+        async function negarAcessoAdministrativo(mensagem = 'Acesso não autorizado. Seu usuário não está cadastrado para acessar o painel administrativo.') {
+            usuarioLogado = null;
+            sessionStorage.removeItem('corpofitness_logado');
+            localStorage.removeItem('corpofitness_logado');
+
+            if (mainAppContainer) mainAppContainer.style.display = 'none';
+            if (loginOverlay) loginOverlay.style.display = 'flex';
+
+            const erroEl = document.getElementById('loginError');
+            if (erroEl) {
+                erroEl.textContent = mensagem;
+                erroEl.style.display = 'block';
+            }
+
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                if (session) await _supabase.auth.signOut();
+            } catch (_) {}
+        }
+
+        async function autorizarSessaoAdministrativa(authUser) {
+            if (!authUser?.id) {
+                await negarAcessoAdministrativo('Faça login com um usuário previamente cadastrado no painel.');
+                return null;
+            }
+
+            const perfil = await carregarPerfilStaff(authUser);
+
+            if (!perfilAdministrativoValido(perfil)) {
+                await negarAcessoAdministrativo(
+                    'Acesso não autorizado. Esta conta não está cadastrada ou está desativada no painel administrativo.'
+                );
+                return null;
+            }
+
+            usuarioLogado = perfil;
+            sessionStorage.setItem('corpofitness_logado', JSON.stringify(perfil));
+            liberarPainel(perfil);
+            return perfil;
+        }
+
         async function restaurarSessaoSegura() {
             try {
                 const { data:{ session }, error } = await _supabase.auth.getSession();
                 if (error) throw error;
-                if (!session?.user) return;
-                let perfil = await carregarPerfilStaff(session.user);
-                if (!perfil) {
-                    const { data: bootstrapOk } = await _supabase.rpc('corpofitness_bootstrap_disponivel');
-                    if (bootstrapOk === true) {
-                        await _supabase.rpc('corpofitness_bootstrap_master', { p_nome: session.user.email?.split('@')[0] || 'Administrador' });
-                        perfil = await carregarPerfilStaff(session.user);
-                    }
+                if (!session?.user) {
+                    if (mainAppContainer) mainAppContainer.style.display = 'none';
+                    if (loginOverlay) loginOverlay.style.display = 'flex';
+                    return;
                 }
-                if (!perfil) {
-                    await _supabase.auth.signOut();
-                    throw new Error('Este usuário não possui perfil administrativo ativo.');
-                }
-                usuarioLogado = perfil;
-                sessionStorage.setItem('corpofitness_logado', JSON.stringify(perfil));
-                liberarPainel(perfil);
+                await autorizarSessaoAdministrativa(session.user);
             } catch (err) {
-                console.warn('[Auth] sessão não restaurada:', err?.message || err);
-                sessionStorage.removeItem('corpofitness_logado');
+                console.warn('[Auth] sessão administrativa não restaurada:', err?.message || err);
+                await negarAcessoAdministrativo('Não foi possível validar sua autorização administrativa.');
             }
         }
 
         restaurarSessaoSegura();
 
-        async function verificarBootstrapDisponivel() {
-            const btn = document.getElementById('btnPrimeiroAcessoMaster');
-            if (!btn) return;
-            try {
-                const { data, error } = await _supabase.rpc('corpofitness_bootstrap_disponivel');
-                btn.style.display = (!error && data === true) ? 'block' : 'none';
-            } catch (_) { btn.style.display = 'none'; }
-        }
-        verificarBootstrapDisponivel();
+        // OAuth/Google pode concluir a sessão depois do carregamento inicial da página.
+        // Toda sessão SIGNED_IN é validada novamente contra staff_profiles.
+        _supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session?.user) {
+                setTimeout(() => {
+                    autorizarSessaoAdministrativa(session.user).catch(err => {
+                        console.error('[Auth] falha ao validar whitelist:', err);
+                    });
+                }, 0);
+            }
+
+            if (event === 'SIGNED_OUT') {
+                usuarioLogado = null;
+                sessionStorage.removeItem('corpofitness_logado');
+                if (mainAppContainer) mainAppContainer.style.display = 'none';
+                if (loginOverlay) loginOverlay.style.display = 'flex';
+            }
+        });
 
         const btnLoginGoogle = document.getElementById('btnLoginGoogle');
         if (btnLoginGoogle) {
@@ -4395,115 +4449,18 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
                 try {
                     const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
                     if (error) throw error;
-                    let perfil = await carregarPerfilStaff(data.user);
-                    if (!perfil) {
-                        const { data: bootstrapOk } = await _supabase.rpc('corpofitness_bootstrap_disponivel');
-                        if (bootstrapOk === true) {
-                            const { error: bootError } = await _supabase.rpc('corpofitness_bootstrap_master', { p_nome: data.user.email?.split('@')[0] || 'Administrador' });
-                            if (bootError) throw bootError;
-                            perfil = await carregarPerfilStaff(data.user);
-                        }
-                    }
-                    if (!perfil) {
-                        await _supabase.auth.signOut();
-                        throw new Error('Usuário sem permissão administrativa ativa.');
-                    }
-                    usuarioLogado = perfil;
-                    sessionStorage.setItem('corpofitness_logado', JSON.stringify(perfil));
-                    liberarPainel(perfil);
+
+                    const perfil = await autorizarSessaoAdministrativa(data.user);
+                    if (!perfil) return;
                 } catch (err) {
                     console.error('[Auth] falha de login:', err);
                     if (erroEl) {
                         const msg = String(err?.message || '');
                         erroEl.textContent = /invalid login credentials/i.test(msg)
-                            ? 'E-mail/senha inválidos. Se esta conta foi criada com Google, use o botão “Continuar com Google”.'
-                            : (msg || 'Não foi possível entrar.');
+                            ? 'E-mail/senha inválidos. Se esta conta usa Google, clique em “Continuar com Google”.'
+                            : (msg || 'Não foi possível entrar. Apenas usuários previamente cadastrados podem acessar.');
                         erroEl.style.display = 'block';
                     }
-                }
-            });
-        }
-
-        const btnBootstrap = document.getElementById('btnPrimeiroAcessoMaster');
-        if (btnBootstrap) {
-            btnBootstrap.addEventListener('click', async () => {
-                const email = document.getElementById('loginUser').value.trim().toLowerCase();
-                const senha = document.getElementById('loginPass').value;
-                const erroEl = document.getElementById('loginError');
-                if (erroEl) erroEl.style.display = 'none';
-
-                if (!email || senha.length < 8) {
-                    window.showToast('Informe um e-mail válido e uma senha com pelo menos 8 caracteres.', 'warning');
-                    return;
-                }
-
-                btnBootstrap.disabled = true;
-                const textoOriginal = btnBootstrap.innerHTML;
-                btnBootstrap.innerHTML = '⏳ Verificando conta...';
-
-                try {
-                    const { data: bootstrapOk, error: bootstrapCheckError } = await _supabase.rpc('corpofitness_bootstrap_disponivel');
-                    if (bootstrapCheckError) throw bootstrapCheckError;
-                    if (bootstrapOk !== true) {
-                        throw new Error('O primeiro acesso Master já foi configurado. Use o botão “Acessar Painel”.');
-                    }
-
-                    // 1) PRIMEIRO tenta autenticar. Isso cobre corretamente contas que já existiam no Supabase Auth.
-                    let authData = null;
-                    const tentativaLogin = await _supabase.auth.signInWithPassword({ email, password: senha });
-
-                    if (!tentativaLogin.error && tentativaLogin.data?.session?.user) {
-                        authData = tentativaLogin.data;
-                    } else {
-                        // 2) Se não entrou, tenta criar uma conta nova. O Supabase pode retornar
-                        // um usuário sem identities quando o e-mail já existe; nesse caso NÃO
-                        // mostramos a mensagem incorreta de confirmação de e-mail.
-                        const cadastro = await _supabase.auth.signUp({ email, password: senha });
-                        if (cadastro.error) throw cadastro.error;
-
-                        const identities = cadastro.data?.user?.identities;
-                        const pareceContaExistente = Array.isArray(identities) && identities.length === 0;
-
-                        if (pareceContaExistente) {
-                            throw new Error('Este e-mail já possui uma conta no Supabase Auth. Use a senha já cadastrada e clique em “Acessar Painel”. Se não lembrar da senha, faça a redefinição de senha no Supabase Auth.');
-                        }
-
-                        if (!cadastro.data?.user) {
-                            throw new Error('Não foi possível criar o usuário no Supabase Auth.');
-                        }
-
-                        if (!cadastro.data?.session) {
-                            throw new Error('Conta criada agora. Confirme o e-mail recebido e depois volte a esta página para concluir o primeiro acesso Master.');
-                        }
-
-                        authData = cadastro.data;
-                    }
-
-                    if (!authData?.user || !authData?.session) {
-                        throw new Error('Não foi possível estabelecer uma sessão autenticada para concluir o primeiro acesso.');
-                    }
-
-                    const nome = email.split('@')[0].replace(/[._-]+/g, ' ');
-                    const { error: bootError } = await _supabase.rpc('corpofitness_bootstrap_master', { p_nome: nome });
-                    if (bootError) throw bootError;
-
-                    const perfil = await carregarPerfilStaff(authData.user);
-                    if (!perfil) throw new Error('O perfil Master foi criado, mas não pôde ser carregado. Recarregue a página e faça login novamente.');
-
-                    usuarioLogado = perfil;
-                    sessionStorage.setItem('corpofitness_logado', JSON.stringify(perfil));
-                    liberarPainel(perfil);
-                    btnBootstrap.style.display = 'none';
-                    window.showToast('Primeiro acesso Master ativado com segurança!');
-                } catch (err) {
-                    console.error('[Auth] falha no primeiro acesso Master:', err);
-                    if (erroEl) {
-                        erroEl.textContent = err?.message || String(err);
-                        erroEl.style.display = 'block';
-                    }
-                } finally {
-                    btnBootstrap.disabled = false;
-                    btnBootstrap.innerHTML = textoOriginal;
                 }
             });
         }
@@ -4525,6 +4482,11 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
         }
 
         function liberarPainel(usuario) {
+            if (!perfilAdministrativoValido(usuario)) {
+                negarAcessoAdministrativo('Acesso não autorizado ao painel administrativo.');
+                return;
+            }
+
             if (loginOverlay) loginOverlay.style.display = 'none';
             if (mainAppContainer) mainAppContainer.style.display = 'flex';
             

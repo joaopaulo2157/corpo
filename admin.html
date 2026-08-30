@@ -705,9 +705,25 @@
                     <input type="password" id="loginPass" class="form-control" required placeholder="••••••••" value="" autocomplete="current-password">
                 </div>
                 <div id="loginError" style="color: var(--danger); font-size: 0.8rem; margin-bottom: 15px; display: none;">Usuário ou senha incorretos.</div>
-                <button type="submit" class="btn" style="width: 100%; justify-content: center;">Acessar Painel</button>
-                    <button type="button" id="btnPrimeiroAcessoMaster" class="btn-action-bar" style="width:100%; margin-top:10px; padding:10px; display:none;">🔐 Criar Primeiro Acesso Master</button>
-                    <div id="loginSecurityInfo" style="margin-top:12px; padding:9px 10px; border-radius:9px; background:rgba(30,136,229,.08); border:1px solid rgba(30,136,229,.22); color:var(--gray); font-size:.72rem; line-height:1.5;">Acesso protegido por Supabase Auth. Credenciais não são armazenadas no HTML nem na tabela de usuários do sistema.</div>
+                <button type="submit" class="btn" style="width: 100%; justify-content: center;">Acessar com E-mail e Senha</button>
+
+                <div style="display:flex; align-items:center; gap:10px; margin:14px 0 12px;">
+                    <span style="height:1px; background:var(--border); flex:1;"></span>
+                    <span style="font-size:.72rem; color:var(--gray); font-weight:600;">OU</span>
+                    <span style="height:1px; background:var(--border); flex:1;"></span>
+                </div>
+
+                <button type="button" id="btnLoginGoogle" class="btn-action-bar"
+                    style="width:100%; padding:11px 14px; display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#222; border:1px solid #dadce0; font-weight:700;">
+                    <span style="font-size:1rem; font-weight:900; color:#4285F4;">G</span>
+                    Continuar com Google
+                </button>
+
+                <button type="button" id="btnPrimeiroAcessoMaster" class="btn-action-bar" style="width:100%; margin-top:10px; padding:10px; display:none;">🔐 Criar Primeiro Acesso Master</button>
+                <div id="loginProviderHint" style="margin-top:10px; color:var(--gray); font-size:.7rem; line-height:1.45; text-align:center;">
+                    Se sua conta foi criada pelo Google, use <strong style="color:var(--text-color);">Continuar com Google</strong>. Nesse caso ela não possui senha própria no Supabase.
+                </div>
+                <div id="loginSecurityInfo" style="margin-top:12px; padding:9px 10px; border-radius:9px; background:rgba(30,136,229,.08); border:1px solid rgba(30,136,229,.22); color:var(--gray); font-size:.72rem; line-height:1.5;">Acesso protegido por Supabase Auth. Credenciais não são armazenadas no HTML nem na tabela de usuários do sistema.</div>
             </form>
         </div>
 
@@ -4328,6 +4344,43 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
         }
         verificarBootstrapDisponivel();
 
+        const btnLoginGoogle = document.getElementById('btnLoginGoogle');
+        if (btnLoginGoogle) {
+            btnLoginGoogle.addEventListener('click', async () => {
+                const erroEl = document.getElementById('loginError');
+                if (erroEl) erroEl.style.display = 'none';
+
+                const textoOriginal = btnLoginGoogle.innerHTML;
+                btnLoginGoogle.disabled = true;
+                btnLoginGoogle.innerHTML = '⏳ Abrindo Google...';
+
+                try {
+                    const redirectTo = window.location.origin + window.location.pathname;
+                    const { data, error } = await _supabase.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: {
+                            redirectTo,
+                            queryParams: {
+                                access_type: 'offline',
+                                prompt: 'select_account'
+                            }
+                        }
+                    });
+
+                    if (error) throw error;
+                    if (data?.url) window.location.assign(data.url);
+                } catch (err) {
+                    console.error('[Auth] falha no login Google:', err);
+                    if (erroEl) {
+                        erroEl.textContent = err?.message || 'Não foi possível iniciar o login com Google.';
+                        erroEl.style.display = 'block';
+                    }
+                    btnLoginGoogle.disabled = false;
+                    btnLoginGoogle.innerHTML = textoOriginal;
+                }
+            });
+        }
+
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -4358,7 +4411,10 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
                 } catch (err) {
                     console.error('[Auth] falha de login:', err);
                     if (erroEl) {
-                        erroEl.textContent = err?.message || 'E-mail ou senha incorretos.';
+                        const msg = String(err?.message || '');
+                        erroEl.textContent = /invalid login credentials/i.test(msg)
+                            ? 'E-mail/senha inválidos. Se esta conta foi criada com Google, use o botão “Continuar com Google”.'
+                            : (msg || 'Não foi possível entrar.');
                         erroEl.style.display = 'block';
                     }
                 }

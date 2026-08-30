@@ -4370,31 +4370,82 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
             btnBootstrap.addEventListener('click', async () => {
                 const email = document.getElementById('loginUser').value.trim().toLowerCase();
                 const senha = document.getElementById('loginPass').value;
+                const erroEl = document.getElementById('loginError');
+                if (erroEl) erroEl.style.display = 'none';
+
                 if (!email || senha.length < 8) {
                     window.showToast('Informe um e-mail válido e uma senha com pelo menos 8 caracteres.', 'warning');
                     return;
                 }
+
                 btnBootstrap.disabled = true;
+                const textoOriginal = btnBootstrap.innerHTML;
+                btnBootstrap.innerHTML = '⏳ Verificando conta...';
+
                 try {
-                    const { data, error } = await _supabase.auth.signUp({ email, password: senha });
-                    if (error) throw error;
-                    if (!data?.user) throw new Error('Não foi possível criar o usuário no Supabase Auth.');
-                    if (!data.session) {
-                        throw new Error('Conta criada. Confirme o e-mail no Supabase e depois faça login para concluir o primeiro acesso.');
+                    const { data: bootstrapOk, error: bootstrapCheckError } = await _supabase.rpc('corpofitness_bootstrap_disponivel');
+                    if (bootstrapCheckError) throw bootstrapCheckError;
+                    if (bootstrapOk !== true) {
+                        throw new Error('O primeiro acesso Master já foi configurado. Use o botão “Acessar Painel”.');
                     }
+
+                    // 1) PRIMEIRO tenta autenticar. Isso cobre corretamente contas que já existiam no Supabase Auth.
+                    let authData = null;
+                    const tentativaLogin = await _supabase.auth.signInWithPassword({ email, password: senha });
+
+                    if (!tentativaLogin.error && tentativaLogin.data?.session?.user) {
+                        authData = tentativaLogin.data;
+                    } else {
+                        // 2) Se não entrou, tenta criar uma conta nova. O Supabase pode retornar
+                        // um usuário sem identities quando o e-mail já existe; nesse caso NÃO
+                        // mostramos a mensagem incorreta de confirmação de e-mail.
+                        const cadastro = await _supabase.auth.signUp({ email, password: senha });
+                        if (cadastro.error) throw cadastro.error;
+
+                        const identities = cadastro.data?.user?.identities;
+                        const pareceContaExistente = Array.isArray(identities) && identities.length === 0;
+
+                        if (pareceContaExistente) {
+                            throw new Error('Este e-mail já possui uma conta no Supabase Auth. Use a senha já cadastrada e clique em “Acessar Painel”. Se não lembrar da senha, faça a redefinição de senha no Supabase Auth.');
+                        }
+
+                        if (!cadastro.data?.user) {
+                            throw new Error('Não foi possível criar o usuário no Supabase Auth.');
+                        }
+
+                        if (!cadastro.data?.session) {
+                            throw new Error('Conta criada agora. Confirme o e-mail recebido e depois volte a esta página para concluir o primeiro acesso Master.');
+                        }
+
+                        authData = cadastro.data;
+                    }
+
+                    if (!authData?.user || !authData?.session) {
+                        throw new Error('Não foi possível estabelecer uma sessão autenticada para concluir o primeiro acesso.');
+                    }
+
                     const nome = email.split('@')[0].replace(/[._-]+/g, ' ');
                     const { error: bootError } = await _supabase.rpc('corpofitness_bootstrap_master', { p_nome: nome });
                     if (bootError) throw bootError;
-                    const perfil = await carregarPerfilStaff(data.user);
+
+                    const perfil = await carregarPerfilStaff(authData.user);
+                    if (!perfil) throw new Error('O perfil Master foi criado, mas não pôde ser carregado. Recarregue a página e faça login novamente.');
+
                     usuarioLogado = perfil;
                     sessionStorage.setItem('corpofitness_logado', JSON.stringify(perfil));
                     liberarPainel(perfil);
                     btnBootstrap.style.display = 'none';
-                    window.showToast('Primeiro acesso Master criado com segurança!');
+                    window.showToast('Primeiro acesso Master ativado com segurança!');
                 } catch (err) {
-                    const erroEl = document.getElementById('loginError');
-                    if (erroEl) { erroEl.textContent = err?.message || String(err); erroEl.style.display = 'block'; }
-                } finally { btnBootstrap.disabled = false; }
+                    console.error('[Auth] falha no primeiro acesso Master:', err);
+                    if (erroEl) {
+                        erroEl.textContent = err?.message || String(err);
+                        erroEl.style.display = 'block';
+                    }
+                } finally {
+                    btnBootstrap.disabled = false;
+                    btnBootstrap.innerHTML = textoOriginal;
+                }
             });
         }
 
@@ -6704,7 +6755,7 @@ async function processarConviteURL(){
   const token=new URLSearchParams(location.search).get('invite'); if(!token) return;
   const info=document.getElementById('loginSecurityInfo'); if(info) info.innerHTML='<strong style="color:var(--primary-light)">Convite detectado.</strong> Informe o e-mail convidado e escolha sua senha para ativar o acesso.';
   const form=document.getElementById('loginForm'); if(!form||form.dataset.inviteMode) return; form.dataset.inviteMode='1';
-  form.addEventListener('submit',async e=>{if(!new URLSearchParams(location.search).get('invite'))return;e.preventDefault();e.stopImmediatePropagation();const email=document.getElementById('loginUser').value.trim().toLowerCase();const password=document.getElementById('loginPass').value;if(password.length<8)return showToast('Use uma senha com pelo menos 8 caracteres.','warning');try{let authData=null;const signup=await _supabase.auth.signUp({email,password});if(!signup.error&&signup.data?.session){authData=signup.data;}else{const signin=await _supabase.auth.signInWithPassword({email,password});if(signin.error){if(!signup.error&&!signup.data?.session)throw new Error('Conta criada. Confirme o e-mail e depois reabra este link para concluir o convite.');throw signin.error;}authData=signin.data;}if(!authData?.session)throw new Error('Confirme o e-mail e reabra o link do convite para concluir.');const {error:claimErr}=await _supabase.rpc('corpofitness_aceitar_convite_staff',{p_token:token});if(claimErr)throw claimErr;history.replaceState({},'',location.pathname);location.reload();}catch(err){showToast(err?.message||err,'error')}},true);
+  form.addEventListener('submit',async e=>{if(!new URLSearchParams(location.search).get('invite'))return;e.preventDefault();e.stopImmediatePropagation();const email=document.getElementById('loginUser').value.trim().toLowerCase();const password=document.getElementById('loginPass').value;if(password.length<8)return showToast('Use uma senha com pelo menos 8 caracteres.','warning');try{let authData=null;const signin=await _supabase.auth.signInWithPassword({email,password});if(!signin.error&&signin.data?.session){authData=signin.data;}else{const signup=await _supabase.auth.signUp({email,password});if(signup.error)throw signup.error;const identities=signup.data?.user?.identities;const existente=Array.isArray(identities)&&identities.length===0;if(existente)throw new Error('Este e-mail já possui conta. Use a senha cadastrada anteriormente para aceitar o convite.');if(!signup.data?.session)throw new Error('Conta criada agora. Confirme o e-mail e depois reabra este link para concluir o convite.');authData=signup.data;}if(!authData?.session)throw new Error('Não foi possível estabelecer uma sessão autenticada.');const {error:claimErr}=await _supabase.rpc('corpofitness_aceitar_convite_staff',{p_token:token});if(claimErr)throw claimErr;history.replaceState({},'',location.pathname);location.reload();}catch(err){showToast(err?.message||err,'error')}},true);
 }
 processarConviteURL();
 

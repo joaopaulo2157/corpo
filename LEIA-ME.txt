@@ -1,0 +1,42 @@
+CORPOFITNESS — ATUALIZAÇÃO OFICIAL
+==================================
+
+O QUE JÁ FOI FEITO NO SUPABASE
+- Adicionado `alunos.auth_user_id`.
+- Cadastro do aluno existente vinculado ao UUID real do Supabase Auth.
+- Trigger privado no Supabase Auth vincula novas contas ao cadastro de aluno.
+- RLS do aluno evoluído para reconhecer o usuário autenticado pelo UUID.
+- O painel administrativo continua usando `staff_profiles` e whitelist.
+
+O QUE ESTE PACOTE ALTERA NO GITHUB
+1. Adiciona aluno/portal-seguro.html.
+2. Adiciona aluno/treinos-seguro.html.
+3. Atualiza vercel.json com redirecionamentos das rotas antigas.
+4. NÃO altera index.html.
+5. NÃO apaga nenhuma pasta do projeto.
+
+POR QUE EXISTE O .BAT
+A integração GitHub desta conversa consegue ler o repositório, mas o próprio
+GitHub recusou todas as operações de escrita com:
+Resource not accessible by integration (HTTP 403).
+
+Por isso o arquivo ATUALIZAR_CORPO_GITHUB.bat faz a mesma atualização usando
+o Git instalado no seu Windows e sua autenticação GitHub local.
+
+COMO USAR
+- Extraia a pasta inteira.
+- Dê dois cliques em ATUALIZAR_CORPO_GITHUB.bat.
+- Não mova o BAT para fora da pasta.
+- Se o GitHub pedir autenticação, faça login.
+- Ao final, a Vercel vinculada ao GitHub deve fazer o deploy automático.
+
+ROTAS APÓS PUBLICAR
+- Site principal: /index.html (permanece intacto)
+- Admin: /admin.html
+- Portal do aluno: /aluno/portal-seguro.html
+- Treino do aluno: /aluno/treinos-seguro.html
+
+IMPORTANTE SOBRE OAUTH
+No Supabase > Authentication > URL Configuration, a URL publicada da Vercel
+deve estar permitida em Redirect URLs. Depois disso não há necessidade de
+localhost nem janela CMD para usar o site em produção.

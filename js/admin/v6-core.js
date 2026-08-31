@@ -1,7 +1,7 @@
 (function CorpofitnessV2(){
 'use strict';
 
-const V2 = { versao:'2026.08.31-v6-core-refactor', alunoId:null, alunoNome:null, anamnese:null, staff:null };
+const V2 = { versao:'2026.08.31-v6.1-alertas-treino', alunoId:null, alunoNome:null, anamnese:null, staff:null };
 window.CorpofitnessV2 = V2;
 window.fecharModalV2 = id => { const el=document.getElementById(id); if(el) el.style.display='none'; };
 const esc = v => String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
@@ -600,7 +600,147 @@ window.abrirModalTreinoFiel=async function(alunoId,alunoNome,...rest){if(!podeTr
 window.salvarTreinoAnexo=async function(...args){if(!podeTreinoV6())return CorpofitnessUI.aviso('Seu nível não permite salvar treinos.');if(typeof window.__salvarTreinoAnexoBase!=='function')throw new Error('Base de salvamento não carregada.');window.CorpofitnessTreinoVideoPolicy?.limparMemoria?.();const r=await window.__salvarTreinoAnexoBase.apply(this,args);await criarVersaoTreinoV2('Salvamento pelo professor');return r;};
 
 // ------------------ Dashboard central de pendências ---------------------
-async function carregarPendenciasV6(){const alvo=document.getElementById('tab-dashboard');if(!alvo)return;let card=document.getElementById('cardAlertasInteligentesV2');if(card)card.remove();card=document.createElement('div');card.id='cardAlertasInteligentesV2';card.className='card';card.style.border='1px solid rgba(30,136,229,.28)';card.innerHTML='<div class="card-header"><div><h3 style="margin:0">🧭 Central de Pendências</h3><small style="color:var(--gray)">Treinos, avaliações e cadastros que precisam de atenção</small></div><span id="badgeAlertasV2" class="status-badge status-respondido">Analisando...</span></div><div id="filtrosPendenciasV6" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><button class="btn-action-bar active" data-p="todos">Todos</button><button class="btn-action-bar" data-p="urgente">🔴 Urgente</button><button class="btn-action-bar" data-p="atencao">🟠 Atenção</button><button class="btn-action-bar" data-p="revisao">🔵 Revisão</button></div><div id="listaAlertasV2" style="display:grid;gap:7px"></div>';alvo.appendChild(card);try{const [{data:alunos},{data:treinos},{data:avals}]=await Promise.all([_supabase.from('alunos').select('id,nome,status').is('arquivado_em',null),_supabase.from('treinos_alunos').select('aluno_id,created_at,reavaliar_em').eq('dia','Geral'),_supabase.from('avaliacoes_fisicas').select('aluno_id,created_at')]);const tmap=new Map((treinos||[]).map(t=>[String(t.aluno_id),t]));const amap=new Map();(avals||[]).forEach(a=>{const k=String(a.aluno_id);if(!amap.has(k)||new Date(a.created_at)>new Date(amap.get(k).created_at))amap.set(k,a)});const alerts=[];for(const a of alunos||[]){if(String(a.status||'').toLowerCase().includes('bloque'))continue;const t=tmap.get(String(a.id)),av=amap.get(String(a.id));if(!t)alerts.push({nivel:'urgente',tipo:'Treino ausente',nome:a.nome});if(!av)alerts.push({nivel:'atencao',tipo:'Sem avaliação corporal',nome:a.nome});else if(Date.now()-new Date(av.created_at).getTime()>90*86400000)alerts.push({nivel:'atencao',tipo:'Avaliação acima de 90 dias',nome:a.nome});if(t){const lim=t.reavaliar_em?new Date(t.reavaliar_em):new Date(new Date(t.created_at).getTime()+90*86400000);if(lim<=new Date())alerts.push({nivel:'revisao',tipo:'Treino para revisão',nome:a.nome})}}document.getElementById('badgeAlertasV2').textContent=`${alerts.length} pendência(s)`;const render=f=>{const list=f==='todos'?alerts:alerts.filter(x=>x.nivel===f);const cor={urgente:'var(--danger)',atencao:'var(--warning)',revisao:'var(--primary-light)'};document.getElementById('listaAlertasV2').innerHTML=list.map(a=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:9px"><span>${esc(a.nome)}</span><strong style="color:${cor[a.nivel]};font-size:.72rem">${esc(a.tipo)}</strong></div>`).join('')||'<div style="color:var(--success)">✓ Nenhuma pendência neste filtro.</div>'};render('todos');card.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{card.querySelectorAll('[data-p]').forEach(x=>x.classList.remove('active'));b.classList.add('active');render(b.dataset.p)})}catch(err){document.getElementById('listaAlertasV2').innerHTML=`<div style="color:var(--warning)">${esc(err.message)}</div>`}}
+async function carregarPendenciasV6(){
+  const alvo=document.getElementById('tab-dashboard');
+  if(!alvo)return;
+
+  let card=document.getElementById('cardAlertasInteligentesV2');
+  if(card)card.remove();
+
+  card=document.createElement('div');
+  card.id='cardAlertasInteligentesV2';
+  card.className='card';
+  card.style.border='1px solid rgba(30,136,229,.28)';
+  card.innerHTML=`
+    <div class="card-header">
+      <div>
+        <h3 style="margin:0">🧭 Central de Pendências</h3>
+        <small style="color:var(--gray)">Treinos, avaliações e cadastros que precisam de atenção</small>
+      </div>
+      <span id="badgeAlertasV2" class="status-badge status-respondido">Analisando...</span>
+    </div>
+    <div id="filtrosPendenciasV6" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="btn-action-bar active" data-p="todos">Todos</button>
+      <button class="btn-action-bar" data-p="urgente">🔴 Urgente</button>
+      <button class="btn-action-bar" data-p="atencao">🟠 Atenção</button>
+      <button class="btn-action-bar" data-p="revisao">🔵 Revisão</button>
+    </div>
+    <div id="listaAlertasV2" style="display:grid;gap:7px"></div>`;
+
+  alvo.appendChild(card);
+
+  const parseDate=(valor)=>{
+    if(!valor)return null;
+    const s=String(valor);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(s))return new Date(`${s}T12:00:00`);
+    const d=new Date(s);
+    return Number.isNaN(d.getTime())?null:d;
+  };
+
+  const diasAte=(data)=>{
+    const hoje=new Date();hoje.setHours(0,0,0,0);
+    const alvoData=new Date(data);alvoData.setHours(0,0,0,0);
+    return Math.ceil((alvoData-hoje)/86400000);
+  };
+
+  try{
+    const [{data:alunos},{data:treinos},{data:avals}]=await Promise.all([
+      _supabase.from('alunos').select('id,nome,status').is('arquivado_em',null),
+      _supabase.from('treinos_alunos')
+        .select('id,aluno_id,created_at,inicio_em,reavaliar_em,ultima_atualizacao_em')
+        .eq('dia','Geral'),
+      _supabase.from('avaliacoes_fisicas').select('aluno_id,created_at')
+    ]);
+
+    const tmap=new Map();
+    (treinos||[]).forEach(t=>{
+      const k=String(t.aluno_id);
+      const atual=tmap.get(k);
+      const dt=parseDate(t.ultima_atualizacao_em||t.created_at);
+      const da=atual?parseDate(atual.ultima_atualizacao_em||atual.created_at):null;
+      if(!atual || (dt&&(!da||dt>da)))tmap.set(k,t);
+    });
+
+    const amap=new Map();
+    (avals||[]).forEach(a=>{
+      const k=String(a.aluno_id);
+      if(!amap.has(k)||new Date(a.created_at)>new Date(amap.get(k).created_at))amap.set(k,a);
+    });
+
+    const alerts=[];
+
+    for(const a of alunos||[]){
+      if(String(a.status||'').toLowerCase().includes('bloque'))continue;
+
+      const t=tmap.get(String(a.id));
+      const av=amap.get(String(a.id));
+
+      if(!t)alerts.push({nivel:'urgente',tipo:'Treino ausente',nome:a.nome,alunoId:a.id});
+      if(!av)alerts.push({nivel:'atencao',tipo:'Sem avaliação corporal',nome:a.nome,alunoId:a.id});
+      else if(Date.now()-new Date(av.created_at).getTime()>90*86400000){
+        alerts.push({nivel:'atencao',tipo:'Avaliação acima de 90 dias',nome:a.nome,alunoId:a.id});
+      }
+
+      if(t){
+        let limite=parseDate(t.reavaliar_em);
+
+        if(!limite){
+          const base=parseDate(t.inicio_em)||parseDate(t.ultima_atualizacao_em)||parseDate(t.created_at);
+          if(base){
+            limite=new Date(base);
+            limite.setDate(limite.getDate()+90);
+          }
+        }
+
+        if(limite){
+          const dias=diasAte(limite);
+          const dataFmt=limite.toLocaleDateString('pt-BR');
+
+          if(dias<0){
+            alerts.push({nivel:'urgente',tipo:`Treino vencido há ${Math.abs(dias)} dia(s) • ${dataFmt}`,nome:a.nome,alunoId:a.id,tipoTreino:true});
+          }else if(dias===0){
+            alerts.push({nivel:'urgente',tipo:`Treino vence HOJE • ${dataFmt}`,nome:a.nome,alunoId:a.id,tipoTreino:true});
+          }else if(dias<=7){
+            alerts.push({nivel:'urgente',tipo:`Treino vence em ${dias} dia(s) • ${dataFmt}`,nome:a.nome,alunoId:a.id,tipoTreino:true});
+          }else if(dias<=15){
+            alerts.push({nivel:'atencao',tipo:`Treino próximo do vencimento: ${dias} dias • ${dataFmt}`,nome:a.nome,alunoId:a.id,tipoTreino:true});
+          }
+        }
+      }
+    }
+
+    document.getElementById('badgeAlertasV2').textContent=`${alerts.length} pendência(s)`;
+
+    const render=(f)=>{
+      const list=f==='todos'?alerts:alerts.filter(x=>x.nivel===f);
+      const cor={urgente:'var(--danger)',atencao:'var(--warning)',revisao:'var(--primary-light)'};
+
+      document.getElementById('listaAlertasV2').innerHTML=list.map(a=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--border);border-radius:9px">
+          <div style="min-width:0">
+            <strong style="display:block;font-size:.78rem">${esc(a.nome)}</strong>
+            <span style="color:${cor[a.nivel]};font-size:.7rem">${esc(a.tipo)}</span>
+          </div>
+          ${a.tipoTreino?`<button class="btn-action-bar" data-revisar-treino data-aluno-id="${esc(a.alunoId)}" data-aluno-nome="${esc(a.nome)}" title="Abrir plano de treino" style="white-space:nowrap"><i class="fa-solid fa-dumbbell"></i> Revisar</button>`:''}
+        </div>`).join('') || '<div style="color:var(--success)">✓ Nenhuma pendência neste filtro.</div>';
+
+      document.querySelectorAll('[data-revisar-treino]').forEach(btn=>{
+        btn.onclick=()=>abrirModalTreinoFiel(btn.dataset.alunoId,btn.dataset.alunoNome);
+      });
+    };
+
+    render('todos');
+
+    card.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{
+      card.querySelectorAll('[data-p]').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      render(b.dataset.p);
+    });
+
+  }catch(err){
+    document.getElementById('listaAlertasV2').innerHTML=`<div style="color:var(--warning)">${esc(err.message)}</div>`;
+  }
+}
 window.carregarPendenciasV6=carregarPendenciasV6;
 setTimeout(carregarPendenciasV6,700);
 

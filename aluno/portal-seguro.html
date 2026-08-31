@@ -26,7 +26,13 @@
 #authMessage{min-height:22px;margin:12px 0 0;font-size:.82rem;line-height:1.45;text-align:center}.error{color:var(--danger)}.success{color:var(--success)}.warning{color:var(--warning)}
 #app{display:none;min-height:100vh}.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px clamp(16px,4vw,42px);background:rgba(7,16,35,.88);border-bottom:1px solid var(--border);backdrop-filter:blur(16px)}.topbar .brand{font-size:1.35rem;text-align:left}.userbox{display:flex;align-items:center;gap:10px}.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--blue),var(--blue2));font-weight:800}.user-meta{line-height:1.2}.user-meta strong{display:block;font-size:.86rem}.user-meta span{font-size:.7rem;color:var(--muted)}.logout{border:1px solid rgba(248,113,113,.35);background:rgba(248,113,113,.08);color:#fca5a5;border-radius:10px;padding:9px 11px;cursor:pointer}
 main{width:min(1180px,100%);margin:auto;padding:28px clamp(16px,4vw,36px) 50px}.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding:26px;border:1px solid rgba(96,165,250,.22);border-radius:var(--radius);background:linear-gradient(135deg,rgba(37,99,235,.18),rgba(21,33,62,.74));margin-bottom:22px}.hero h1{margin:0 0 6px;font-size:clamp(1.5rem,4vw,2.2rem)}.hero p{margin:0;color:var(--muted)}.plan-badge{padding:7px 11px;border-radius:999px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.28);color:#6ee7b7;font-size:.75rem;font-weight:800;white-space:nowrap}
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}.metric,.card{border:1px solid var(--border);background:rgba(16,27,53,.82);border-radius:var(--radius)}.metric{padding:18px}.metric small{display:block;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}.metric strong{display:block;margin-top:7px;font-size:1.25rem}.grid{display:grid;grid-template-columns:1.35fr .8fr;gap:16px}.card{padding:20px}.card h2{font-size:1rem;margin:0 0 16px;display:flex;align-items:center;gap:8px}.chart{height:280px}.goal{padding:13px 0;border-bottom:1px solid var(--border)}.goal:last-child{border-bottom:0}.goal-head{display:flex;justify-content:space-between;gap:10px;font-size:.82rem}.goal p{color:var(--muted);font-size:.73rem;margin:5px 0 8px}.bar{height:8px;background:#0a142a;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2));border-radius:99px}.empty{color:var(--muted);font-size:.83rem;padding:16px 0;text-align:center}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.action{display:flex;align-items:center;gap:11px;padding:15px;border:1px solid var(--border);border-radius:15px;background:rgba(21,33,62,.65);color:#fff;text-decoration:none;transition:.2s}.action:hover{transform:translateY(-2px);border-color:rgba(96,165,250,.5)}.action i{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(37,99,235,.17);color:var(--blue2)}.action strong{font-size:.82rem}.action span{display:block;color:var(--muted);font-size:.68rem;margin-top:2px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}.metric,.card{border:1px solid var(--border);background:rgba(16,27,53,.82);border-radius:var(--radius)}.metric{padding:18px}.metric small{display:block;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}.metric strong{display:block;margin-top:7px;font-size:1.25rem}.grid{display:grid;grid-template-columns:1.35fr .8fr;gap:16px}.card{padding:20px}.card h2{font-size:1rem;margin:0 0 16px;display:flex;align-items:center;gap:8px}.chart{height:280px}.goal{padding:13px 0;border-bottom:1px solid var(--border)}.goal:last-child{border-bottom:0}.goal-head{display:flex;justify-content:space-between;gap:10px;font-size:.82rem}.goal p{color:var(--muted);font-size:.73rem;margin:5px 0 8px}.bar{height:8px;background:#0a142a;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2));border-radius:99px}.empty{color:var(--muted);font-size:.83rem;padding:16px 0;text-align:center}.workout-expiry{display:none;align-items:flex-start;justify-content:space-between;gap:14px;margin:0 0 18px;padding:15px 17px;border-radius:16px;border:1px solid rgba(251,191,36,.32);background:linear-gradient(135deg,rgba(251,191,36,.10),rgba(21,33,62,.78))}
+.workout-expiry.show{display:flex}.workout-expiry.urgent{border-color:rgba(248,113,113,.38);background:linear-gradient(135deg,rgba(248,113,113,.11),rgba(21,33,62,.78))}
+.workout-expiry-icon{width:42px;height:42px;flex:0 0 42px;border-radius:13px;display:grid;place-items:center;background:rgba(251,191,36,.12);color:#fbbf24;font-size:1.05rem}.workout-expiry.urgent .workout-expiry-icon{background:rgba(248,113,113,.12);color:#fca5a5}
+.workout-expiry-main{flex:1;min-width:0}.workout-expiry-main strong{display:block;font-size:.88rem;margin-bottom:3px}.workout-expiry-main p{margin:0;color:var(--muted);font-size:.73rem;line-height:1.45}.workout-expiry-date{display:block;margin-top:6px;font-size:.67rem;font-weight:800;color:#fde68a}.workout-expiry.urgent .workout-expiry-date{color:#fecaca}
+.workout-expiry a{align-self:center;text-decoration:none;border:1px solid var(--border);background:#fff;color:#071023;border-radius:11px;padding:9px 11px;font-size:.69rem;font-weight:900;white-space:nowrap}
+@media(max-width:650px){.workout-expiry{flex-wrap:wrap}.workout-expiry a{width:100%;text-align:center}}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.action{display:flex;align-items:center;gap:11px;padding:15px;border:1px solid var(--border);border-radius:15px;background:rgba(21,33,62,.65);color:#fff;text-decoration:none;transition:.2s}.action:hover{transform:translateY(-2px);border-color:rgba(96,165,250,.5)}.action i{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(37,99,235,.17);color:var(--blue2)}.action strong{font-size:.82rem}.action span{display:block;color:var(--muted);font-size:.68rem;margin-top:2px}
 @media(max-width:800px){.metrics{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.user-meta{display:none}.hero{align-items:flex-start;flex-direction:column}}@media(max-width:460px){.auth-card{padding:26px 20px}.metrics{grid-template-columns:1fr 1fr}.metric{padding:14px}.metric strong{font-size:1rem}}
 </style>
 </head>
@@ -61,6 +67,15 @@ main{width:min(1180px,100%);margin:auto;padding:28px clamp(16px,4vw,36px) 50px}.
 </header>
 <main>
 <section class="hero"><div><h1 id="welcome">Bem-vindo! 💪</h1><p>Acompanhe avaliação, metas e seu plano de treino em um só lugar.</p></div><span class="plan-badge">ALUNO ATIVO</span></section>
+<section id="workoutExpiry" class="workout-expiry">
+  <div class="workout-expiry-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+  <div class="workout-expiry-main">
+    <strong id="workoutExpiryTitle">Seu treino está próximo da revisão</strong>
+    <p id="workoutExpiryText">Seu professor deverá revisar sua prescrição em breve.</p>
+    <span id="workoutExpiryDate" class="workout-expiry-date"></span>
+  </div>
+  <a href="treinos-seguro.html"><i class="fa-solid fa-dumbbell"></i> Ver meu treino</a>
+</section>
 <section class="metrics"><div class="metric"><small>Peso atual</small><strong id="mPeso">-- kg</strong></div><div class="metric"><small>Altura</small><strong id="mAltura">-- m</strong></div><div class="metric"><small>% gordura</small><strong id="mGordura">-- %</strong></div><div class="metric"><small>Última avaliação</small><strong id="mAvaliacao">--</strong></div></section>
 <section class="grid"><article class="card"><h2><i class="fa-solid fa-chart-line" style="color:var(--blue2)"></i> Evolução do peso</h2><div id="chartEmpty" class="empty hidden">São necessárias pelo menos duas avaliações para exibir a evolução.</div><div class="chart"><canvas id="pesoChart"></canvas></div></article><article class="card"><h2><i class="fa-solid fa-bullseye" style="color:var(--blue2)"></i> Metas</h2><div id="goals"><div class="empty">Carregando...</div></div></article></section>
 <section class="actions"><a class="action" href="treinos-seguro.html"><i class="fa-solid fa-dumbbell"></i><div><strong>Meu treino</strong><span>Ficha atual, conjugados e vídeos</span></div></a><a class="action" href="progresso.html"><i class="fa-solid fa-chart-simple"></i><div><strong>Meu progresso</strong><span>Acompanhe medidas e evolução</span></div></a><a class="action" href="perfil.html"><i class="fa-solid fa-user"></i><div><strong>Meu perfil</strong><span>Dados da sua matrícula</span></div></a></section>
@@ -74,9 +89,83 @@ const busy=(el,on)=>{if(!el)return;if(on){el.dataset.old=el.innerHTML;el.disable
 async function obterAluno(){const {data:{user},error}=await _supabase.auth.getUser();if(error||!user?.email)return null;const q=await _supabase.from('alunos').select('id,nome,email,tel,plano,status,created_at,auth_user_id').eq('auth_user_id',user.id).maybeSingle();if(q.error)throw q.error;if(q.data)return q.data;
 const fallback=await _supabase.from('alunos').select('id,nome,email,tel,plano,status,created_at,auth_user_id').eq('email',user.email).maybeSingle();if(fallback.error)throw fallback.error;return fallback.data}
 async function negar(texto){alunoAtual=null;sessionStorage.removeItem('corpofitness_aluno_id');sessionStorage.removeItem('corpofitness_aluno_logado');try{await _supabase.auth.signOut({scope:'local'})}catch(_){}app.style.display='none';authOverlay.style.display='grid';show(texto,'error')}
-async function validar(){if(validando)return;validando=true;try{const {data:{session}}=await _supabase.auth.getSession();if(!session?.user){authOverlay.style.display='grid';app.style.display='none';return}const aluno=await obterAluno();if(!aluno){await negar('Conta autenticada, mas não existe matrícula vinculada a este usuário.');return}if(norm(aluno.status)!=='ativo'){await negar(`Seu acesso está ${aluno.status||'inativo'}. Procure a recepção da academia.`);return}alunoAtual=aluno;sessionStorage.setItem('corpofitness_aluno_id',aluno.id);sessionStorage.setItem('corpofitness_aluno_logado',JSON.stringify({id:aluno.id,nome:aluno.nome,email:aluno.email,plano:aluno.plano,status:aluno.status}));authOverlay.style.display='none';app.style.display='block';document.getElementById('userName').textContent=aluno.nome||'Aluno';document.getElementById('userPlan').textContent=aluno.plano||'Aluno';document.getElementById('avatar').textContent=(aluno.nome||'AL').substring(0,2).toUpperCase();document.getElementById('welcome').textContent=`Olá, ${(aluno.nome||'Aluno').split(' ')[0]}! 💪`;await Promise.all([avaliacoes(),metas()])}catch(e){console.error(e);show('Não foi possível validar seu acesso agora.','error')}finally{validando=false}}
+async function validar(){if(validando)return;validando=true;try{const {data:{session}}=await _supabase.auth.getSession();if(!session?.user){authOverlay.style.display='grid';app.style.display='none';return}const aluno=await obterAluno();if(!aluno){await negar('Conta autenticada, mas não existe matrícula vinculada a este usuário.');return}if(norm(aluno.status)!=='ativo'){await negar(`Seu acesso está ${aluno.status||'inativo'}. Procure a recepção da academia.`);return}alunoAtual=aluno;sessionStorage.setItem('corpofitness_aluno_id',aluno.id);sessionStorage.setItem('corpofitness_aluno_logado',JSON.stringify({id:aluno.id,nome:aluno.nome,email:aluno.email,plano:aluno.plano,status:aluno.status}));authOverlay.style.display='none';app.style.display='block';document.getElementById('userName').textContent=aluno.nome||'Aluno';document.getElementById('userPlan').textContent=aluno.plano||'Aluno';document.getElementById('avatar').textContent=(aluno.nome||'AL').substring(0,2).toUpperCase();document.getElementById('welcome').textContent=`Olá, ${(aluno.nome||'Aluno').split(' ')[0]}! 💪`;await Promise.all([avaliacoes(),metas(),avisoVencimentoTreino()])}catch(e){console.error(e);show('Não foi possível validar seu acesso agora.','error')}finally{validando=false}}
 async function avaliacoes(){const {data,error}=await _supabase.from('avaliacoes_fisicas').select('peso,altura,gordura,massa,created_at,avaliado_em').eq('aluno_id',alunoAtual.id).order('created_at',{ascending:true});if(error)throw error;const lista=data||[],u=lista.at(-1);if(u){mPeso.textContent=u.peso!=null?`${u.peso} kg`:'-- kg';mAltura.textContent=u.altura!=null?`${u.altura} m`:'-- m';mGordura.textContent=u.gordura!=null?`${Number(u.gordura).toFixed(1).replace('.',',')} %`:'-- %';mAvaliacao.textContent=new Date(u.avaliado_em||u.created_at).toLocaleDateString('pt-BR')}const validas=lista.filter(a=>a.peso!=null),canvas=document.getElementById('pesoChart'),empty=document.getElementById('chartEmpty');if(validas.length<2){canvas.style.display='none';empty.classList.remove('hidden');return}canvas.style.display='block';empty.classList.add('hidden');if(pesoChart)pesoChart.destroy();pesoChart=new Chart(canvas,{type:'line',data:{labels:validas.map(a=>new Date(a.avaliado_em||a.created_at).toLocaleDateString('pt-BR')),datasets:[{data:validas.map(a=>Number(a.peso)),borderColor:'#60a5fa',backgroundColor:'rgba(37,99,235,.16)',fill:true,tension:.35,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(148,163,184,.08)'}},y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(148,163,184,.08)'}}}}})}
 async function metas(){const box=document.getElementById('goals'),{data,error}=await _supabase.from('metas_alunos').select('id,titulo,descricao,data_vencimento,progresso,concluida').eq('aluno_id',alunoAtual.id).order('created_at',{ascending:false}).limit(6);if(error){box.innerHTML='<div class="empty">Não foi possível carregar as metas.</div>';return}if(!data?.length){box.innerHTML='<div class="empty">Nenhuma meta cadastrada no momento.</div>';return}box.innerHTML=data.map(m=>{const p=Math.max(0,Math.min(100,Number(m.progresso)||0));return `<div class="goal"><div class="goal-head"><strong>${esc(m.titulo||'Meta')}</strong><span>${m.concluida?'Concluída':p+'%'}</span></div><p>${esc(m.descricao||'')}${m.data_vencimento?' • até '+new Date(m.data_vencimento+'T12:00:00').toLocaleDateString('pt-BR'):''}</p><div class="bar"><span style="width:${m.concluida?100:p}%"></span></div></div>`}).join('')}
+
+
+async function avisoVencimentoTreino(){
+  const box=document.getElementById('workoutExpiry');
+  if(!box||!alunoAtual)return;
+
+  try{
+    const {data,error}=await _supabase
+      .from('treinos_alunos')
+      .select('id,created_at,inicio_em,reavaliar_em,ultima_atualizacao_em')
+      .eq('aluno_id',alunoAtual.id)
+      .eq('dia','Geral')
+      .order('ultima_atualizacao_em',{ascending:false,nullsFirst:false})
+      .order('created_at',{ascending:false})
+      .limit(1)
+      .maybeSingle();
+
+    if(error)throw error;
+    if(!data){box.classList.remove('show','urgent');return}
+
+    const parseDate=(valor)=>{
+      if(!valor)return null;
+      const s=String(valor);
+      if(/^\d{4}-\d{2}-\d{2}$/.test(s))return new Date(`${s}T12:00:00`);
+      const d=new Date(s);
+      return Number.isNaN(d.getTime())?null:d;
+    };
+
+    let limite=parseDate(data.reavaliar_em);
+
+    if(!limite){
+      const base=parseDate(data.inicio_em)||parseDate(data.ultima_atualizacao_em)||parseDate(data.created_at);
+      if(base){
+        limite=new Date(base);
+        limite.setDate(limite.getDate()+90);
+      }
+    }
+
+    if(!limite){box.classList.remove('show','urgent');return}
+
+    const hoje=new Date();hoje.setHours(0,0,0,0);
+    const fim=new Date(limite);fim.setHours(0,0,0,0);
+    const dias=Math.ceil((fim-hoje)/86400000);
+
+    if(dias>15){box.classList.remove('show','urgent');return}
+
+    const title=document.getElementById('workoutExpiryTitle');
+    const text=document.getElementById('workoutExpiryText');
+    const date=document.getElementById('workoutExpiryDate');
+
+    box.classList.add('show');
+    box.classList.toggle('urgent',dias<=7);
+
+    if(dias<0){
+      title.textContent='Seu plano de treino precisa ser revisado';
+      text.textContent=`O ciclo atual venceu há ${Math.abs(dias)} dia(s). Procure seu professor para atualizar sua prescrição.`;
+    }else if(dias===0){
+      title.textContent='Seu plano de treino vence hoje';
+      text.textContent='Seu ciclo atual chegou à data de revisão. Converse com seu professor para atualizar a ficha.';
+    }else if(dias<=7){
+      title.textContent='Seu treino está muito próximo da revisão';
+      text.textContent=`Faltam ${dias} dia(s) para a revisão do seu plano. Seu professor também recebe este alerta no painel.`;
+    }else{
+      title.textContent='Seu treino está próximo da revisão';
+      text.textContent=`Faltam ${dias} dia(s) para a revisão do seu plano. Programe-se para conversar com seu professor.`;
+    }
+
+    date.textContent=`Data prevista para revisão: ${limite.toLocaleDateString('pt-BR')}`;
+
+  }catch(e){
+    console.warn('[Portal] aviso de vencimento:',e?.message||e);
+    box.classList.remove('show','urgent');
+  }
+}
 
 const recoveryMode=new URLSearchParams(location.search).get('recovery')==='1';
 if(recoveryMode){

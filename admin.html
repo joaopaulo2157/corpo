@@ -4,6 +4,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow,noarchive">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <link rel="icon" href="img/favicon.png" type="image/png">
     <title>Painel Administrativo V2 | Corpofitness Premium</title>
     <!-- GOOGLE FONTS -->
@@ -20,7 +22,19 @@
     <script defer>
         const NEXT_PUBLIC_SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
         const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
-        const _supabase = supabase.createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+        const _supabase = supabase.createClient(
+            NEXT_PUBLIC_SUPABASE_URL,
+            NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+            {
+                auth: {
+                    flowType: 'pkce',
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true,
+                    storageKey: 'corpofitness.admin.auth'
+                }
+            }
+        );
     </script>
 
     <style>
@@ -3439,8 +3453,11 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
         }
         if (confirm(`Deseja enviar um link de redefinição/cadastro de senha para o e-mail: ${email}?`)) {
             try {
+                if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+                    throw new Error('Envio de recuperação deve ser feito pela URL publicada na Vercel.');
+                }
                 const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + '/login.html'
+                    redirectTo: `${window.location.origin}/auth-callback.html?area=aluno&mode=recovery`
                 });
                 if (error) throw error;
                 window.showToast("Link de acesso enviado com sucesso para o e-mail do aluno!");
@@ -4311,6 +4328,17 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
 
         const NIVEIS_ADMIN_PERMITIDOS = Object.freeze(['master', 'professor', 'recepcao']);
 
+        function limparCredenciaisDaUrlAdmin() {
+            try {
+                const url = new URL(window.location.href);
+                if (/access_token|refresh_token|error_description/i.test(url.hash || '') || url.searchParams.has('code')) {
+                    url.hash = '';
+                    url.searchParams.delete('code');
+                    history.replaceState({}, document.title, url.pathname + (url.search || ''));
+                }
+            } catch (_) {}
+        }
+
         function perfilAdministrativoValido(perfil) {
             return !!(
                 perfil &&
@@ -4336,7 +4364,7 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
 
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
-                if (session) await _supabase.auth.signOut();
+                if (session) await _supabase.auth.signOut({ scope: 'local' });
             } catch (_) {}
         }
 
@@ -4357,6 +4385,7 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
 
             usuarioLogado = perfil;
             sessionStorage.setItem('corpofitness_logado', JSON.stringify(perfil));
+            limparCredenciaisDaUrlAdmin();
             liberarPainel(perfil);
             return perfil;
         }
@@ -4398,6 +4427,11 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
             }
         });
 
+        if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+            const info = document.getElementById('loginSecurityInfo');
+            if (info) info.innerHTML = '⚠️ <strong>Ambiente local:</strong> use a URL publicada na Vercel para login Google.';
+        }
+
         const btnLoginGoogle = document.getElementById('btnLoginGoogle');
         if (btnLoginGoogle) {
             btnLoginGoogle.addEventListener('click', async () => {
@@ -4409,14 +4443,16 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
                 btnLoginGoogle.innerHTML = '⏳ Abrindo Google...';
 
                 try {
-                    const emLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-                    const redirectTo = emLocalhost
-                        ? `${window.location.protocol}//${window.location.host}/admin.html`
-                        : `${window.location.origin}${window.location.pathname}`;
+                    if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+                        throw new Error('Login Google desativado no localhost. Abra a URL publicada na Vercel.');
+                    }
+
+                    sessionStorage.setItem('corpofitness.auth.area', 'admin');
+
                     const { data, error } = await _supabase.auth.signInWithOAuth({
                         provider: 'google',
                         options: {
-                            redirectTo,
+                            redirectTo: `${window.location.origin}/auth-callback.html?area=admin`,
                             queryParams: {
                                 access_type: 'offline',
                                 prompt: 'select_account'
@@ -4467,7 +4503,7 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
 
         if (btnLogout) {
             btnLogout.addEventListener('click', async () => {
-                try { await _supabase.auth.signOut(); } catch (_) {}
+                try { await _supabase.auth.signOut({ scope: 'local' }); } catch (_) {}
                 usuarioLogado = null;
                 sessionStorage.removeItem('corpofitness_logado');
                 localStorage.removeItem('corpofitness_logado');

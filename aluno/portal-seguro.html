@@ -45,6 +45,11 @@ main{width:min(1180px,100%);margin:auto;padding:28px clamp(16px,4vw,36px) 50px}.
 </form>
 <button id="magicBtn" class="btn btn-ghost" type="button"><i class="fa-regular fa-envelope"></i> Receber link de acesso no e-mail</button>
 <p id="authMessage" role="status" aria-live="polite"></p>
+<div id="recoveryBox" style="display:none;margin-top:16px;padding:14px;border:1px solid rgba(96,165,250,.25);border-radius:14px;background:rgba(37,99,235,.08)">
+<strong style="display:block;margin-bottom:8px">Definir nova senha</strong>
+<input class="field" id="newPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Nova senha (mínimo 8 caracteres)">
+<button id="savePasswordBtn" class="btn btn-primary" type="button"><i class="fa-solid fa-key"></i> Salvar nova senha</button>
+</div>
 <a href="../index.html" class="btn btn-ghost" style="text-decoration:none"><i class="fa-solid fa-arrow-left"></i> Voltar ao site</a>
 </div>
 </section>
@@ -67,15 +72,44 @@ const show=(text,type='')=>{msg.textContent=text;msg.className=type};const norm=
 const busy=(el,on)=>{if(!el)return;if(on){el.dataset.old=el.innerHTML;el.disabled=true;el.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Aguarde...'}else{el.disabled=false;if(el.dataset.old)el.innerHTML=el.dataset.old}};
 async function obterAluno(){const {data:{user},error}=await _supabase.auth.getUser();if(error||!user?.email)return null;const q=await _supabase.from('alunos').select('id,nome,email,tel,plano,status,created_at,auth_user_id').eq('auth_user_id',user.id).maybeSingle();if(q.error)throw q.error;if(q.data)return q.data;
 const fallback=await _supabase.from('alunos').select('id,nome,email,tel,plano,status,created_at,auth_user_id').eq('email',user.email).maybeSingle();if(fallback.error)throw fallback.error;return fallback.data}
-async function negar(texto){alunoAtual=null;sessionStorage.removeItem('corpofitness_aluno_id');sessionStorage.removeItem('corpofitness_aluno_logado');try{await _supabase.auth.signOut()}catch(_){}app.style.display='none';authOverlay.style.display='grid';show(texto,'error')}
+async function negar(texto){alunoAtual=null;sessionStorage.removeItem('corpofitness_aluno_id');sessionStorage.removeItem('corpofitness_aluno_logado');try{await _supabase.auth.signOut({scope:'local'})}catch(_){}app.style.display='none';authOverlay.style.display='grid';show(texto,'error')}
 async function validar(){if(validando)return;validando=true;try{const {data:{session}}=await _supabase.auth.getSession();if(!session?.user){authOverlay.style.display='grid';app.style.display='none';return}const aluno=await obterAluno();if(!aluno){await negar('Conta autenticada, mas não existe matrícula vinculada a este usuário.');return}if(norm(aluno.status)!=='ativo'){await negar(`Seu acesso está ${aluno.status||'inativo'}. Procure a recepção da academia.`);return}alunoAtual=aluno;sessionStorage.setItem('corpofitness_aluno_id',aluno.id);sessionStorage.setItem('corpofitness_aluno_logado',JSON.stringify({id:aluno.id,nome:aluno.nome,email:aluno.email,plano:aluno.plano,status:aluno.status}));authOverlay.style.display='none';app.style.display='block';document.getElementById('userName').textContent=aluno.nome||'Aluno';document.getElementById('userPlan').textContent=aluno.plano||'Aluno';document.getElementById('avatar').textContent=(aluno.nome||'AL').substring(0,2).toUpperCase();document.getElementById('welcome').textContent=`Olá, ${(aluno.nome||'Aluno').split(' ')[0]}! 💪`;await Promise.all([avaliacoes(),metas()])}catch(e){console.error(e);show('Não foi possível validar seu acesso agora.','error')}finally{validando=false}}
 async function avaliacoes(){const {data,error}=await _supabase.from('avaliacoes_fisicas').select('peso,altura,gordura,massa,created_at,avaliado_em').eq('aluno_id',alunoAtual.id).order('created_at',{ascending:true});if(error)throw error;const lista=data||[],u=lista.at(-1);if(u){mPeso.textContent=u.peso!=null?`${u.peso} kg`:'-- kg';mAltura.textContent=u.altura!=null?`${u.altura} m`:'-- m';mGordura.textContent=u.gordura!=null?`${Number(u.gordura).toFixed(1).replace('.',',')} %`:'-- %';mAvaliacao.textContent=new Date(u.avaliado_em||u.created_at).toLocaleDateString('pt-BR')}const validas=lista.filter(a=>a.peso!=null),canvas=document.getElementById('pesoChart'),empty=document.getElementById('chartEmpty');if(validas.length<2){canvas.style.display='none';empty.classList.remove('hidden');return}canvas.style.display='block';empty.classList.add('hidden');if(pesoChart)pesoChart.destroy();pesoChart=new Chart(canvas,{type:'line',data:{labels:validas.map(a=>new Date(a.avaliado_em||a.created_at).toLocaleDateString('pt-BR')),datasets:[{data:validas.map(a=>Number(a.peso)),borderColor:'#60a5fa',backgroundColor:'rgba(37,99,235,.16)',fill:true,tension:.35,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(148,163,184,.08)'}},y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(148,163,184,.08)'}}}}})}
 async function metas(){const box=document.getElementById('goals'),{data,error}=await _supabase.from('metas_alunos').select('id,titulo,descricao,data_vencimento,progresso,concluida').eq('aluno_id',alunoAtual.id).order('created_at',{ascending:false}).limit(6);if(error){box.innerHTML='<div class="empty">Não foi possível carregar as metas.</div>';return}if(!data?.length){box.innerHTML='<div class="empty">Nenhuma meta cadastrada no momento.</div>';return}box.innerHTML=data.map(m=>{const p=Math.max(0,Math.min(100,Number(m.progresso)||0));return `<div class="goal"><div class="goal-head"><strong>${esc(m.titulo||'Meta')}</strong><span>${m.concluida?'Concluída':p+'%'}</span></div><p>${esc(m.descricao||'')}${m.data_vencimento?' • até '+new Date(m.data_vencimento+'T12:00:00').toLocaleDateString('pt-BR'):''}</p><div class="bar"><span style="width:${m.concluida?100:p}%"></span></div></div>`}).join('')}
-googleBtn.addEventListener('click',async()=>{busy(googleBtn,true);show('');try{const {data,error}=await _supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:`${location.origin}/aluno/portal-seguro.html`,queryParams:{prompt:'select_account'}}});if(error)throw error;if(data?.url)location.assign(data.url)}catch(e){show(e.message||'Não foi possível abrir o Google.','error');busy(googleBtn,false)}});
+
+const recoveryMode=new URLSearchParams(location.search).get('recovery')==='1';
+if(recoveryMode){
+ document.getElementById('recoveryBox').style.display='block';
+ show('Sessão de recuperação validada. Defina uma nova senha.','success');
+}
+document.getElementById('savePasswordBtn')?.addEventListener('click',async()=>{
+ const senha=document.getElementById('newPassword').value;
+ if(!senha||senha.length<8){show('A nova senha deve possuir pelo menos 8 caracteres.','warning');return}
+ busy(document.getElementById('savePasswordBtn'),true);
+ try{
+   const {error}=await _supabase.auth.updateUser({password:senha});if(error)throw error;
+   show('Senha atualizada com sucesso.','success');
+   history.replaceState({},document.title,'/aluno/portal-seguro.html');
+   document.getElementById('recoveryBox').style.display='none';
+   await validar();
+ }catch(e){show(e?.message||'Não foi possível atualizar a senha.','error')}
+ finally{busy(document.getElementById('savePasswordBtn'),false)}
+});
+googleBtn.addEventListener('click',async()=>{busy(googleBtn,true);show('');try{
+if(['localhost','127.0.0.1'].includes(location.hostname))throw new Error('Login Google disponível somente na URL publicada da Corpofitness.');
+sessionStorage.setItem('corpofitness.auth.area','aluno');
+const {data,error}=await _supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:`${location.origin}/auth-callback.html?area=aluno`,queryParams:{prompt:'select_account'}}});
+if(error)throw error;if(data?.url)location.assign(data.url)
+}catch(e){show(e.message||'Não foi possível abrir o Google.','error');busy(googleBtn,false)}});
 passwordLogin.addEventListener('submit',async e=>{e.preventDefault();busy(passwordBtn,true);show('');try{const {error}=await _supabase.auth.signInWithPassword({email:loginEmail.value.trim().toLowerCase(),password:loginPassword.value});if(error)throw error;await validar()}catch(_){show('E-mail/senha inválidos. Se sua conta usa Google, clique em Continuar com Google.','error')}finally{busy(passwordBtn,false)}});
-magicBtn.addEventListener('click',async()=>{const email=loginEmail.value.trim().toLowerCase();if(!email){show('Informe seu e-mail acima.','warning');loginEmail.focus();return}busy(magicBtn,true);try{const {error}=await _supabase.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:`${location.origin}/aluno/portal-seguro.html`}});if(error)throw error;show('Se o e-mail estiver habilitado, enviaremos um link seguro.','success')}catch(_){show('Não foi possível enviar o link. Confirme seu cadastro com a recepção.','error')}finally{busy(magicBtn,false)}});
-logoutBtn.addEventListener('click',async()=>{try{await _supabase.auth.signOut()}finally{sessionStorage.removeItem('corpofitness_aluno_id');sessionStorage.removeItem('corpofitness_aluno_logado');location.replace('portal-seguro.html')}});
+magicBtn.addEventListener('click',async()=>{const email=loginEmail.value.trim().toLowerCase();if(!email){show('Informe seu e-mail acima.','warning');loginEmail.focus();return}busy(magicBtn,true);try{if(['localhost','127.0.0.1'].includes(location.hostname))throw new Error('Use a URL publicada para receber link de acesso.');
+sessionStorage.setItem('corpofitness.auth.area','aluno');
+const {error}=await _supabase.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:`${location.origin}/auth-callback.html?area=aluno`}});if(error)throw error;show('Se o e-mail estiver habilitado, enviaremos um link seguro.','success')}catch(_){show('Não foi possível enviar o link. Confirme seu cadastro com a recepção.','error')}finally{busy(magicBtn,false)}});
+logoutBtn.addEventListener('click',async()=>{try{await _supabase.auth.signOut({scope:'local'})}finally{sessionStorage.removeItem('corpofitness_aluno_id');sessionStorage.removeItem('corpofitness_aluno_logado');location.replace('portal-seguro.html')}});
 _supabase.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session?.user)setTimeout(validar,0);if(event==='SIGNED_OUT'){app.style.display='none';authOverlay.style.display='grid'}});
+if(['localhost','127.0.0.1'].includes(location.hostname)){
+ show('Ambiente local: Google/OAuth está desativado. Use a URL publicada na Vercel.','warning');
+}
 validar();
 })();
 </script>

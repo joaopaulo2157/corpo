@@ -696,6 +696,43 @@
         @media(max-width:1100px){ #modalTreinoFiel .modal-card-grid-duplo{grid-template-columns:1fr!important} #modalTreinoFiel .treino-fluxo{grid-template-columns:repeat(2,1fr)} }
         @media(max-width:720px){ #modalTreinoFiel .treino-editor-body{padding:14px} #modalTreinoFiel .treino-identificacao{grid-template-columns:1fr 1fr!important} #modalTreinoFiel .treino-identificacao>div:last-child{grid-column:1/-1} }
 
+
+        /* V5 — Modal do Plano Profissional sem corte */
+        #modalTreinoFiel {
+            align-items: flex-start !important;
+            overflow: hidden !important;
+            padding: 12px !important;
+        }
+        #modalTreinoFiel .treino-profissional-card {
+            width: min(1450px, 100%) !important;
+            max-height: calc(100dvh - 24px) !important;
+            min-height: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+            margin: auto !important;
+        }
+        #modalTreinoFiel .treino-topbar {
+            position: relative !important;
+            top: auto !important;
+            flex: 0 0 auto !important;
+        }
+        #modalTreinoFiel .treino-editor-body {
+            flex: 1 1 auto !important;
+            min-height: 0 !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            overscroll-behavior: contain;
+            scrollbar-gutter: stable;
+            padding-bottom: 52px !important;
+        }
+        #modalTreinoFiel .treino-editor-body::after { content:""; display:block; height:18px; }
+        @media(max-width:720px){
+            #modalTreinoFiel{padding:0 !important}
+            #modalTreinoFiel .treino-profissional-card{width:100% !important;max-height:100dvh !important;min-height:100dvh !important;border-radius:0 !important}
+            #modalTreinoFiel .treino-editor-body{padding-bottom:max(56px, env(safe-area-inset-bottom)) !important}
+        }
+
         /* AJUSTES RESPONSIVOS EXTRAS PARA GRID DE FICHAS E TREINOS EM MOBILE/TABLET */
         .modal-card-grid-duplo {
             display: grid;
@@ -2967,46 +3004,44 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
                 });
             };
 
-            // Ficha A4 independente do painel administrativo.
+            // ================================================================
+            // FICHA A4 COMPACTA — simples, completa e elegante
+            // ================================================================
             window.imprimirPlanoTreinoProfissional = function() {
-                const escPrint = (v) => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-                const nome=document.getElementById('tr_nome')?.value?.trim()||'Aluno';
-                const codigo=document.getElementById('tr_cod')?.value?.trim()||'-';
-                const codigoTreino=document.getElementById('tr_codt')?.value?.trim()||'-';
-                const dataAplicacao=document.getElementById('tr_data')?.value?.trim()||new Date().toLocaleDateString('pt-BR');
+                const escPrint = (v) => String(v ?? '')
+                    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+                    .replace(/'/g,'&#039;');
+
+                const value = (id, fallback='') => document.getElementById(id)?.value?.trim() || fallback;
+                const nome=value('tr_nome','Aluno'), codigo=value('tr_cod','—'), codigoTreino=value('tr_codt','—');
+                const dataAplicacao=value('tr_data',new Date().toLocaleDateString('pt-BR'));
                 const objetivo=document.getElementById('tr_objetivo')?.value||'Não informado';
-                const objetivoDesc=document.getElementById('tr_objetivo_desc')?.value?.trim()||'';
+                const objetivoDesc=value('tr_objetivo_desc','');
                 const nivel=[...document.querySelectorAll('input[name="tr_nivel"]')].find(r=>r.checked)?.parentElement?.textContent?.trim()||'Não informado';
                 const divisao=[...document.querySelectorAll('input[name="tr_divisao"]')].find(r=>r.checked)?.parentElement?.textContent?.trim()||'Não informada';
-                const peso=document.getElementById('fiel_peso')?.value?.trim()||'', altura=document.getElementById('fiel_altura')?.value?.trim()||'', gordura=document.getElementById('fiel_gordura')?.value?.trim()||'', massa=document.getElementById('fiel_massa')?.value?.trim()||'';
-                const grupos=[...document.querySelectorAll('.chk-musculo:checked')].map(c=>c.parentElement?.textContent?.trim()).filter(Boolean);
+                const peso=value('fiel_peso'),altura=value('fiel_altura'),gordura=value('fiel_gordura'),massa=value('fiel_massa');
                 const ficha=(typeof exerciciosFichaMemoria==='object'&&exerciciosFichaMemoria)?exerciciosFichaMemoria:{A:[],B:[],C:[],D:[],E:[]};
                 const blocos=['A','B','C','D','E'].filter(k=>Array.isArray(ficha[k])&&ficha[k].length);
-                if(!blocos.length){ window.showToast('Adicione exercícios antes de imprimir a ficha.','warning'); return; }
-                const cel=(v)=>escPrint(v||'—');
-                function renderExercicio(item,index,letra){
-                    const conj=item?.tipo_item==='conjugado'&&Array.isArray(item?.conjugado)&&item.conjugado.length>=2;
-                    if(conj){
-                        const filhos=item.conjugado.map((s,j)=>`<div class="subex"><span class="subcode">${letra}${j+1}</span><div class="submain"><strong>${cel(s.exercicio)}</strong><span>${cel(s.reps)} reps • ${cel(s.carga)}</span></div></div>`).join('');
-                        return `<div class="exercise-card conjugated"><div class="exercise-top"><div><span class="badge-conj">${cel(item.metodo||'Conjugado')}</span><h3>${index+1}. ${cel(item.exercicio)}</h3></div><div class="series-box"><small>SÉRIES</small><strong>${cel(item.series)}</strong></div></div><div class="subex-list">${filhos}</div><div class="exercise-footer"><span><b>Descanso após o bloco:</b> ${cel(item.descanso)}</span>${item.observacao?`<span><b>Obs.:</b> ${cel(item.observacao)}</span>`:''}</div></div>`;
-                    }
-                    const extra=[item.rir?`<span>RIR <b>${cel(item.rir)}</b></span>`:'',item.rpe?`<span>RPE <b>${cel(item.rpe)}</b></span>`:'',item.cadencia?`<span>Cadência <b>${cel(item.cadencia)}</b></span>`:''].filter(Boolean).join('');
-                    return `<div class="exercise-card"><div class="exercise-number">${String(index+1).padStart(2,'0')}</div><div class="exercise-name"><h3>${cel(item.exercicio)}</h3><div class="method">${cel(item.metodo||'Tradicional')}</div>${item.observacao?`<p>${cel(item.observacao)}</p>`:''}</div><div class="rx"><small>SÉRIES</small><strong>${cel(item.series)}</strong></div><div class="rx"><small>REPS</small><strong>${cel(item.reps)}</strong></div><div class="rx load"><small>CARGA</small><strong>${cel(item.carga)}</strong></div><div class="rx"><small>DESCANSO</small><strong>${cel(item.descanso)}</strong></div>${extra?`<div class="exercise-extra">${extra}</div>`:''}</div>`;
-                }
-                const blocosHtml=blocos.map(letra=>`<section class="workout-section"><div class="workout-title"><div><span class="workout-letter">${letra}</span><div><h2>Treino ${letra}</h2><p>${ficha[letra].length} exercício(s) / bloco(s)</p></div></div><span class="workout-check">□ CONCLUÍDO</span></div><div class="exercise-list">${ficha[letra].map((it,i)=>renderExercicio(it,i,letra)).join('')}</div></section>`).join('');
-                const bio=[peso?`<div><small>PESO</small><strong>${cel(peso)} kg</strong></div>`:'',altura?`<div><small>ALTURA</small><strong>${cel(altura)} m</strong></div>`:'',gordura?`<div><small>GORDURA</small><strong>${cel(gordura)}%</strong></div>`:'',massa?`<div><small>MASSA</small><strong>${cel(massa)} kg</strong></div>`:''].filter(Boolean).join('');
-                let logo=''; try{logo=new URL('img/logo.png',window.location.href).href}catch(_){}
+                if(!blocos.length){window.showToast('Adicione exercícios antes de imprimir a ficha.','warning');return}
+                const cel=v=>escPrint(v||'—');
+
+                const simples=(item,index)=>`<tr><td class="n">${index+1}</td><td class="ex"><b>${cel(item.exercicio)}</b>${item.observacao?`<small>${cel(item.observacao)}</small>`:''}${(item.rir||item.rpe||item.cadencia)?`<small>${[item.rir?`RIR ${cel(item.rir)}`:'',item.rpe?`RPE ${cel(item.rpe)}`:'',item.cadencia?`Cad. ${cel(item.cadencia)}`:''].filter(Boolean).join(' • ')}</small>`:''}</td><td>${cel(item.series)}</td><td>${cel(item.reps)}</td><td>${cel(item.carga)}</td><td>${cel(item.descanso)}</td><td>${cel(item.metodo||'Tradicional')}</td></tr>`;
+
+                const conjugado=(item,index,letra)=>`<tr class="conj-title"><td class="n">${index+1}</td><td colspan="6"><b>${cel(item.metodo||'Conjugado')}:</b> ${cel(item.exercicio)}${item.observacao?`<small>${cel(item.observacao)}</small>`:''}</td></tr>${(item.conjugado||[]).map((sub,j)=>`<tr class="conj"><td class="code">${letra}${j+1}</td><td class="ex"><b>${cel(sub.exercicio)}</b></td><td>${cel(item.series)}</td><td>${cel(sub.reps)}</td><td>${cel(sub.carga)}</td><td>${j===(item.conjugado.length-1)?cel(item.descanso):'—'}</td><td>${j===(item.conjugado.length-1)?'Descansar após bloco':'Sem descanso'}</td></tr>`).join('')}`;
+
+                const blocosHtml=blocos.map(letra=>`<section class="block"><div class="block-head"><b>Treino ${letra}</b><span>${ficha[letra].length} item(ns)</span></div><table><thead><tr><th>#</th><th>Exercício</th><th>Séries</th><th>Reps</th><th>Carga</th><th>Desc.</th><th>Método</th></tr></thead><tbody>${ficha[letra].map((item,i)=>item?.tipo_item==='conjugado'&&Array.isArray(item.conjugado)&&item.conjugado.length>=2?conjugado(item,i,letra):simples(item,i)).join('')}</tbody></table></section>`).join('');
+
+                const bio=[peso?`Peso: <b>${cel(peso)} kg</b>`:'',altura?`Altura: <b>${cel(altura)} m</b>`:'',gordura?`Gordura: <b>${cel(gordura)}%</b>`:'',massa?`Massa: <b>${cel(massa)} kg</b>`:''].filter(Boolean).join(' &nbsp;•&nbsp; ');
                 const w=window.open('','_blank');
-                if(!w){ window.showToast('O navegador bloqueou a impressão. Permita pop-ups para este site.','warning'); return; }
+                if(!w){window.showToast('Permita pop-ups para imprimir a ficha.','warning');return}
                 try{w.opener=null}catch(_){}
+
                 w.document.open();
-                w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plano de Treino - ${cel(nome)}</title><style>
-@page{size:A4 portrait;margin:10mm}*{box-sizing:border-box}html,body{margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;color:#101828;background:#fff;font-size:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{width:100%}.header{display:grid;grid-template-columns:180px 1fr;gap:16px;align-items:center;border-bottom:3px solid #1976d2;padding-bottom:11px;margin-bottom:11px}.logo{max-width:165px;max-height:62px;object-fit:contain}.brand-fallback{font-size:20px;font-weight:900;font-style:italic}.header-side{text-align:right}.doc-type{color:#1976d2;font-size:9px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase}.header-side h1{margin:3px 0 2px;font-size:20px}.header-side p{margin:0;color:#667085;font-size:9px}.student{display:grid;grid-template-columns:1.6fr .8fr .8fr .8fr;gap:7px;margin-bottom:8px}.info,.bio>div{border:1px solid #dce3eb;background:#f8fafc;border-radius:7px;padding:7px 9px}.info small,.bio small,.rx small,.series-box small{display:block;font-size:6.8px;color:#667085;letter-spacing:.55px;font-weight:800}.info strong,.bio strong{display:block;margin-top:2px;font-size:10px}.prescription{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:8px}.objective{grid-column:span 2;border:1px solid #b9d8f7;background:#eef6ff;border-radius:7px;padding:7px 9px}.objective small{display:block;color:#1976d2;font-size:6.8px;font-weight:900;letter-spacing:.6px}.objective strong{display:block;font-size:11px;margin-top:2px}.objective p{margin:2px 0 0;color:#52606d;font-size:8px}.bio{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}.muscles{border:1px solid #e4e7ec;border-radius:7px;padding:6px 8px;color:#475467;font-size:8px;margin-bottom:10px}.workout-section{margin-top:10px;page-break-inside:auto}.workout-title{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#111827;color:#fff;border-radius:8px;padding:7px 9px;margin-bottom:6px}.workout-title>div{display:flex;align-items:center;gap:8px}.workout-letter{width:29px;height:29px;border-radius:7px;background:#1976d2;display:grid;place-items:center;font-size:14px;font-weight:900}.workout-title h2{margin:0;font-size:12px}.workout-title p{margin:1px 0 0;color:#cbd5e1;font-size:7px}.workout-check{font-size:7px;color:#dbeafe;font-weight:800}.exercise-list{display:grid;gap:5px}.exercise-card{display:grid;grid-template-columns:30px minmax(150px,1fr) 48px 58px 95px 65px;align-items:stretch;border:1px solid #dde3ea;border-radius:7px;overflow:hidden;page-break-inside:avoid;break-inside:avoid;background:#fff}.exercise-number{display:grid;place-items:center;color:#1976d2;font-weight:900;font-size:10px;background:#f0f7ff;border-right:1px solid #dde3ea}.exercise-name{padding:6px 7px}.exercise-name h3{margin:0;font-size:9px}.exercise-name .method{color:#1976d2;font-size:7px;font-weight:700;margin-top:2px}.exercise-name p{color:#667085;margin:2px 0 0;font-size:6.8px}.rx{border-left:1px solid #e5e7eb;padding:6px 5px;display:flex;flex-direction:column;justify-content:center;text-align:center}.rx strong{margin-top:2px;font-size:8px;overflow-wrap:anywhere}.rx.load strong{font-size:7.5px}.exercise-extra{grid-column:2/-1;border-top:1px dashed #d0d5dd;padding:4px 7px;display:flex;gap:10px;flex-wrap:wrap;color:#475467;font-size:7px}.exercise-card.conjugated{display:block;border:1.5px solid #e9a23b;background:#fffbf3;padding:7px}.exercise-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.exercise-top h3{margin:4px 0 0;font-size:9px}.badge-conj{display:inline-block;background:#fff0cf;color:#995c00;border:1px solid #f1c879;border-radius:999px;padding:2px 6px;font-size:6.5px;font-weight:900;text-transform:uppercase}.series-box{min-width:52px;text-align:center;border-left:1px solid #f1d8a8;padding-left:8px}.series-box strong{display:block;margin-top:2px;font-size:10px}.subex-list{margin-top:6px;border-top:1px dashed #e8c78b}.subex{display:grid;grid-template-columns:34px 1fr;gap:7px;align-items:center;padding:5px 0;border-bottom:1px dashed #ead7b4}.subex:last-child{border-bottom:0}.subcode{width:29px;height:24px;border-radius:6px;background:#f4a61f;color:#fff;display:grid;place-items:center;font-size:7px;font-weight:900}.submain strong{display:block;font-size:8.5px}.submain span{color:#6b5a3d;font-size:7px}.exercise-footer{border-top:1px solid #f0dbb3;margin-top:4px;padding-top:4px;display:flex;gap:12px;flex-wrap:wrap;color:#6b5a3d;font-size:7px}.print-note{margin-top:11px;padding:7px 9px;border:1px solid #dce3eb;border-radius:7px;color:#475467;font-size:7.5px;line-height:1.45}.signatures{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:22px;page-break-inside:avoid}.signature{border-top:1px solid #667085;padding-top:4px;text-align:center;color:#475467;font-size:7px}.footer{margin-top:12px;padding-top:6px;border-top:1px solid #e4e7ec;display:flex;justify-content:space-between;gap:10px;color:#98a2b3;font-size:6.5px}
-</style></head><body><div class="sheet"><header class="header"><div>${logo?`<img class="logo" src="${escPrint(logo)}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="brand-fallback" style="display:none">CORPOFITNESS</div>`:`<div class="brand-fallback">CORPOFITNESS</div>`}</div><div class="header-side"><div class="doc-type">Ficha individual de treinamento</div><h1>Plano de Treino</h1><p>Prescrição preparada pela equipe técnica • vídeos disponíveis no Portal do Aluno</p></div></header><section class="student"><div class="info"><small>ALUNO</small><strong>${cel(nome)}</strong></div><div class="info"><small>CÓDIGO</small><strong>${cel(codigo)}</strong></div><div class="info"><small>TREINO</small><strong>${cel(codigoTreino)}</strong></div><div class="info"><small>APLICAÇÃO</small><strong>${cel(dataAplicacao)}</strong></div></section><section class="prescription"><div class="objective"><small>OBJETIVO PRINCIPAL</small><strong>${cel(objetivo)}</strong>${objetivoDesc?`<p>${cel(objetivoDesc)}</p>`:''}</div><div class="info"><small>NÍVEL</small><strong>${cel(nivel)}</strong></div><div class="info"><small>DIVISÃO</small><strong>${cel(divisao)}</strong></div></section>${bio?`<section class="bio">${bio}</section>`:''}${grupos.length?`<div class="muscles"><b>Ênfase muscular:</b> ${grupos.map(cel).join(' • ')}</div>`:''}${blocosHtml}<div class="print-note"><b>Orientações:</b> respeite séries, repetições, descanso e observações prescritas. Nos blocos conjugados (A1/A2, B1/B2 etc.), execute os exercícios na sequência indicada e descanse somente após concluir o bloco. Em caso de dúvida, consulte o vídeo do exercício no Portal do Aluno ou solicite orientação do professor.</div><div class="signatures"><div class="signature">Professor / Responsável técnico</div><div class="signature">Aluno</div></div><footer class="footer"><span>Academia Corpofitness • Ficha individual de treinamento</span><span>Impresso em ${new Date().toLocaleString('pt-BR')}</span></footer></div></body></html>`);
-                w.document.close();
-                w.focus();
-                w.onafterprint=()=>{try{w.close()}catch(_){}};
-                setTimeout(()=>{try{w.print()}catch(_){window.showToast('Não foi possível abrir a impressão.','error')}},450);
+                w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Plano de Treino - ${cel(nome)}</title><style>
+@page{size:A4 portrait;margin:8mm}*{box-sizing:border-box}html,body{margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;color:#172033;background:#fff;font-size:8.2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{width:100%}.header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:5px;margin-bottom:5px;border-bottom:2px solid #1e88e5}.logo{width:140px;max-height:45px;object-fit:contain;object-position:left center}.header-text{text-align:right}.header-text h1{margin:0;font-size:14px}.header-text p{margin:2px 0 0;color:#667085;font-size:6.7px}.meta{display:grid;grid-template-columns:1.8fr .7fr .7fr .8fr;gap:4px;margin-bottom:4px}.box{border:1px solid #d7dee8;border-radius:4px;padding:4px 6px;background:#fafbfc}.box small{display:block;color:#667085;font-size:5.6px;font-weight:700}.box b{display:block;margin-top:1px;font-size:7.8px}.objective{border:1px solid #bed9f5;background:#f1f7fe;border-radius:4px;padding:5px 7px;margin-bottom:4px}.objective b{color:#1565c0}.objective span{color:#475467;margin-left:6px}.bio{color:#475467;margin:2px 0 5px;font-size:6.8px}.block{margin:5px 0 7px;break-inside:auto}.block-head{display:flex;justify-content:space-between;align-items:center;background:#182338;color:#fff;padding:4px 6px;border-radius:4px 4px 0 0}.block-head b{font-size:8.2px}.block-head span{font-size:5.8px;color:#d9e4f2}table{width:100%;border-collapse:collapse;table-layout:fixed}th{background:#edf3f9;color:#52606d;font-size:5.6px;text-transform:uppercase;padding:2.8px;border:1px solid #dce3eb}td{border:1px solid #e1e6ed;padding:3px;vertical-align:middle;line-height:1.18}th:nth-child(1),td:nth-child(1){width:4%}th:nth-child(2),td:nth-child(2){width:31%}th:nth-child(3),td:nth-child(3){width:7%}th:nth-child(4),td:nth-child(4){width:9%}th:nth-child(5),td:nth-child(5){width:17%}th:nth-child(6),td:nth-child(6){width:10%}th:nth-child(7),td:nth-child(7){width:22%}.n,.code{text-align:center;font-weight:800;color:#1976d2}.ex b{font-size:7.3px}.ex small,.conj-title small{display:block;color:#667085;font-size:5.8px;margin-top:1px}.conj-title td{background:#fff8e9;color:#7a4a00;border-color:#efd8a9}.conj-title b{font-size:7.2px}.conj td{background:#fffdf8}.code{color:#b66a00}.note{margin-top:5px;border-top:1px solid #dce3eb;padding-top:4px;color:#667085;font-size:6.1px;line-height:1.3}.sign{display:grid;grid-template-columns:1fr 1fr;gap:35px;margin-top:13px;break-inside:avoid}.sign div{border-top:1px solid #8b95a5;text-align:center;padding-top:3px;color:#667085;font-size:5.8px}.footer{display:flex;justify-content:space-between;margin-top:5px;color:#98a2b3;font-size:5.5px}
+</style></head><body><div class="sheet"><header class="header"><img class="logo" src="${new URL('/img/logo.png',window.location.origin).href}" onerror="this.onerror=null;this.src='${new URL('/img/logo.svg',window.location.origin).href}'" alt="Corpofitness"><div class="header-text"><h1>Plano de Treino</h1><p>Ficha individual • vídeos disponíveis no Portal do Aluno</p></div></header><div class="meta"><div class="box"><small>ALUNO</small><b>${cel(nome)}</b></div><div class="box"><small>CÓDIGO</small><b>${cel(codigo)}</b></div><div class="box"><small>TREINO</small><b>${cel(codigoTreino)}</b></div><div class="box"><small>APLICAÇÃO</small><b>${cel(dataAplicacao)}</b></div></div><div class="meta" style="grid-template-columns:1fr .55fr .55fr"><div class="objective"><b>${cel(objetivo)}</b>${objetivoDesc?`<span>${cel(objetivoDesc)}</span>`:''}</div><div class="box"><small>NÍVEL</small><b>${cel(nivel)}</b></div><div class="box"><small>DIVISÃO</small><b>${cel(divisao)}</b></div></div>${bio?`<div class="bio">${bio}</div>`:''}${blocosHtml}<div class="note"><b>Orientação:</b> siga a prescrição da equipe técnica. Nos conjugados, execute A1/A2/A3 em sequência e descanse somente após completar o bloco. Em caso de dúvida, consulte o vídeo do exercício no Portal do Aluno.</div><div class="sign"><div>Professor / Responsável técnico</div><div>Aluno</div></div><div class="footer"><span>Academia Corpofitness</span><span>${new Date().toLocaleDateString('pt-BR')}</span></div></div></body></html>`);
+                w.document.close();w.focus();w.onafterprint=()=>{try{w.close()}catch(_){}};setTimeout(()=>{try{w.print()}catch(_){}},350);
             };
 
             window.salvarTreinoAnexo = async function() {
@@ -6560,7 +6595,7 @@ document.getElementById('inputBuscaExercicio')?.addEventListener('input', functi
 (function CorpofitnessV2(){
 'use strict';
 
-const V2 = { versao:'2026.08.30-v4-plano-profissional-impressao', alunoId:null, alunoNome:null, anamnese:null, staff:null };
+const V2 = { versao:'2026.08.31-v5-logo-layout-impressao-compacta', alunoId:null, alunoNome:null, anamnese:null, staff:null };
 window.CorpofitnessV2 = V2;
 window.fecharModalV2 = id => { const el=document.getElementById(id); if(el) el.style.display='none'; };
 const esc = v => String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');

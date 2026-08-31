@@ -65,7 +65,10 @@ button{cursor:pointer}.no-scroll{overflow:hidden}
 .exercise-list{display:grid;gap:12px}.exercise{border:1px solid var(--border);border-radius:20px;background:rgba(14,26,52,.88);overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,.18)}
 .exercise.done{border-color:rgba(52,211,153,.32)}.ex-head{display:grid;grid-template-columns:58px 1fr auto;gap:12px;align-items:center;padding:14px}.ex-thumb{width:58px;height:58px;border-radius:15px;background:linear-gradient(145deg,#1e3a8a,#0f1f3d);display:grid;place-items:center;color:#93c5fd;font-size:1.35rem;overflow:hidden}.ex-thumb img{width:100%;height:100%;object-fit:cover}.ex-num{font-size:.6rem;color:var(--blue2);font-weight:800;text-transform:uppercase}.ex-head h3{font-size:.88rem;margin:2px 0 3px}.ex-meta{font-size:.62rem;color:var(--muted);line-height:1.45}.expand-btn{width:36px;height:36px;border:1px solid var(--border);border-radius:11px;background:rgba(255,255,255,.03);color:var(--muted);transition:.2s}.exercise.open .expand-btn{transform:rotate(180deg)}
 .ex-body{display:none;border-top:1px solid var(--border);padding:12px 12px 14px}.exercise.open .ex-body{display:block}
-.video-btn{width:100%;border:1px solid rgba(96,165,250,.25);background:rgba(37,99,235,.08);color:#93c5fd;border-radius:11px;padding:9px;font-size:.68rem;font-weight:800;margin-bottom:10px}
+.video-btn{width:100%;border:1px solid rgba(96,165,250,.38);background:linear-gradient(135deg,rgba(37,99,235,.18),rgba(56,189,248,.08));color:#dbeafe;border-radius:13px;padding:11px 12px;font-size:.72rem;font-weight:900;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 22px rgba(37,99,235,.10)}
+.video-btn i{color:#60a5fa}
+.video-btn:hover{border-color:#60a5fa;background:rgba(37,99,235,.22)}
+.no-video{width:100%;border:1px dashed rgba(148,163,184,.18);background:rgba(255,255,255,.02);color:#64748b;border-radius:11px;padding:8px 10px;font-size:.61rem;text-align:center;margin-bottom:10px}
 .prescription{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.chip{padding:5px 8px;border-radius:999px;background:#0a1429;border:1px solid var(--border);font-size:.59rem;color:var(--muted)}.chip strong{color:#fff}
 .set-table{display:grid;gap:7px}.set-row{display:grid;grid-template-columns:34px 1fr 1fr 46px;gap:7px;align-items:center;padding:8px;border-radius:13px;background:#0a1429;border:1px solid rgba(255,255,255,.055)}.set-row.completed{border-color:rgba(52,211,153,.30);background:rgba(52,211,153,.055)}.set-n{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:#132343;color:#93c5fd;font-size:.7rem;font-weight:900}.set-row.completed .set-n{background:rgba(52,211,153,.14);color:#6ee7b7}.set-field label{display:block;color:var(--muted);font-size:.50rem;text-transform:uppercase;margin:0 0 2px}.set-input{width:100%;border:0;border-bottom:1px solid rgba(148,163,184,.18);background:transparent;color:#fff;padding:3px 0;font-size:.72rem;outline:none}.set-input:focus{border-color:var(--blue2)}.check-set{width:40px;height:40px;border-radius:12px;border:1px solid rgba(96,165,250,.24);background:rgba(37,99,235,.10);color:#93c5fd}.completed .check-set{background:rgba(52,211,153,.14);border-color:rgba(52,211,153,.30);color:#6ee7b7}
 .set-tools{display:flex;justify-content:flex-end;margin-top:7px}.details-link{border:0;background:transparent;color:var(--muted);font-size:.62rem;padding:4px}
@@ -160,8 +163,25 @@ video{display:block;width:100%;max-height:68vh;border-radius:15px;background:#00
 
 <div id="videoOverlay" class="overlay">
   <div class="modal">
-    <div class="modal-head"><h3 id="videoTitle">Execução do exercício</h3><button class="close" data-close="videoOverlay">✕</button></div>
-    <video id="videoPlayer" controls controlsList="nodownload" playsinline></video>
+    <div class="modal-head">
+      <div>
+        <h3 id="videoTitle">Como executar o exercício</h3>
+        <div style="font-size:.62rem;color:var(--muted);margin-top:3px">Assista à demonstração cadastrada pelo professor.</div>
+      </div>
+      <button class="close" data-close="videoOverlay">✕</button>
+    </div>
+    <div id="videoPlayerWrap" style="position:relative;width:100%;background:#000;border-radius:15px;overflow:hidden">
+      <video id="videoPlayer" controls controlsList="nodownload" playsinline style="display:none"></video>
+      <iframe id="youtubePlayer"
+        title="Demonstração do exercício"
+        style="display:none;width:100%;aspect-ratio:16/9;border:0;background:#000"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+      <div id="videoError" style="display:none;padding:26px 18px;text-align:center;color:var(--muted);font-size:.75rem">
+        <i class="fa-solid fa-circle-exclamation" style="display:block;font-size:1.7rem;color:var(--yellow);margin-bottom:10px"></i>
+        Não foi possível abrir este vídeo.
+      </div>
+    </div>
   </div>
 </div>
 
@@ -400,12 +420,16 @@ function renderExercicios(){
         const v=videoDo(sub);
         return `<div class="sub-ex">
           <div class="sub-title"><span class="sub-code">${String.fromCharCode(65+i)}${j+1}</span><div><strong>${esc(sub.exercicio)}</strong><small>${esc(sub.reps||it.reps||'—')} reps • ${esc(sub.carga||'A definir')}</small></div></div>
-          ${v?`<button class="video-btn" data-video="${esc(v)}" data-title="${esc(sub.exercicio)}"><i class="fa-solid fa-play"></i> Ver execução</button>`:''}
+          ${v
+            ? `<button class="video-btn" data-video="${esc(v)}" data-title="${esc(sub.exercicio)}"><i class="fa-solid fa-circle-play"></i> Ver como fazer ${esc(sub.exercicio)}</button>`
+            : `<div class="no-video"><i class="fa-solid fa-video-slash"></i> Sem vídeo cadastrado para ${esc(sub.exercicio)}.</div>`}
           <div class="set-table">${seriesHtml({...sub,series:it.series},i,j)}</div>
         </div>`;
       }).join('');
     }else{
-      body=`${vid?`<button class="video-btn" data-video="${esc(vid)}" data-title="${esc(it.exercicio)}"><i class="fa-solid fa-play"></i> Ver execução correta</button>`:''}
+      body=`${vid
+        ? `<button class="video-btn" data-video="${esc(vid)}" data-title="${esc(it.exercicio)}"><i class="fa-solid fa-circle-play"></i> Ver como fazer este exercício</button>`
+        : `<div class="no-video"><i class="fa-solid fa-video-slash"></i> Vídeo demonstrativo ainda não cadastrado para este exercício.</div>`}
         <div class="prescription">
           <span class="chip"><strong>${esc(it.series||'—')}</strong> séries</span>
           <span class="chip"><strong>${esc(it.reps||'—')}</strong> reps</span>
@@ -419,7 +443,7 @@ function renderExercicios(){
       <div class="ex-head" data-toggle="${i}">
         <div class="ex-thumb">${thumb}</div>
         <div><div class="ex-num">${conj?'CONJUGADO':'EXERCÍCIO'} ${i+1}</div><h3>${esc(it.exercicio||'Conjugado')}</h3>
-          <div class="ex-meta">${esc(lib?.grupo_principal||'Treino personalizado')} • ${total} séries${done?' • ✅ concluído':''}</div></div>
+          <div class="ex-meta">${esc(lib?.grupo_principal||'Treino personalizado')} • ${total} séries${(vid||conj)?' • 🎥 demonstração disponível':''}${done?' • ✅ concluído':''}</div></div>
         <button class="expand-btn"><i class="fa-solid fa-chevron-down"></i></button>
       </div>
       <div class="ex-body">${body}${it.observacao?`<div style="margin-top:10px;color:var(--muted);font-size:.65rem"><i class="fa-regular fa-note-sticky"></i> ${esc(it.observacao)}</div>`:''}</div>
@@ -564,8 +588,50 @@ async function finalizarSessao(){
 }
 
 /* ------------------ VIDEO / OVERLAYS ------------------ */
-function abrirVideo(title,url){$('videoTitle').textContent=title;$('videoPlayer').src=url;$('videoOverlay').classList.add('open');document.body.classList.add('no-scroll');$('videoPlayer').play().catch(()=>{})}
-function fecharOverlay(id){$(id).classList.remove('open');document.body.classList.remove('no-scroll');if(id==='videoOverlay'){$('videoPlayer').pause();$('videoPlayer').removeAttribute('src');$('videoPlayer').load()}}
+function youtubeEmbedUrl(url){
+  try{
+    const u=new URL(url,location.origin);
+    let id='';
+    if(u.hostname.includes('youtu.be')) id=u.pathname.split('/').filter(Boolean)[0]||'';
+    else if(u.hostname.includes('youtube.com')){
+      if(u.pathname==='/watch') id=u.searchParams.get('v')||'';
+      else if(u.pathname.startsWith('/shorts/')) id=u.pathname.split('/')[2]||'';
+      else if(u.pathname.startsWith('/embed/')) id=u.pathname.split('/')[2]||'';
+    }
+    return id?`https://www.youtube.com/embed/${encodeURIComponent(id)}?rel=0&modestbranding=1&playsinline=1`:'';
+  }catch(_){return''}
+}
+function abrirVideo(title,url){
+  $('videoTitle').textContent=`Como fazer: ${title}`;
+  const video=$('videoPlayer'),yt=$('youtubePlayer'),err=$('videoError');
+  video.style.display='none';yt.style.display='none';err.style.display='none';
+  video.pause();video.removeAttribute('src');video.load();yt.removeAttribute('src');
+
+  const embed=youtubeEmbedUrl(url);
+  if(embed){
+    yt.src=embed;
+    yt.style.display='block';
+  }else if(url){
+    video.src=url;
+    video.style.display='block';
+    video.play().catch(()=>{});
+  }else{
+    err.style.display='block';
+  }
+
+  $('videoOverlay').classList.add('open');
+  document.body.classList.add('no-scroll');
+}
+function fecharOverlay(id){
+  $(id).classList.remove('open');
+  document.body.classList.remove('no-scroll');
+  if(id==='videoOverlay'){
+    const video=$('videoPlayer'),yt=$('youtubePlayer');
+    video.pause();video.removeAttribute('src');video.load();
+    yt.removeAttribute('src');yt.style.display='none';
+    video.style.display='none';
+  }
+}
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>fecharOverlay(b.dataset.close));
 document.querySelectorAll('.overlay').forEach(o=>o.onclick=e=>{if(e.target===o)fecharOverlay(o.id)});
 

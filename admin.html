@@ -665,6 +665,37 @@
             .sidebar-overlay.active { display: block; }
         }
 
+
+        /* ==========================================================
+           PLANO DE TREINO PROFISSIONAL V4
+           ========================================================== */
+        #modalTreinoFiel { --treino-panel:#1c1c1c; --treino-blue-soft:rgba(30,136,229,.08); }
+        #modalTreinoFiel .treino-profissional-card { padding:0 !important; overflow:hidden; border-radius:18px !important; }
+        #modalTreinoFiel .treino-editor-body { padding:18px 22px 24px; }
+        #modalTreinoFiel .treino-topbar { position:sticky; top:0; z-index:35; background:rgba(24,24,24,.96); backdrop-filter:blur(14px); padding:16px 20px !important; margin:0 !important; border-bottom:1px solid var(--border)!important; }
+        #modalTreinoFiel .treino-topbar-title { display:flex; flex-direction:column; gap:3px; }
+        #modalTreinoFiel .treino-topbar-title strong { font-size:.95rem; }
+        #modalTreinoFiel .treino-topbar-title small { color:var(--gray); font-size:.68rem; }
+        #modalTreinoFiel .treino-identificacao { display:grid!important; grid-template-columns:90px 90px 150px minmax(260px,1fr)!important; background:linear-gradient(135deg,rgba(30,136,229,.08),rgba(255,255,255,.018))!important; border-color:rgba(30,136,229,.22)!important; padding:13px 15px!important; margin-bottom:15px!important; }
+        #modalTreinoFiel .treino-fluxo { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-bottom:16px; }
+        #modalTreinoFiel .treino-fluxo-item { border:1px solid var(--border); background:var(--dark-card); border-radius:11px; padding:9px 10px; display:flex; align-items:center; gap:8px; min-width:0; }
+        #modalTreinoFiel .treino-fluxo-num { min-width:25px; width:25px; height:25px; border-radius:8px; display:grid; place-items:center; background:rgba(30,136,229,.14); color:var(--primary-light); font-size:.66rem; font-weight:900; }
+        #modalTreinoFiel .treino-fluxo-item strong { display:block; font-size:.68rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #modalTreinoFiel .treino-fluxo-item small { display:block; color:var(--gray); font-size:.58rem; margin-top:1px; }
+        #modalTreinoFiel .modal-card-grid-duplo { grid-template-columns:minmax(350px,410px) minmax(0,1fr)!important; gap:15px!important; }
+        #modalTreinoFiel .treino-coluna-config { gap:12px!important; }
+        #modalTreinoFiel .treino-coluna-config > :nth-child(1){order:1} #modalTreinoFiel .treino-coluna-config > :nth-child(3){order:2} #modalTreinoFiel .treino-coluna-config > :nth-child(2){order:3}
+        #modalTreinoFiel .treino-coluna-ficha { gap:12px!important; }
+        #modalTreinoFiel .treino-coluna-ficha > div:first-child { box-shadow:0 10px 30px rgba(0,0,0,.16); border-color:rgba(30,136,229,.22)!important; }
+        #modalTreinoFiel .treino-section-caption { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 10px; }
+        #modalTreinoFiel .treino-section-caption .step { font-size:.61rem; font-weight:900; color:var(--primary-light); text-transform:uppercase; letter-spacing:.55px; }
+        #modalTreinoFiel .treino-section-caption .hint { color:var(--gray); font-size:.61rem; }
+        #modalTreinoFiel .btn-treino-aba.active { background:var(--primary)!important; color:#fff!important; border-color:var(--primary)!important; box-shadow:0 5px 16px rgba(30,136,229,.22); }
+        #modalTreinoFiel .treino-antropometria-note { font-size:.64rem; color:var(--gray); line-height:1.45; margin-top:9px; padding-top:8px; border-top:1px solid var(--border); }
+        @media print { #modalTreinoFiel { display:none!important; } }
+        @media(max-width:1100px){ #modalTreinoFiel .modal-card-grid-duplo{grid-template-columns:1fr!important} #modalTreinoFiel .treino-fluxo{grid-template-columns:repeat(2,1fr)} }
+        @media(max-width:720px){ #modalTreinoFiel .treino-editor-body{padding:14px} #modalTreinoFiel .treino-identificacao{grid-template-columns:1fr 1fr!important} #modalTreinoFiel .treino-identificacao>div:last-child{grid-column:1/-1} }
+
         /* AJUSTES RESPONSIVOS EXTRAS PARA GRID DE FICHAS E TREINOS EM MOBILE/TABLET */
         .modal-card-grid-duplo {
             display: grid;
@@ -2067,12 +2098,13 @@
 
             <!-- MODAL PLANO DE TREINO PROFISSIONAL EVOLUÍDO E ORGANIZADO -->
             <div class="modal-overlay" id="modalTreinoFiel" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto; padding: 15px;">
-                <div class="modal-card" style="max-width: 1450px; width: 100%; background: #181818; color: #fff; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.8);">
+                <div class="modal-card treino-profissional-card" style="max-width: 1450px; width: 100%; background: #181818; color: #fff; padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.8);">
                     
                     <!-- Topo do Modal / Ações Rápidas -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="background: rgba(30,136,229,0.15); border: 1px solid var(--primary); padding: 8px 14px; font-weight: bold; font-size: 0.85rem; border-radius: 8px; color: var(--primary-light);">📅 PLANO DE TREINO PROFISSIONAL & AVALIAÇÃO</span>
+                    <div class="treino-topbar" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                        <div class="treino-topbar-title">
+                            <strong><i class="fa-solid fa-clipboard-list" style="color:var(--primary-light)"></i> Plano de Treino Profissional</strong>
+                            <small>Prescrição, avaliação, montagem e revisão da ficha do aluno</small>
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                             <button type="button" onclick="abrirModalExerciciosCatalogo()" class="btn-action-bar"><i class="fa-solid fa-dumbbell"></i> Biblioteca</button>
@@ -2081,7 +2113,7 @@
                             <button type="button" onclick="abrirTemplatesTreino()" class="btn-action-bar">📚 Templates</button>
                             <button type="button" onclick="abrirHistoricoVersoesTreino()" class="btn-action-bar">🕘 Versões</button>
                             <button type="button" onclick="abrirDuplicarTreino()" class="btn-action-bar">📋 Duplicar</button>
-                            <button type="button" onclick="window.print()" class="btn btn-print" style="padding: 6px 12px; font-size: 0.8rem;"><i class="fa-solid fa-print"></i> Imprimir</button>
+                            <button type="button" onclick="imprimirPlanoTreinoProfissional()" class="btn btn-print" style="padding: 6px 12px; font-size: 0.8rem;"><i class="fa-solid fa-print"></i> Imprimir Ficha do Aluno</button>
                             <button type="button" onclick="salvarTreinoAnexo()" class="btn btn-success" style="padding: 6px 16px; font-size: 0.8rem;"><i class="fa-solid fa-floppy-disk"></i> Salvar Treino</button>
                             <button type="button" onclick="fecharModal('modalTreinoFiel')" class="btn-action-bar" style="background: var(--danger); color: #fff; padding: 6px 12px;">✕</button>
                         </div>
@@ -2089,8 +2121,16 @@
 
                     <input type="hidden" id="tr_aluno_id">
 
+                    <div class="treino-editor-body">
+                    <div class="treino-fluxo" aria-label="Fluxo de montagem do treino">
+                        <div class="treino-fluxo-item"><span class="treino-fluxo-num">1</span><div><strong>Objetivo</strong><small>Meta e análise</small></div></div>
+                        <div class="treino-fluxo-item"><span class="treino-fluxo-num">2</span><div><strong>Estrutura</strong><small>Nível e divisão</small></div></div>
+                        <div class="treino-fluxo-item"><span class="treino-fluxo-num">3</span><div><strong>Montagem</strong><small>Exercícios e métodos</small></div></div>
+                        <div class="treino-fluxo-item"><span class="treino-fluxo-num">4</span><div><strong>Revisão</strong><small>Salvar ou imprimir</small></div></div>
+                    </div>
+
                     <!-- Informações do Aluno / Cabeçalho Técnico -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; align-items: center; margin-bottom: 20px; background: var(--dark-card); padding: 15px; border: 1px solid var(--border); border-radius: 12px;">
+                    <div class="treino-identificacao" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; align-items: center; margin-bottom: 20px; background: var(--dark-card); padding: 15px; border: 1px solid var(--border); border-radius: 12px;">
                         <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Cód</label><input type="text" id="tr_cod" value="1" class="form-control" readonly></div>
                         <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">CódT</label><input type="text" id="tr_codt" value="1" class="form-control" readonly></div>
                         <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Data Aplicação:</label><input type="text" id="tr_data" value="" class="form-control"></div>
@@ -2101,11 +2141,12 @@
                     <div class="modal-card-grid-duplo" style="align-items: start;">
                         
                         <!-- Coluna da Esquerda: Objetivo, Anatomia Compacta, Nível e Divisão -->
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div class="treino-coluna-config" style="display: flex; flex-direction: column; gap: 15px;">
                             
                             <!-- Objetivo & Estrutura -->
                             <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 14px; border-radius: 12px; position: relative;">
                                 <span style="position: absolute; top: -11px; left: 15px; background: var(--dark-card); padding: 0 8px; color: var(--primary-light); font-weight: 700; font-size: 0.75rem;">🎯 OBJETIVO & ESTRUTURA</span>
+                                <div class="treino-section-caption"><span class="step">Etapa 1 • Prescrição</span><span class="hint">O assistente sugere; o professor decide.</span></div>
                                 <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
                                     <select id="tr_objetivo" class="form-control" style="padding: 10px;">
                                         <option value="">Selecione o objetivo...</option>
@@ -2205,12 +2246,13 @@
                         </div>
 
                         <!-- Coluna da Direita: Ficha de Treino e Bioimpedância -->
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div class="treino-coluna-ficha" style="display: flex; flex-direction: column; gap: 15px;">
                             
                             <!-- Montagem dos Exercícios por Ficha -->
                             <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 18px; border-radius: 12px; position: relative;">
+                                <div class="treino-section-caption"><span class="step">Etapa 3 • Montagem principal</span><span class="hint">Esta área define exatamente o que o aluno receberá.</span></div>
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
-                                    <h4 style="font-size: 0.95rem; color: var(--text-color); margin: 0;"><i class="fa-solid fa-dumbbell"></i> Montagem de Exercícios</h4>
+                                    <h4 style="font-size: 1rem; color: var(--text-color); margin: 0;"><i class="fa-solid fa-dumbbell" style="color:var(--primary-light)"></i> Ficha de Exercícios</h4>
                                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
                                         <button type="button" onclick="abrirSeletorExerciciosFicha()" class="btn-action-bar" style="background: var(--primary); color:#fff; padding: 6px 14px;">➕ Adicionar Exercício</button>
                                     </div>
@@ -2255,6 +2297,7 @@
                             <!-- Dados Rápidos de Bioimpedância no Treino -->
                             <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 18px; border-radius: 12px;">
                                 <h4 style="font-size: 0.9rem; color: var(--text-color); margin-bottom: 12px;"><i class="fa-solid fa-scale-balanced"></i> Dados Antropométricos Rápidos</h4>
+                                <div class="treino-section-caption"><span class="step">Contexto da avaliação</span><span class="hint">Referência rápida para prescrição.</span></div>
                                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px;">
                                     <div>
                                         <label class="form-label">Peso (kg)</label>
@@ -2273,12 +2316,14 @@
                                         <input type="number" step="0.1" id="fiel_massa" class="form-control" placeholder="62.0">
                                     </div>
                                 </div>
+                                <div class="treino-antropometria-note"><i class="fa-solid fa-circle-info"></i> Estes dados são um resumo técnico da avaliação. A ficha impressa mostra apenas os valores disponíveis e não substitui a avaliação corporal completa.</div>
                             </div>
 
                         </div>
 
                     </div>
 
+                    </div><!-- /.treino-editor-body -->
                 </div>
             </div>
 
@@ -2920,6 +2965,48 @@ window.adicionarExercicioDiretoFichaPorIndice = function(indice) {
                     const el = document.getElementById('map-' + musculo);
                     if (el) el.style.opacity = chk.checked ? "0.9" : "0.15";
                 });
+            };
+
+            // Ficha A4 independente do painel administrativo.
+            window.imprimirPlanoTreinoProfissional = function() {
+                const escPrint = (v) => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+                const nome=document.getElementById('tr_nome')?.value?.trim()||'Aluno';
+                const codigo=document.getElementById('tr_cod')?.value?.trim()||'-';
+                const codigoTreino=document.getElementById('tr_codt')?.value?.trim()||'-';
+                const dataAplicacao=document.getElementById('tr_data')?.value?.trim()||new Date().toLocaleDateString('pt-BR');
+                const objetivo=document.getElementById('tr_objetivo')?.value||'Não informado';
+                const objetivoDesc=document.getElementById('tr_objetivo_desc')?.value?.trim()||'';
+                const nivel=[...document.querySelectorAll('input[name="tr_nivel"]')].find(r=>r.checked)?.parentElement?.textContent?.trim()||'Não informado';
+                const divisao=[...document.querySelectorAll('input[name="tr_divisao"]')].find(r=>r.checked)?.parentElement?.textContent?.trim()||'Não informada';
+                const peso=document.getElementById('fiel_peso')?.value?.trim()||'', altura=document.getElementById('fiel_altura')?.value?.trim()||'', gordura=document.getElementById('fiel_gordura')?.value?.trim()||'', massa=document.getElementById('fiel_massa')?.value?.trim()||'';
+                const grupos=[...document.querySelectorAll('.chk-musculo:checked')].map(c=>c.parentElement?.textContent?.trim()).filter(Boolean);
+                const ficha=(typeof exerciciosFichaMemoria==='object'&&exerciciosFichaMemoria)?exerciciosFichaMemoria:{A:[],B:[],C:[],D:[],E:[]};
+                const blocos=['A','B','C','D','E'].filter(k=>Array.isArray(ficha[k])&&ficha[k].length);
+                if(!blocos.length){ window.showToast('Adicione exercícios antes de imprimir a ficha.','warning'); return; }
+                const cel=(v)=>escPrint(v||'—');
+                function renderExercicio(item,index,letra){
+                    const conj=item?.tipo_item==='conjugado'&&Array.isArray(item?.conjugado)&&item.conjugado.length>=2;
+                    if(conj){
+                        const filhos=item.conjugado.map((s,j)=>`<div class="subex"><span class="subcode">${letra}${j+1}</span><div class="submain"><strong>${cel(s.exercicio)}</strong><span>${cel(s.reps)} reps • ${cel(s.carga)}</span></div></div>`).join('');
+                        return `<div class="exercise-card conjugated"><div class="exercise-top"><div><span class="badge-conj">${cel(item.metodo||'Conjugado')}</span><h3>${index+1}. ${cel(item.exercicio)}</h3></div><div class="series-box"><small>SÉRIES</small><strong>${cel(item.series)}</strong></div></div><div class="subex-list">${filhos}</div><div class="exercise-footer"><span><b>Descanso após o bloco:</b> ${cel(item.descanso)}</span>${item.observacao?`<span><b>Obs.:</b> ${cel(item.observacao)}</span>`:''}</div></div>`;
+                    }
+                    const extra=[item.rir?`<span>RIR <b>${cel(item.rir)}</b></span>`:'',item.rpe?`<span>RPE <b>${cel(item.rpe)}</b></span>`:'',item.cadencia?`<span>Cadência <b>${cel(item.cadencia)}</b></span>`:''].filter(Boolean).join('');
+                    return `<div class="exercise-card"><div class="exercise-number">${String(index+1).padStart(2,'0')}</div><div class="exercise-name"><h3>${cel(item.exercicio)}</h3><div class="method">${cel(item.metodo||'Tradicional')}</div>${item.observacao?`<p>${cel(item.observacao)}</p>`:''}</div><div class="rx"><small>SÉRIES</small><strong>${cel(item.series)}</strong></div><div class="rx"><small>REPS</small><strong>${cel(item.reps)}</strong></div><div class="rx load"><small>CARGA</small><strong>${cel(item.carga)}</strong></div><div class="rx"><small>DESCANSO</small><strong>${cel(item.descanso)}</strong></div>${extra?`<div class="exercise-extra">${extra}</div>`:''}</div>`;
+                }
+                const blocosHtml=blocos.map(letra=>`<section class="workout-section"><div class="workout-title"><div><span class="workout-letter">${letra}</span><div><h2>Treino ${letra}</h2><p>${ficha[letra].length} exercício(s) / bloco(s)</p></div></div><span class="workout-check">□ CONCLUÍDO</span></div><div class="exercise-list">${ficha[letra].map((it,i)=>renderExercicio(it,i,letra)).join('')}</div></section>`).join('');
+                const bio=[peso?`<div><small>PESO</small><strong>${cel(peso)} kg</strong></div>`:'',altura?`<div><small>ALTURA</small><strong>${cel(altura)} m</strong></div>`:'',gordura?`<div><small>GORDURA</small><strong>${cel(gordura)}%</strong></div>`:'',massa?`<div><small>MASSA</small><strong>${cel(massa)} kg</strong></div>`:''].filter(Boolean).join('');
+                let logo=''; try{logo=new URL('img/logo.png',window.location.href).href}catch(_){}
+                const w=window.open('','_blank');
+                if(!w){ window.showToast('O navegador bloqueou a impressão. Permita pop-ups para este site.','warning'); return; }
+                try{w.opener=null}catch(_){}
+                w.document.open();
+                w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plano de Treino - ${cel(nome)}</title><style>
+@page{size:A4 portrait;margin:10mm}*{box-sizing:border-box}html,body{margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;color:#101828;background:#fff;font-size:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.sheet{width:100%}.header{display:grid;grid-template-columns:180px 1fr;gap:16px;align-items:center;border-bottom:3px solid #1976d2;padding-bottom:11px;margin-bottom:11px}.logo{max-width:165px;max-height:62px;object-fit:contain}.brand-fallback{font-size:20px;font-weight:900;font-style:italic}.header-side{text-align:right}.doc-type{color:#1976d2;font-size:9px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase}.header-side h1{margin:3px 0 2px;font-size:20px}.header-side p{margin:0;color:#667085;font-size:9px}.student{display:grid;grid-template-columns:1.6fr .8fr .8fr .8fr;gap:7px;margin-bottom:8px}.info,.bio>div{border:1px solid #dce3eb;background:#f8fafc;border-radius:7px;padding:7px 9px}.info small,.bio small,.rx small,.series-box small{display:block;font-size:6.8px;color:#667085;letter-spacing:.55px;font-weight:800}.info strong,.bio strong{display:block;margin-top:2px;font-size:10px}.prescription{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:8px}.objective{grid-column:span 2;border:1px solid #b9d8f7;background:#eef6ff;border-radius:7px;padding:7px 9px}.objective small{display:block;color:#1976d2;font-size:6.8px;font-weight:900;letter-spacing:.6px}.objective strong{display:block;font-size:11px;margin-top:2px}.objective p{margin:2px 0 0;color:#52606d;font-size:8px}.bio{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}.muscles{border:1px solid #e4e7ec;border-radius:7px;padding:6px 8px;color:#475467;font-size:8px;margin-bottom:10px}.workout-section{margin-top:10px;page-break-inside:auto}.workout-title{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#111827;color:#fff;border-radius:8px;padding:7px 9px;margin-bottom:6px}.workout-title>div{display:flex;align-items:center;gap:8px}.workout-letter{width:29px;height:29px;border-radius:7px;background:#1976d2;display:grid;place-items:center;font-size:14px;font-weight:900}.workout-title h2{margin:0;font-size:12px}.workout-title p{margin:1px 0 0;color:#cbd5e1;font-size:7px}.workout-check{font-size:7px;color:#dbeafe;font-weight:800}.exercise-list{display:grid;gap:5px}.exercise-card{display:grid;grid-template-columns:30px minmax(150px,1fr) 48px 58px 95px 65px;align-items:stretch;border:1px solid #dde3ea;border-radius:7px;overflow:hidden;page-break-inside:avoid;break-inside:avoid;background:#fff}.exercise-number{display:grid;place-items:center;color:#1976d2;font-weight:900;font-size:10px;background:#f0f7ff;border-right:1px solid #dde3ea}.exercise-name{padding:6px 7px}.exercise-name h3{margin:0;font-size:9px}.exercise-name .method{color:#1976d2;font-size:7px;font-weight:700;margin-top:2px}.exercise-name p{color:#667085;margin:2px 0 0;font-size:6.8px}.rx{border-left:1px solid #e5e7eb;padding:6px 5px;display:flex;flex-direction:column;justify-content:center;text-align:center}.rx strong{margin-top:2px;font-size:8px;overflow-wrap:anywhere}.rx.load strong{font-size:7.5px}.exercise-extra{grid-column:2/-1;border-top:1px dashed #d0d5dd;padding:4px 7px;display:flex;gap:10px;flex-wrap:wrap;color:#475467;font-size:7px}.exercise-card.conjugated{display:block;border:1.5px solid #e9a23b;background:#fffbf3;padding:7px}.exercise-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.exercise-top h3{margin:4px 0 0;font-size:9px}.badge-conj{display:inline-block;background:#fff0cf;color:#995c00;border:1px solid #f1c879;border-radius:999px;padding:2px 6px;font-size:6.5px;font-weight:900;text-transform:uppercase}.series-box{min-width:52px;text-align:center;border-left:1px solid #f1d8a8;padding-left:8px}.series-box strong{display:block;margin-top:2px;font-size:10px}.subex-list{margin-top:6px;border-top:1px dashed #e8c78b}.subex{display:grid;grid-template-columns:34px 1fr;gap:7px;align-items:center;padding:5px 0;border-bottom:1px dashed #ead7b4}.subex:last-child{border-bottom:0}.subcode{width:29px;height:24px;border-radius:6px;background:#f4a61f;color:#fff;display:grid;place-items:center;font-size:7px;font-weight:900}.submain strong{display:block;font-size:8.5px}.submain span{color:#6b5a3d;font-size:7px}.exercise-footer{border-top:1px solid #f0dbb3;margin-top:4px;padding-top:4px;display:flex;gap:12px;flex-wrap:wrap;color:#6b5a3d;font-size:7px}.print-note{margin-top:11px;padding:7px 9px;border:1px solid #dce3eb;border-radius:7px;color:#475467;font-size:7.5px;line-height:1.45}.signatures{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:22px;page-break-inside:avoid}.signature{border-top:1px solid #667085;padding-top:4px;text-align:center;color:#475467;font-size:7px}.footer{margin-top:12px;padding-top:6px;border-top:1px solid #e4e7ec;display:flex;justify-content:space-between;gap:10px;color:#98a2b3;font-size:6.5px}
+</style></head><body><div class="sheet"><header class="header"><div>${logo?`<img class="logo" src="${escPrint(logo)}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="brand-fallback" style="display:none">CORPOFITNESS</div>`:`<div class="brand-fallback">CORPOFITNESS</div>`}</div><div class="header-side"><div class="doc-type">Ficha individual de treinamento</div><h1>Plano de Treino</h1><p>Prescrição preparada pela equipe técnica • vídeos disponíveis no Portal do Aluno</p></div></header><section class="student"><div class="info"><small>ALUNO</small><strong>${cel(nome)}</strong></div><div class="info"><small>CÓDIGO</small><strong>${cel(codigo)}</strong></div><div class="info"><small>TREINO</small><strong>${cel(codigoTreino)}</strong></div><div class="info"><small>APLICAÇÃO</small><strong>${cel(dataAplicacao)}</strong></div></section><section class="prescription"><div class="objective"><small>OBJETIVO PRINCIPAL</small><strong>${cel(objetivo)}</strong>${objetivoDesc?`<p>${cel(objetivoDesc)}</p>`:''}</div><div class="info"><small>NÍVEL</small><strong>${cel(nivel)}</strong></div><div class="info"><small>DIVISÃO</small><strong>${cel(divisao)}</strong></div></section>${bio?`<section class="bio">${bio}</section>`:''}${grupos.length?`<div class="muscles"><b>Ênfase muscular:</b> ${grupos.map(cel).join(' • ')}</div>`:''}${blocosHtml}<div class="print-note"><b>Orientações:</b> respeite séries, repetições, descanso e observações prescritas. Nos blocos conjugados (A1/A2, B1/B2 etc.), execute os exercícios na sequência indicada e descanse somente após concluir o bloco. Em caso de dúvida, consulte o vídeo do exercício no Portal do Aluno ou solicite orientação do professor.</div><div class="signatures"><div class="signature">Professor / Responsável técnico</div><div class="signature">Aluno</div></div><footer class="footer"><span>Academia Corpofitness • Ficha individual de treinamento</span><span>Impresso em ${new Date().toLocaleString('pt-BR')}</span></footer></div></body></html>`);
+                w.document.close();
+                w.focus();
+                w.onafterprint=()=>{try{w.close()}catch(_){}};
+                setTimeout(()=>{try{w.print()}catch(_){window.showToast('Não foi possível abrir a impressão.','error')}},450);
             };
 
             window.salvarTreinoAnexo = async function() {
@@ -6473,7 +6560,7 @@ document.getElementById('inputBuscaExercicio')?.addEventListener('input', functi
 (function CorpofitnessV2(){
 'use strict';
 
-const V2 = { versao:'2026.08.30-v3-conjugado-integrado', alunoId:null, alunoNome:null, anamnese:null, staff:null };
+const V2 = { versao:'2026.08.30-v4-plano-profissional-impressao', alunoId:null, alunoNome:null, anamnese:null, staff:null };
 window.CorpofitnessV2 = V2;
 window.fecharModalV2 = id => { const el=document.getElementById(id); if(el) el.style.display='none'; };
 const esc = v => String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');

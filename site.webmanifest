@@ -1,21 +1,24 @@
 {
     "name":  "Corpofitness",
     "short_name":  "Corpofitness",
+    "id":  "/",
+    "start_url":  "/",
+    "scope":  "/",
     "display":  "standalone",
     "theme_color":  "#071023",
     "background_color":  "#071023",
     "icons":  [
                   {
-                      "src":  "./img/favicon/android-chrome-192x192.png",
+                      "src":  "/img/favicon/app-icon-192-oficial-v5.png",
                       "sizes":  "192x192",
                       "type":  "image/png",
-                      "purpose":  "any"
+                      "purpose":  "any maskable"
                   },
                   {
-                      "src":  "./img/favicon/android-chrome-512x512.png",
+                      "src":  "/img/favicon/app-icon-512-oficial-v5.png",
                       "sizes":  "512x512",
                       "type":  "image/png",
-                      "purpose":  "any"
+                      "purpose":  "any maskable"
                   }
               ]
 }

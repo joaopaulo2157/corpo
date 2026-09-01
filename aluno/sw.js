@@ -1,7 +1,7 @@
 // ==================================================
 // SERVICE WORKER - CORPOFITNESS ALUNO PWA
 // ==================================================
-const CACHE_NAME = 'corpofitness-aluno-v1';
+const CACHE_NAME = 'corpofitness-aluno-v5';
 const STATIC_ASSETS = [
     'index.html',
     'treinos.html',

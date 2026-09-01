@@ -1,23 +1,33 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#071023"><title>Autenticando | Corpofitness</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#071023">
+<title>Autenticando | Corpofitness</title>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="shortcut icon" href="/favicon.ico">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#071023;color:#f8fafc;font-family:Arial,sans-serif;padding:22px}.box{width:min(100%,440px);padding:30px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:#101b35;text-align:center}.auth-logo{display:block;width:min(235px,82%);max-height:96px;object-fit:contain;margin:0 auto 18px}.spin{width:42px;height:42px;border:4px solid rgba(255,255,255,.13);border-top-color:#60a5fa;border-radius:50%;margin:0 auto 18px;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}h1{font-size:1.15rem;margin:0 0 8px}p{margin:0;color:#94a3b8;font-size:.86rem;line-height:1.5}.err{color:#fca5a5}.link{display:inline-block;margin-top:16px;color:#93c5fd}
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon-corpofitness-v6.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32-corpofitness-v6.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16-corpofitness-v6.png">
-<link rel="shortcut icon" href="/favicon.ico">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Corpofitness">
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:#071023;color:#f8fafc;font-family:Arial,sans-serif;padding:22px}
+.box{width:min(100%,440px);padding:30px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:#101b35;text-align:center}
+.auth-logo{display:block;width:min(260px,86%);max-height:120px;object-fit:contain;margin:0 auto 18px}
+.spin{width:42px;height:42px;border:4px solid rgba(255,255,255,.13);border-top-color:#60a5fa;border-radius:50%;margin:0 auto 18px;animation:s .8s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+h1{font-size:1.15rem;margin:0 0 8px}p{margin:0;color:#94a3b8;font-size:.86rem;line-height:1.5}.err{color:#fca5a5}.link{display:inline-block;margin-top:16px;color:#93c5fd}
+</style>
 </head>
-<body><div class="box"><img class="auth-logo" src="/img/logo.png" alt="Academia Corpofitness" onerror="this.onerror=null;this.src='/img/logo.svg'"><div id="spinner" class="spin"></div><h1 id="title">Validando acesso seguro…</h1><p id="status">Aguarde alguns instantes.</p><a id="fallback" class="link" href="/" style="display:none">Voltar ao site</a></div>
+<body>
+<div class="box">
+  <img class="auth-logo" src="/img/logo-oficial-exata-v6.png" alt="Academia Corpofitness" onerror="this.onerror=null;this.src='/img/logo.png'">
+  <div id="spinner" class="spin"></div>
+  <h1 id="title">Validando acesso seguro…</h1>
+  <p id="status">Aguarde alguns instantes.</p>
+  <a id="fallback" class="link" href="/aluno/portal-seguro.html" style="display:none">Voltar para a Área do Aluno</a>
+</div>
 <script>
 (async()=>{'use strict';
 const U='https://rylbznbtrrsuyzxgsivg.supabase.co',K='sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
@@ -26,17 +36,26 @@ const saved=sessionStorage.getItem('corpofitness.auth.area'),qp=q.get('area');
 const area=['admin','aluno'].includes(qp)?qp:(['admin','aluno'].includes(saved)?saved:'aluno');
 const mode=q.get('mode')==='recovery'?'recovery':'';
 const storageKey=area==='admin'?'corpofitness.admin.auth':'corpofitness.aluno.auth';
-const client=supabase.createClient(U,K,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey}});
+const client=supabase.createClient(U,K,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey}});
 const title=document.getElementById('title'),status=document.getElementById('status'),spinner=document.getElementById('spinner'),fallback=document.getElementById('fallback');
-function fail(m){spinner.style.display='none';title.textContent='Não foi possível concluir o acesso';status.textContent=m;status.className='err';fallback.style.display='inline-block'}
+function fail(m){spinner.style.display='none';title.textContent='Não foi possível concluir o acesso';status.textContent=m;status.className='err';fallback.href=area==='admin'?'/admin.html':'/aluno/portal-seguro.html';fallback.textContent=area==='admin'?'Voltar ao Painel':'Voltar para a Área do Aluno';fallback.style.display='inline-block'}
 const oe=q.get('error_description')||h.get('error_description');if(oe){fail(decodeURIComponent(oe.replace(/\+/g,' ')));return}
 try{
- const {data,error}=await client.auth.getSession();if(error)throw error;
- if(!data?.session?.user)throw new Error('Sessão não criada. Verifique as Redirect URLs no Supabase Auth.');
+ const code=q.get('code');
+ if(code){const {error}=await client.auth.exchangeCodeForSession(code);if(error)throw error;}
+ let session=null;
+ for(let i=0;i<12;i++){
+   const {data,error}=await client.auth.getSession();if(error)throw error;
+   session=data?.session||null;if(session?.user)break;
+   await new Promise(r=>setTimeout(r,150));
+ }
+ if(!session?.user)throw new Error('Sessão não criada. Confira a Redirect URL do Google no Supabase Auth.');
  sessionStorage.removeItem('corpofitness.auth.area');
  history.replaceState({},document.title,'/auth-callback.html');
  if(area==='admin'){location.replace('/admin.html');return}
  location.replace(mode==='recovery'?'/aluno/portal-seguro.html?recovery=1':'/aluno/portal-seguro.html');
 }catch(e){console.error('[Auth Callback]',e);fail(e?.message||'Falha na autenticação.')}
 })();
-</script></body></html>
+</script>
+</body>
+</html>

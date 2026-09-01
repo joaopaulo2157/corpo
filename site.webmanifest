@@ -1,19 +1,21 @@
 {
-  "name": "Corpofitness",
-  "short_name": "Corpofitness",
-  "icons": [
-    {
-      "src": "./img/favicon/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "./img/favicon/android-chrome-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "theme_color": "#071023",
-  "background_color": "#071023",
-  "display": "standalone"
+    "name":  "Corpofitness",
+    "short_name":  "Corpofitness",
+    "display":  "standalone",
+    "theme_color":  "#071023",
+    "background_color":  "#071023",
+    "icons":  [
+                  {
+                      "src":  "./img/favicon/android-chrome-192x192.png",
+                      "sizes":  "192x192",
+                      "type":  "image/png",
+                      "purpose":  "any"
+                  },
+                  {
+                      "src":  "./img/favicon/android-chrome-512x512.png",
+                      "sizes":  "512x512",
+                      "type":  "image/png",
+                      "purpose":  "any"
+                  }
+              ]
 }

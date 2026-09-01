@@ -1,109 +1,119 @@
 {
-  "redirects": [
-    {
-      "source": "/login.html",
-      "destination": "/admin.html",
-      "permanent": false
-    },
-    {
-      "source": "/login-cliente.html",
-      "destination": "/aluno/portal-seguro.html",
-      "permanent": false
-    },
-    {
-      "source": "/aluno",
-      "destination": "/aluno/portal-seguro.html",
-      "permanent": false
-    },
-    {
-      "source": "/aluno/",
-      "destination": "/aluno/portal-seguro.html",
-      "permanent": false
-    },
-    {
-      "source": "/aluno/index.html",
-      "destination": "/aluno/portal-seguro.html",
-      "permanent": false
-    },
-    {
-      "source": "/aluno/treinos.html",
-      "destination": "/aluno/treinos-seguro.html",
-      "permanent": false
-    },
-    {
-      "source": "/treinos.html",
-      "destination": "/aluno/treinos-seguro.html",
-      "permanent": false
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self' https://rylbznbtrrsuyzxgsivg.supabase.co wss://rylbznbtrrsuyzxgsivg.supabase.co; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://rylbznbtrrsuyzxgsivg.supabase.co wss://rylbznbtrrsuyzxgsivg.supabase.co https://cdn.jsdelivr.net; media-src 'self' https: blob:; worker-src 'self' blob:; frame-src 'self' https://www.youtube.com https://youtube.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self';"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=(), payment=()"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=31536000; includeSubDomains"
-        }
-      ]
-    },
-    {
-      "source": "/admin.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0, must-revalidate"
-        },
-        {
-          "key": "Pragma",
-          "value": "no-cache"
-        }
-      ]
-    },
-    {
-      "source": "/auth-callback.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0, must-revalidate"
-        },
-        {
-          "key": "Pragma",
-          "value": "no-cache"
-        }
-      ]
-    },
-    {
-      "source": "/aluno/(.*).html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0, must-revalidate"
-        },
-        {
-          "key": "Pragma",
-          "value": "no-cache"
-        }
-      ]
-    }
-  ]
+    "redirects":  [
+                      {
+                          "source":  "/login.html",
+                          "destination":  "/admin.html",
+                          "permanent":  false
+                      },
+                      {
+                          "source":  "/login-cliente.html",
+                          "destination":  "/aluno/portal-seguro.html",
+                          "permanent":  false
+                      },
+                      {
+                          "source":  "/aluno",
+                          "destination":  "/aluno/portal-seguro.html",
+                          "permanent":  false
+                      },
+                      {
+                          "source":  "/aluno/",
+                          "destination":  "/aluno/portal-seguro.html",
+                          "permanent":  false
+                      },
+                      {
+                          "source":  "/aluno/index.html",
+                          "destination":  "/aluno/portal-seguro.html",
+                          "permanent":  false
+                      },
+                      {
+                          "source":  "/aluno/treinos.html",
+                          "destination":  "/aluno/treinos-seguro.html",
+                          "permanent":  false
+                      },
+                      {
+                          "source":  "/treinos.html",
+                          "destination":  "/aluno/treinos-seguro.html",
+                          "permanent":  false
+                      },
+                      {
+                          "source":  "/aluno/login-cliente.html",
+                          "destination":  "/aluno/portal-seguro.html",
+                          "permanent":  false
+                      },
+                      {
+                          "source":  "/aluno/login.html",
+                          "destination":  "/aluno/portal-seguro.html",
+                          "permanent":  false
+                      }
+                  ],
+    "headers":  [
+                    {
+                        "source":  "/(.*)",
+                        "headers":  [
+                                        {
+                                            "key":  "Content-Security-Policy",
+                                            "value":  "default-src \u0027self\u0027 https://rylbznbtrrsuyzxgsivg.supabase.co wss://rylbznbtrrsuyzxgsivg.supabase.co; script-src \u0027self\u0027 \u0027unsafe-inline\u0027 https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src \u0027self\u0027 \u0027unsafe-inline\u0027 https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; img-src \u0027self\u0027 data: blob: https:; font-src \u0027self\u0027 data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src \u0027self\u0027 https://rylbznbtrrsuyzxgsivg.supabase.co wss://rylbznbtrrsuyzxgsivg.supabase.co https://cdn.jsdelivr.net; media-src \u0027self\u0027 https: blob:; worker-src \u0027self\u0027 blob:; frame-src \u0027self\u0027 https://www.youtube.com https://youtube.com; object-src \u0027none\u0027; base-uri \u0027self\u0027; frame-ancestors \u0027self\u0027;"
+                                        },
+                                        {
+                                            "key":  "X-Content-Type-Options",
+                                            "value":  "nosniff"
+                                        },
+                                        {
+                                            "key":  "X-Frame-Options",
+                                            "value":  "SAMEORIGIN"
+                                        },
+                                        {
+                                            "key":  "Referrer-Policy",
+                                            "value":  "strict-origin-when-cross-origin"
+                                        },
+                                        {
+                                            "key":  "Permissions-Policy",
+                                            "value":  "camera=(), microphone=(), geolocation=(), payment=()"
+                                        },
+                                        {
+                                            "key":  "Strict-Transport-Security",
+                                            "value":  "max-age=31536000; includeSubDomains"
+                                        }
+                                    ]
+                    },
+                    {
+                        "source":  "/admin.html",
+                        "headers":  [
+                                        {
+                                            "key":  "Cache-Control",
+                                            "value":  "no-store, max-age=0, must-revalidate"
+                                        },
+                                        {
+                                            "key":  "Pragma",
+                                            "value":  "no-cache"
+                                        }
+                                    ]
+                    },
+                    {
+                        "source":  "/auth-callback.html",
+                        "headers":  [
+                                        {
+                                            "key":  "Cache-Control",
+                                            "value":  "no-store, max-age=0, must-revalidate"
+                                        },
+                                        {
+                                            "key":  "Pragma",
+                                            "value":  "no-cache"
+                                        }
+                                    ]
+                    },
+                    {
+                        "source":  "/aluno/(.*).html",
+                        "headers":  [
+                                        {
+                                            "key":  "Cache-Control",
+                                            "value":  "no-store, max-age=0, must-revalidate"
+                                        },
+                                        {
+                                            "key":  "Pragma",
+                                            "value":  "no-cache"
+                                        }
+                                    ]
+                    }
+                ]
 }

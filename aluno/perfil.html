@@ -192,10 +192,10 @@
 </div>
 
     <header>
-        <a href="index.html" class="logo-area">
+        <a href="/aluno/portal-seguro.html" class="logo-area">
             <i class="fa-solid fa-dumbbell"></i> CORPOFITNESS
         </a>
-        <a href="index.html" class="btn-voltar">
+        <a href="/aluno/portal-seguro.html" class="btn-voltar">
             <i class="fa-solid fa-arrow-left"></i> Voltar ao Painel
         </a>
     </header>
@@ -241,72 +241,165 @@
     </main>
 
     <script>
-        const SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+(() => {
+    'use strict';
 
-        let usuarioAtual = null;
+    const SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            usuarioAtual = JSON.parse(sessionStorage.getItem('corpofitness_usuario')) ||
-                           JSON.parse(sessionStorage.getItem('corpofitness_cliente_logado'));
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+            flowType: 'pkce',
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storageKey: 'corpofitness.aluno.auth'
+        }
+    });
+
+    let usuarioAtual = null;
+
+    async function obterMatriculaDoAluno() {
+        const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+
+        const user = session?.user;
+        if (!user?.id || !user?.email) return null;
+
+        let { data: aluno, error } = await _supabase
+            .from('alunos')
+            .select('id,nome,email,tel,plano,status,auth_user_id')
+            .eq('auth_user_id', user.id)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (!aluno) {
+            const fallback = await _supabase
+                .from('alunos')
+                .select('id,nome,email,tel,plano,status,auth_user_id')
+                .eq('email', user.email)
+                .maybeSingle();
+
+            if (fallback.error) throw fallback.error;
+            aluno = fallback.data;
+        }
+
+        if (!aluno) return null;
+
+        const perfil = await _supabase
+            .from('perfis')
+            .select('id,nome,email,telefone,plano')
+            .eq('id', user.id)
+            .maybeSingle();
+
+        const p = perfil.error ? null : perfil.data;
+        const objetivo = localStorage.getItem(`corpofitness_objetivo_${aluno.id}`) || '';
+
+        return {
+            id: aluno.id,
+            auth_user_id: user.id,
+            nome: p?.nome || aluno.nome || user.user_metadata?.full_name || 'Aluno(a)',
+            email: aluno.email || user.email,
+            telefone: p?.telefone || aluno.tel || '',
+            plano: aluno.plano || p?.plano || '',
+            status: aluno.status || '',
+            objetivo
+        };
+    }
+
+    async function carregarPerfil() {
+        try {
+            usuarioAtual = await obterMatriculaDoAluno();
 
             if (!usuarioAtual) {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if (session && session.user) {
-                    usuarioAtual = { id: session.user.id, email: session.user.email, nome: session.user.user_metadata.full_name };
-                }
-            }
-
-            if (!usuarioAtual) {
-                window.location.href = 'login-cliente.html';
+                window.location.replace('/aluno/portal-seguro.html');
                 return;
             }
 
-            // Preenche os campos com os dados locais ou do banco
+            sessionStorage.setItem('corpofitness_aluno_id', usuarioAtual.id);
+            sessionStorage.setItem('corpofitness_aluno_logado', JSON.stringify({
+                id: usuarioAtual.id,
+                nome: usuarioAtual.nome,
+                email: usuarioAtual.email,
+                plano: usuarioAtual.plano,
+                status: usuarioAtual.status
+            }));
+
             document.getElementById('lblNomePerfil').textContent = usuarioAtual.nome || 'Aluno(a)';
             document.getElementById('lblEmailPerfil').textContent = usuarioAtual.email || '';
             document.getElementById('txtNome').value = usuarioAtual.nome || '';
             document.getElementById('txtTelefone').value = usuarioAtual.telefone || '';
+
             if (usuarioAtual.objetivo) {
                 document.getElementById('selectObjetivo').value = usuarioAtual.objetivo;
             }
-        });
-
-        async function atualizarPerfil(event) {
-            event.preventDefault();
-            const btn = document.getElementById('btnSalvar');
-            const novoNome = document.getElementById('txtNome').value;
-            const novoTelefone = document.getElementById('txtTelefone').value;
-            const novoObjetivo = document.getElementById('selectObjetivo').value;
-
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Salvando...`;
-
-            try {
-                // Atualiza na sessão local
-                usuarioAtual.nome = novoNome;
-                usuarioAtual.telefone = novoTelefone;
-                usuarioAtual.objetivo = novoObjetivo;
-                sessionStorage.setItem('corpofitness_usuario', JSON.stringify(usuarioAtual));
-
-                // Se houver tabela de perfis no Supabase, atualiza lá também
-                if (usuarioAtual.id) {
-                    await _supabase
-                        .from('perfis')
-                        .update({ nome: novoNome, telefone: novoTelefone, objetivo: novoObjetivo })
-                        .eq('id', usuarioAtual.id);
-                }
-
-                alert('Perfil atualizado com sucesso!');
-                window.location.reload();
-            } catch (err) {
-                console.error("Erro ao atualizar perfil:", err);
-                alert('Erro ao salvar as alterações.');
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações`;
-            }
+        } catch (err) {
+            console.error('[Perfil] Falha ao carregar:', err);
+            alert('Não foi possível carregar seu perfil agora.');
         }
-    </script>
+    }
+
+    window.atualizarPerfil = async function(event) {
+        event.preventDefault();
+
+        if (!usuarioAtual?.auth_user_id) {
+            alert('Sua sessão expirou. Entre novamente.');
+            window.location.replace('/aluno/portal-seguro.html');
+            return;
+        }
+
+        const btn = document.getElementById('btnSalvar');
+        const novoNome = document.getElementById('txtNome').value.trim();
+        const novoTelefone = document.getElementById('txtTelefone').value.trim();
+        const novoObjetivo = document.getElementById('selectObjetivo').value;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
+
+        try {
+            const payload = {
+                id: usuarioAtual.auth_user_id,
+                nome: novoNome || usuarioAtual.nome || 'Aluno(a)',
+                email: usuarioAtual.email,
+                telefone: novoTelefone || null,
+                tipo: 'aluno',
+                plano: usuarioAtual.plano || null
+            };
+
+            const { error } = await _supabase
+                .from('perfis')
+                .upsert(payload, { onConflict: 'id' });
+
+            if (error) throw error;
+
+            localStorage.setItem(`corpofitness_objetivo_${usuarioAtual.id}`, novoObjetivo);
+
+            usuarioAtual.nome = payload.nome;
+            usuarioAtual.telefone = novoTelefone;
+            usuarioAtual.objetivo = novoObjetivo;
+
+            sessionStorage.setItem('corpofitness_aluno_logado', JSON.stringify({
+                id: usuarioAtual.id,
+                nome: usuarioAtual.nome,
+                email: usuarioAtual.email,
+                plano: usuarioAtual.plano,
+                status: usuarioAtual.status
+            }));
+
+            document.getElementById('lblNomePerfil').textContent = usuarioAtual.nome;
+            alert('Perfil atualizado com sucesso!');
+        } catch (err) {
+            console.error('[Perfil] Erro ao atualizar:', err);
+            alert('Erro ao salvar as alterações.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações';
+        }
+    };
+
+    window.addEventListener('DOMContentLoaded', carregarPerfil, { once: true });
+})();
+</script>
 </body>
 </html>

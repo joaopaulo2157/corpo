@@ -232,12 +232,12 @@
 </div>
 
     <header>
-        <a href="index.html" class="logo-area">
+        <a href="/aluno/portal-seguro.html" class="logo-area">
             <i class="fa-solid fa-dumbbell"></i>
             <h1>CORPOFITNESS</h1>
         </a>
         <div>
-            <a href="index.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar ao Painel</a>
+            <a href="/aluno/portal-seguro.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar ao Painel</a>
         </div>
     </header>
 
@@ -301,118 +301,175 @@
     </main>
 
     <script>
-        const SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+(() => {
+    'use strict';
 
-        let usuarioAtual = null;
+    const SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_3xR7VpxN0s-nIgn6t2COGA_3n9dnoBC';
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            // Define a data atual por padrão no input
-            document.getElementById('dataRegistro').valueAsDate = new Date();
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+            flowType: 'pkce',
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storageKey: 'corpofitness.aluno.auth'
+        }
+    });
 
-            usuarioAtual = JSON.parse(sessionStorage.getItem('corpofitness_usuario')) ||
-                           JSON.parse(sessionStorage.getItem('corpofitness_cliente_logado'));
+    let usuarioAtual = null;
+
+    async function obterMatriculaDoAluno() {
+        const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+
+        const user = session?.user;
+        if (!user?.id || !user?.email) return null;
+
+        let { data: aluno, error } = await _supabase
+            .from('alunos')
+            .select('id,nome,email,tel,plano,status,auth_user_id')
+            .eq('auth_user_id', user.id)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (!aluno) {
+            const fallback = await _supabase
+                .from('alunos')
+                .select('id,nome,email,tel,plano,status,auth_user_id')
+                .eq('email', user.email)
+                .maybeSingle();
+
+            if (fallback.error) throw fallback.error;
+            aluno = fallback.data;
+        }
+
+        if (!aluno) return null;
+
+        return {
+            id: aluno.id,
+            auth_user_id: user.id,
+            nome: aluno.nome || 'Aluno(a)',
+            email: aluno.email || user.email,
+            plano: aluno.plano || '',
+            status: aluno.status || ''
+        };
+    }
+
+    async function iniciarPagina() {
+        document.getElementById('dataRegistro').valueAsDate = new Date();
+
+        try {
+            usuarioAtual = await obterMatriculaDoAluno();
 
             if (!usuarioAtual) {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if (session && session.user) {
-                    usuarioAtual = { id: session.user.id, email: session.user.email };
-                }
-            }
-
-            if (!usuarioAtual) {
-                window.location.href = 'login-cliente.html';
+                window.location.replace('/aluno/portal-seguro.html');
                 return;
             }
 
+            sessionStorage.setItem('corpofitness_aluno_id', usuarioAtual.id);
+            sessionStorage.setItem('corpofitness_aluno_logado', JSON.stringify(usuarioAtual));
+
             await carregarHistoricoProgresso(usuarioAtual.id, usuarioAtual.email);
-        });
+        } catch (err) {
+            console.error('[Progresso] Falha ao iniciar:', err);
+            document.getElementById('tabelaProgresso').innerHTML =
+                '<tr><td colspan="5" style="text-align:center;color:#ff5252;">Não foi possível carregar seu progresso.</td></tr>';
+        }
+    }
 
-        document.getElementById('formProgresso').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnSalvarProgresso');
-            
-            const dataRegistro = document.getElementById('dataRegistro').value;
-            const peso = parseFloat(document.getElementById('peso').value);
-            const cintura = document.getElementById('cintura').value ? parseFloat(document.getElementById('cintura').value) : null;
-            const braco = document.getElementById('braco').value ? parseFloat(document.getElementById('braco').value) : null;
-            const coxa = document.getElementById('coxa').value ? parseFloat(document.getElementById('coxa').value) : null;
+    document.getElementById('formProgresso').addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Salvando...`;
+        if (!usuarioAtual?.id) {
+            window.location.replace('/aluno/portal-seguro.html');
+            return;
+        }
 
-            try {
-                const { error } = await _supabase.from('progresso_alunos').insert([
-                    {
-                        aluno_id: usuarioAtual.id || null,
-                        email_aluno: usuarioAtual.email || null,
-                        data_registro: dataRegistro,
-                        peso: peso,
-                        cintura: cintura,
-                        braco: braco,
-                        coxa: coxa
-                    }
-                ]);
+        const btn = document.getElementById('btnSalvarProgresso');
+        const dataRegistro = document.getElementById('dataRegistro').value;
+        const peso = parseFloat(document.getElementById('peso').value);
+        const cintura = document.getElementById('cintura').value ? parseFloat(document.getElementById('cintura').value) : null;
+        const braco = document.getElementById('braco').value ? parseFloat(document.getElementById('braco').value) : null;
+        const coxa = document.getElementById('coxa').value ? parseFloat(document.getElementById('coxa').value) : null;
 
-                if (error) throw error;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
 
-                alert('Medidas registradas com sucesso!');
-                document.getElementById('formProgresso').reset();
-                document.getElementById('dataRegistro').valueAsDate = new Date();
-                await carregarHistoricoProgresso(usuarioAtual.id, usuarioAtual.email);
-
-            } catch (err) {
-                console.error("Erro ao salvar progresso:", err);
-                alert('Erro ao salvar os dados. Tente novamente.');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Salvar Registro`;
-            }
-        });
-
-        async function carregarHistoricoProgresso(alunoId, alunoEmail) {
-            const tbody = document.getElementById('tabelaProgresso');
-
-            try {
-                let query = _supabase.from('progresso_alunos').select('*').order('data_registro', { ascending: false });
-
-                if (alunoId) {
-                    query = query.eq('aluno_id', alunoId);
-                } else if (alunoEmail) {
-                    query = query.eq('email_aluno', alunoEmail);
-                }
-
-                const { data: registros, error } = await query;
-
-                if (error) throw error;
-
-                if (!registros || registros.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Nenhum registro de progresso encontrado.</td></tr>`;
-                    return;
-                }
-
-                let html = '';
-                registros.forEach(reg => {
-                    const dataFmt = reg.data_registro ? reg.data_registro.split('-').reverse().join('/') : '-';
-                    html += `
-                        <tr>
-                            <td>${dataFmt}</td>
-                            <td><strong>${reg.peso} kg</strong></td>
-                            <td>${reg.cintura ? reg.cintura + ' cm' : '-'}</td>
-                            <td>${reg.braco ? reg.braco + ' cm' : '-'}</td>
-                            <td>${reg.coxa ? reg.coxa + ' cm' : '-'}</td>
-                        </tr>
-                    `;
+        try {
+            const { error } = await _supabase
+                .from('progresso_alunos')
+                .insert({
+                    aluno_id: usuarioAtual.id,
+                    email_aluno: usuarioAtual.email,
+                    data_registro: dataRegistro,
+                    peso,
+                    cintura,
+                    braco,
+                    coxa
                 });
 
-                tbody.innerHTML = html;
+            if (error) throw error;
 
-            } catch (err) {
-                console.error("Erro ao carregar histórico:", err);
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ff5252;">Erro ao carregar dados do banco.</td></tr>`;
-            }
+            alert('Medidas registradas com sucesso!');
+            document.getElementById('formProgresso').reset();
+            document.getElementById('dataRegistro').valueAsDate = new Date();
+
+            await carregarHistoricoProgresso(usuarioAtual.id, usuarioAtual.email);
+        } catch (err) {
+            console.error('[Progresso] Erro ao salvar:', err);
+            alert('Erro ao salvar os dados. Tente novamente.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Registro';
         }
-    </script>
+    });
+
+    async function carregarHistoricoProgresso(alunoId, alunoEmail) {
+        const tbody = document.getElementById('tabelaProgresso');
+
+        try {
+            let query = _supabase
+                .from('progresso_alunos')
+                .select('*')
+                .eq('aluno_id', alunoId)
+                .order('data_registro', { ascending: false });
+
+            const { data: registros, error } = await query;
+
+            if (error) throw error;
+
+            if (!registros || registros.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Nenhum registro de progresso encontrado.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = registros.map(reg => {
+                const dataFmt = reg.data_registro
+                    ? reg.data_registro.split('-').reverse().join('/')
+                    : '-';
+
+                return `
+                    <tr>
+                        <td>${dataFmt}</td>
+                        <td><strong>${reg.peso != null ? reg.peso + ' kg' : '-'}</strong></td>
+                        <td>${reg.cintura != null ? reg.cintura + ' cm' : '-'}</td>
+                        <td>${reg.braco != null ? reg.braco + ' cm' : '-'}</td>
+                        <td>${reg.coxa != null ? reg.coxa + ' cm' : '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        } catch (err) {
+            console.error('[Progresso] Erro ao carregar histórico:', err);
+            tbody.innerHTML =
+                '<tr><td colspan="5" style="text-align:center;color:#ff5252;">Erro ao carregar dados do banco.</td></tr>';
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', iniciarPagina, { once: true });
+})();
+</script>
 </body>
 </html>

@@ -158,30 +158,70 @@
       throw new Error('Supabase não foi carregado no painel.');
     }
 
-    const {data:{session},error:sessionError}=await _supabase.auth.getSession();
+    let session = null;
 
-    if(sessionError) throw sessionError;
+    // Sempre tenta renovar a sessão antes de uma operação administrativa sensível.
+    // Isso evita usar JWT expirado ou muito próximo de expirar.
+    try {
+      const refresh = await _supabase.auth.refreshSession();
+
+      if (!refresh.error && refresh.data?.session?.access_token) {
+        session = refresh.data.session;
+      }
+    } catch (_) {}
+
+    if (!session) {
+      const current = await _supabase.auth.getSession();
+
+      if (current.error) {
+        throw current.error;
+      }
+
+      session = current.data?.session || null;
+    }
 
     if(!session?.access_token) {
       throw new Error('Sua sessão administrativa expirou. Entre novamente no painel.');
     }
 
-    const {data,error}=await _supabase.functions.invoke(FN_NAME,{
-      body:payload,
-      headers:{
-        Authorization:`Bearer ${session.access_token}`
+    async function callWithToken(accessToken) {
+      return await _supabase.functions.invoke(FN_NAME,{
+        body:payload,
+        headers:{
+          Authorization:`Bearer ${accessToken}`
+        }
+      });
+    }
+
+    let {data,error} = await callWithToken(session.access_token);
+
+    // Se o gateway responder 401, força uma segunda renovação uma única vez.
+    const status = error?.context?.status || error?.status || 0;
+
+    if (error && Number(status) === 401) {
+      const secondRefresh = await _supabase.auth.refreshSession();
+
+      if (!secondRefresh.error && secondRefresh.data?.session?.access_token) {
+        ({data,error} = await callWithToken(secondRefresh.data.session.access_token));
       }
-    });
+    }
 
     if(error){
       let msg=error.message||'Falha ao atualizar o acesso do aluno.';
 
       try{
-        if(error.context && typeof error.context.json==='function'){
+        if(error.context && typeof error.context.clone==='function'){
+          const body = await error.context.clone().json();
+          msg=body?.error||msg;
+        }else if(error.context && typeof error.context.json==='function'){
           const body=await error.context.json();
           msg=body?.error||msg;
         }
       }catch(_){}
+
+      if (/jwt|401|unauthorized|sessão/i.test(String(msg))) {
+        msg = 'Sua sessão administrativa expirou. Atualize a página e entre novamente no painel.';
+      }
 
       throw new Error(msg);
     }
@@ -443,12 +483,12 @@
 
     const form=$('formAlunoDinamico');
 
-    if(form && form.dataset.alunoAccessV2!=='1'){
-      form.dataset.alunoAccessV2='1';
+    if(form && form.dataset.alunoAccessV3!=='1'){
+      form.dataset.alunoAccessV3='1';
       form.addEventListener('submit',handleSubmit,true);
     }
 
-    if(typeof window.abrirFormAluno==='function' && !window.abrirFormAluno.__cfAccessV2Wrapped){
+    if(typeof window.abrirFormAluno==='function' && !window.abrirFormAluno.__cfAccessV3Wrapped){
       const original=window.abrirFormAluno;
 
       const wrapped=async function(...args){
@@ -457,11 +497,11 @@
         return r;
       };
 
-      wrapped.__cfAccessV2Wrapped=true;
+      wrapped.__cfAccessV3Wrapped=true;
       window.abrirFormAluno=wrapped;
     }
 
-    if(typeof window.editarAluno==='function' && !window.editarAluno.__cfAccessV2Wrapped){
+    if(typeof window.editarAluno==='function' && !window.editarAluno.__cfAccessV3Wrapped){
       const original=window.editarAluno;
 
       const wrapped=async function(...args){
@@ -470,7 +510,7 @@
         return r;
       };
 
-      wrapped.__cfAccessV2Wrapped=true;
+      wrapped.__cfAccessV3Wrapped=true;
       window.editarAluno=wrapped;
     }
   }

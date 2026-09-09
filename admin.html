@@ -1371,7 +1371,7 @@
 
                 <!-- MODAL DE AVALIAÇÃO CORPORAL COMPLETA (PADRÃO PLANILHA) -->
                 <div id="modalAvaliacaoCorporalCompleta" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 6000; justify-content: center; align-items: center; padding: 15px; overflow-y: auto;">
-                    <div style="width: 100%; max-width: 900px; background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto;">
+                    <div style="width: 100%; max-width: 1180px; background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto;">
                         
                         <!-- Cabeçalho do Modal -->
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; gap: 10px;">
@@ -1384,7 +1384,16 @@
 
                         <input type="hidden" id="aval_aluno_id">
 
-                        <!-- DATA E AVALIAÇÃO -->
+                        
+                        <!-- CORPOFITNESS AVALIACAO FISICA V3 - ETAPAS -->
+                        <div class="cf-af-steps" id="cfAfStepsStatic">
+                            <span><b>1</b> Dados gerais</span>
+                            <span><b>2</b> Medidas e dobras</span>
+                            <span><b>3</b> Fotos + IA</span>
+                            <span><b>4</b> Salvar / histórico</span>
+                        </div>
+
+<!-- DATA E AVALIAÇÃO -->
                         <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; @media(min-width: 600px){grid-template-columns: 1fr 2fr;}">
                             <div style="background: var(--bg-surface); padding: 12px 15px; border-radius: 10px; border: 1px solid var(--border-color);">
                                 <label style="font-size: 0.75rem; color: var(--text-muted); display: block; font-weight: 700;">DATA DA AVALIAÇÃO</label>
@@ -1492,7 +1501,101 @@
 
                         </div>
 
-                        <!-- Botões de Ação -->
+                        
+                        <!-- CORPOFITNESS AVALIACAO FISICA V3 - FOTOS -->
+                        <section class="cf-af-section" id="cfAfSection">
+                            <div class="cf-af-head">
+                                <div>
+                                    <h4>
+                                        <i class="fa-solid fa-camera-retro" style="color:#60a5fa"></i>
+                                        Fotos da Avaliação + IA Visual
+                                    </h4>
+                                    <p>
+                                        Registre as quatro posições da avaliação. As fotos ficam privadas para professor/master.
+                                        A análise visual da IA é apenas orientativa e deve ser confirmada pelo profissional.
+                                    </p>
+                                </div>
+                                <span class="cf-af-private">
+                                    <i class="fa-solid fa-lock"></i> SOMENTE PROFESSOR
+                                </span>
+                            </div>
+
+                            <div class="cf-af-grid">
+                                <div class="cf-af-slot" data-pos="frente">
+                                    <img data-img="frente" alt="Frente">
+                                    <canvas data-canvas="frente"></canvas>
+                                    <div class="cf-af-empty"><div><i class="fa-solid fa-camera"></i><strong>Frente</strong><small>Selecione a foto</small></div></div>
+                                    <div class="cf-af-tools">
+                                        <button type="button" data-pick="frente"><i class="fa-solid fa-image"></i> Foto</button>
+                                        <button type="button" class="ai" data-ai="frente">✨ IA</button>
+                                    </div>
+                                    <div class="cf-af-label"><strong>Frente</strong><small data-state="frente">Nenhuma foto</small></div>
+                                    <input hidden type="file" accept="image/jpeg,image/png,image/webp" data-file="frente">
+                                </div>
+
+                                <div class="cf-af-slot" data-pos="lado_direito">
+                                    <img data-img="lado_direito" alt="Lado direito">
+                                    <canvas data-canvas="lado_direito"></canvas>
+                                    <div class="cf-af-empty"><div><i class="fa-solid fa-camera"></i><strong>Lado direito</strong><small>Selecione a foto</small></div></div>
+                                    <div class="cf-af-tools">
+                                        <button type="button" data-pick="lado_direito"><i class="fa-solid fa-image"></i> Foto</button>
+                                        <button type="button" class="ai" data-ai="lado_direito">✨ IA</button>
+                                    </div>
+                                    <div class="cf-af-label"><strong>Lado direito</strong><small data-state="lado_direito">Nenhuma foto</small></div>
+                                    <input hidden type="file" accept="image/jpeg,image/png,image/webp" data-file="lado_direito">
+                                </div>
+
+                                <div class="cf-af-slot" data-pos="costas">
+                                    <img data-img="costas" alt="Costas">
+                                    <canvas data-canvas="costas"></canvas>
+                                    <div class="cf-af-empty"><div><i class="fa-solid fa-camera"></i><strong>Costas</strong><small>Selecione a foto</small></div></div>
+                                    <div class="cf-af-tools">
+                                        <button type="button" data-pick="costas"><i class="fa-solid fa-image"></i> Foto</button>
+                                        <button type="button" class="ai" data-ai="costas">✨ IA</button>
+                                    </div>
+                                    <div class="cf-af-label"><strong>Costas</strong><small data-state="costas">Nenhuma foto</small></div>
+                                    <input hidden type="file" accept="image/jpeg,image/png,image/webp" data-file="costas">
+                                </div>
+
+                                <div class="cf-af-slot" data-pos="lado_esquerdo">
+                                    <img data-img="lado_esquerdo" alt="Lado esquerdo">
+                                    <canvas data-canvas="lado_esquerdo"></canvas>
+                                    <div class="cf-af-empty"><div><i class="fa-solid fa-camera"></i><strong>Lado esquerdo</strong><small>Selecione a foto</small></div></div>
+                                    <div class="cf-af-tools">
+                                        <button type="button" data-pick="lado_esquerdo"><i class="fa-solid fa-image"></i> Foto</button>
+                                        <button type="button" class="ai" data-ai="lado_esquerdo">✨ IA</button>
+                                    </div>
+                                    <div class="cf-af-label"><strong>Lado esquerdo</strong><small data-state="lado_esquerdo">Nenhuma foto</small></div>
+                                    <input hidden type="file" accept="image/jpeg,image/png,image/webp" data-file="lado_esquerdo">
+                                </div>
+                            </div>
+
+                            <div class="cf-af-ai" id="cfAfAi">
+                                <strong>IA visual:</strong>
+                                selecione uma foto e toque em <b>IA</b> para marcar pontos visuais que merecem revisão do professor.
+                            </div>
+
+                            <div class="cf-af-actions">
+                                <div class="cf-af-status" id="cfAfStatus">
+                                    As fotos serão vinculadas à nova avaliação quando você clicar em
+                                    <strong>Salvar Avaliação</strong>.
+                                </div>
+
+                                <button type="button" class="cf-af-release" id="cfAfRelease" disabled>
+                                    <i class="fa-solid fa-user-lock"></i>
+                                    Aguardando próxima avaliação
+                                </button>
+                            </div>
+
+                            <div class="cf-af-history">
+                                <strong>Histórico fotográfico</strong>
+                                <div class="cf-af-chips" id="cfAfHistory">
+                                    <span class="cf-af-chip">Nenhum conjunto carregado.</span>
+                                </div>
+                            </div>
+                        </section>
+
+<!-- Botões de Ação -->
                         <div style="display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
                             <button type="button" onclick="fecharModalAvaliacaoCorporal()" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; flex: 1; min-width: 120px;">Cancelar</button>
                             <button type="button" onclick="salvarAvaliacaoCorporalCompleta()" style="background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; flex: 1; min-width: 180px;">Salvar Avaliação</button>
@@ -2609,6 +2712,6 @@
 <script defer src="js/admin/v6-core.js?v=6.1.0"></script>
 <script defer src="js/admin/aluno-acesso.js?v=3.0.0"></script>
 <script defer src="js/ia-postural.js?v=1.0.0"></script>
-<script defer src="js/admin/avaliacao-fotos.js?v=2.0.0"></script>
+<script defer src="js/admin/avaliacao-fotos.js?v=3.0.0"></script>
 </body>
 </html>

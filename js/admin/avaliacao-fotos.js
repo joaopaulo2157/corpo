@@ -51,20 +51,43 @@
     return `<section class="cf-af-section" id="cfAfSection"><div class="cf-af-head"><div><h4><i class="fa-solid fa-camera-retro" style="color:#60a5fa"></i> Fotos da Avaliação + IA Visual</h4><p>As imagens ficam privadas para professor/master. A IA é apenas uma indicação visual para apoiar a revisão profissional e não substitui avaliação presencial.</p></div><span class="cf-af-private"><i class="fa-solid fa-lock"></i> SOMENTE PROFESSOR</span></div><div class="cf-af-grid">${POS.map(([k,l])=>`<div class="cf-af-slot" data-pos="${k}"><img data-img="${k}" alt="${esc(l)}"><canvas data-canvas="${k}"></canvas><div class="cf-af-empty"><div><i class="fa-solid fa-camera"></i><strong>${esc(l)}</strong><small>Selecione a foto</small></div></div><div class="cf-af-tools"><button type="button" data-pick="${k}"><i class="fa-solid fa-image"></i> Foto</button><button type="button" class="ai" data-ai="${k}">✨ IA</button></div><div class="cf-af-label"><strong>${esc(l)}</strong><small data-state="${k}">Nenhuma foto</small></div><input hidden type="file" accept="image/jpeg,image/png,image/webp" data-file="${k}"></div>`).join('')}</div><div class="cf-af-ai" id="cfAfAi"><strong>IA visual:</strong> selecione uma foto e toque em <b>IA</b> para marcar pontos visuais.</div><div class="cf-af-actions"><div class="cf-af-status" id="cfAfStatus">As fotos serão vinculadas à próxima avaliação quando você clicar em <strong>Salvar Avaliação</strong>.</div><button type="button" class="cf-af-release" id="cfAfRelease" disabled><i class="fa-solid fa-user-lock"></i> Aguardando próxima avaliação</button></div><div class="cf-af-history"><strong>Histórico fotográfico</strong><div class="cf-af-chips" id="cfAfHistory"><span class="cf-af-chip">Nenhum conjunto carregado.</span></div></div></section>`;
   }
 
-  function ensureSection(){
-    const modal=$('#modalAvaliacaoCorporalCompleta'); if(!modal || $('#cfAfSection')) return;
-    const panel=modal.firstElementChild; if(!panel) return;
-    const saveBtn=$('button[onclick*="salvarAvaliacaoCorporalCompleta"]',modal);
-    const bar=saveBtn?.parentElement;
-    const holder=document.createElement('div'); holder.innerHTML=sectionHTML(); const section=holder.firstElementChild;
-    if(bar?.parentElement) bar.parentElement.insertBefore(section,bar); else panel.appendChild(section);
+  function bindSection(section){
+    if(!section || section.dataset.cfBound==='1') return;
+    section.dataset.cfBound='1';
+
     POS.forEach(([k])=>{
       const input=$(`[data-file="${k}"]`,section);
       $(`[data-pick="${k}"]`,section)?.addEventListener('click',()=>input?.click());
       input?.addEventListener('change',()=>choose(k,input.files?.[0]||null));
       $(`[data-ai="${k}"]`,section)?.addEventListener('click',()=>runAI(k));
     });
+
     $('#cfAfRelease',section)?.addEventListener('click',toggleRelease);
+  }
+
+  function ensureSection(){
+    const modal=$('#modalAvaliacaoCorporalCompleta'); 
+    if(!modal) return;
+
+    const existing=$('#cfAfSection',modal);
+    if(existing){
+      bindSection(existing);
+      return;
+    }
+
+    const panel=modal.firstElementChild; 
+    if(!panel) return;
+
+    const saveBtn=$('button[onclick*="salvarAvaliacaoCorporalCompleta"]',modal);
+    const bar=saveBtn?.parentElement;
+    const holder=document.createElement('div'); 
+    holder.innerHTML=sectionHTML(); 
+    const section=holder.firstElementChild;
+
+    if(bar?.parentElement) bar.parentElement.insertBefore(section,bar); 
+    else panel.appendChild(section);
+
+    bindSection(section);
   }
 
   function resetPending(){
@@ -118,9 +141,14 @@
   }
 
   function boot(){
-    css();overview();organize();ensureSection();wrap();
-    const mo=new MutationObserver(()=>{overview();organize();ensureSection();wrap();}); mo.observe(document.body,{childList:true,subtree:true});
-    [250,700,1400,2600].forEach(ms=>setTimeout(()=>{overview();organize();ensureSection();wrap();},ms));
+    css();overview();organize();ensureSection();bindSection($('#cfAfSection'));wrap();
+    const mo=new MutationObserver(()=>{
+      overview();organize();ensureSection();bindSection($('#cfAfSection'));wrap();
+    });
+    mo.observe(document.body,{childList:true,subtree:true});
+    [250,700,1400,2600].forEach(ms=>setTimeout(()=>{
+      overview();organize();ensureSection();bindSection($('#cfAfSection'));wrap();
+    },ms));
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();

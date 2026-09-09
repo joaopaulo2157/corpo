@@ -1,0 +1,210 @@
+/* =========================================================
+   CORPOFITNESS - AVALIACAO FISICA VISUAL V5.1
+   Limpa restos V3 e mantém somente a interface V4.
+   ========================================================= */
+
+/* Componentes temporários/diagnósticos */
+#cfAfV4Overview,
+#cfAfV4Health {
+    display: none !important;
+}
+
+/* Interface antiga V3 que ficou gravada no admin.html */
+#cfAfSection,
+#cfAfStepsStatic,
+.cf-af-section,
+.cf-af-steps {
+    display: none !important;
+}
+
+/* Modal principal mais organizado */
+#modalAvaliacaoCorporalCompleta.cf-af-v4-modal {
+    padding: 16px !important;
+    align-items: flex-start !important;
+}
+
+#modalAvaliacaoCorporalCompleta.cf-af-v4-modal > .modal-card,
+#modalAvaliacaoCorporalCompleta.cf-af-v4-modal > div {
+    width: min(1180px, calc(100vw - 32px)) !important;
+    max-width: 1180px !important;
+    margin: 0 auto !important;
+    padding: 24px !important;
+    border-radius: 18px !important;
+    overflow-x: hidden !important;
+}
+
+/* Etapas V4 */
+#modalAvaliacaoCorporalCompleta .cf-af-v4-steps {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    margin: 0 0 18px !important;
+    padding: 10px !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-steps span {
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+}
+
+/* Área das fotos */
+#modalAvaliacaoCorporalCompleta .cf-af-v4-section {
+    display: block !important;
+    margin: 22px 0 18px !important;
+    padding: 20px !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(100,181,246,.30) !important;
+    background:
+        linear-gradient(145deg, rgba(30,136,229,.09), rgba(18,18,18,.98)) !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-head {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 14px !important;
+    margin-bottom: 16px !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-head h4 {
+    margin: 0 !important;
+    font-size: 1rem !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-head p {
+    margin: 6px 0 0 !important;
+    max-width: 780px !important;
+    line-height: 1.55 !important;
+}
+
+/* 4 fotos lado a lado no desktop */
+#modalAvaliacaoCorporalCompleta .cf-af-v4-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+    align-items: stretch !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-slot {
+    position: relative !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    aspect-ratio: 3 / 4 !important;
+    border-radius: 14px !important;
+    border: 1px dashed rgba(148,163,184,.46) !important;
+    overflow: hidden !important;
+    background:
+        radial-gradient(circle at 50% 35%, rgba(37,99,235,.14), transparent 52%),
+        #081226 !important;
+}
+
+/* Evita o ícone de imagem quebrada antes do upload */
+#modalAvaliacaoCorporalCompleta .cf-af-v4-slot img:not([src]),
+#modalAvaliacaoCorporalCompleta .cf-af-v4-slot img[src=""] {
+    display: none !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-slot img {
+    object-fit: cover !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-empty {
+    padding: 18px !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-empty strong {
+    display: block !important;
+    margin-top: 7px !important;
+    color: #fff !important;
+    font-size: .78rem !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-empty small {
+    display: block !important;
+    margin-top: 4px !important;
+    color: #94a3b8 !important;
+    font-size: .63rem !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-tools {
+    top: 9px !important;
+    left: 9px !important;
+    right: 9px !important;
+    gap: 7px !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-tools button {
+    min-height: 34px !important;
+    padding: 7px 10px !important;
+    border-radius: 9px !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-label {
+    padding: 42px 10px 10px !important;
+}
+
+/* IA, histórico e liberação */
+#modalAvaliacaoCorporalCompleta .cf-af-v4-ai {
+    margin-top: 14px !important;
+    padding: 12px 14px !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-actions {
+    margin-top: 14px !important;
+    padding-top: 2px !important;
+}
+
+#modalAvaliacaoCorporalCompleta .cf-af-v4-history {
+    margin-top: 16px !important;
+    padding-top: 14px !important;
+}
+
+/* Responsividade */
+@media (max-width: 980px) {
+    #modalAvaliacaoCorporalCompleta .cf-af-v4-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 680px) {
+    #modalAvaliacaoCorporalCompleta.cf-af-v4-modal {
+        padding: 8px !important;
+    }
+
+    #modalAvaliacaoCorporalCompleta.cf-af-v4-modal > .modal-card,
+    #modalAvaliacaoCorporalCompleta.cf-af-v4-modal > div {
+        width: calc(100vw - 16px) !important;
+        padding: 16px !important;
+    }
+
+    #modalAvaliacaoCorporalCompleta .cf-af-v4-steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    #modalAvaliacaoCorporalCompleta .cf-af-v4-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 9px !important;
+    }
+
+    #modalAvaliacaoCorporalCompleta .cf-af-v4-head {
+        flex-direction: column !important;
+    }
+
+    #modalAvaliacaoCorporalCompleta .cf-af-v4-release {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+}
+
+@media (max-width: 420px) {
+    #modalAvaliacaoCorporalCompleta .cf-af-v4-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    #modalAvaliacaoCorporalCompleta .cf-af-v4-slot {
+        aspect-ratio: 4 / 5 !important;
+    }
+}

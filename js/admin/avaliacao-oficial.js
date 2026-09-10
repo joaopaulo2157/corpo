@@ -12,7 +12,11 @@
   const state = {
     alunoId: null,
     alunoNome: '',
+    avaliacaoAtualId: null,
+    registroAtual: null,
+    iaProfessorPersistida: null,
     fotos: new Map(),
+    fotosPersistidas: new Map(),
     analises: new Map(),
     historico: []
   };
@@ -27,7 +31,9 @@
   }
 
   function num(v) {
-    const x = Number(String(v ?? '').trim().replace(',', '.'));
+    const raw = String(v ?? '').trim().replace(',', '.');
+    if (!raw) return null;
+    const x = Number(raw);
     return Number.isFinite(x) ? x : null;
   }
 
@@ -262,7 +268,10 @@
           </div>
 
           <div class="cfOficial-actions">
-            <button type="button" class="cfOficial-btn warn" id="cfOficialFechar2">Cancelar</button>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button type="button" class="cfOficial-btn warn" id="cfOficialFechar2">Cancelar</button>
+              <button type="button" class="cfOficial-btn" id="cfOficialNova">Nova avaliação</button>
+            </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <button type="button" class="cfOficial-btn" id="cfOficialGerarIA">Analisar todas as fotos</button>
               <button type="button" class="cfOficial-btn primary" id="cfOficialSalvar">Salvar avalia\u00e7\u00e3o</button>
@@ -330,6 +339,7 @@
 
     $('#cfOficialGerarIA').addEventListener('click', analisarTodas);
     $('#cfOficialSalvar').addEventListener('click', salvar);
+    $('#cfOficialNova').addEventListener('click', novaAvaliacao);
     $('#cfOficialLiberarComparativo').addEventListener('click', liberarComparativo);
   }
 
@@ -342,12 +352,43 @@
     $('#modalAvaliacaoOficial')?.classList.remove('active');
   }
 
+  function totalFotos() {
+    const posicoes = new Set();
+
+    state.fotosPersistidas.forEach((_, key) => posicoes.add(key));
+    state.fotos.forEach((_, key) => posicoes.add(key));
+
+    return posicoes.size;
+  }
+
+  function limparFotoVisual(key) {
+    const box = $(`[data-photo-box="${key}"]`);
+    const img = $(`[data-photo-img="${key}"]`);
+    const input = $(`[data-photo-file="${key}"]`);
+    const status = $(`[data-photo-status="${key}"]`);
+    const canvas = $(`[data-photo-canvas="${key}"]`);
+
+    box?.classList.remove('has-img');
+    img?.removeAttribute('src');
+    if (input) input.value = '';
+    if (status) status.textContent = 'Pendente';
+
+    if (canvas) {
+      canvas.width = 1;
+      canvas.height = 1;
+    }
+  }
+
   function limpar() {
     state.fotos.forEach(v => {
       if (v.url) URL.revokeObjectURL(v.url);
     });
 
+    state.avaliacaoAtualId = null;
+    state.registroAtual = null;
+    state.iaProfessorPersistida = null;
     state.fotos.clear();
+    state.fotosPersistidas.clear();
     state.analises.clear();
 
     ['cfOficialObjetivo','cfOficialSexo','cfOficialIdade','cfOficialPeso','cfOficialAltura',
@@ -358,28 +399,162 @@
 
     $$('[data-medida],[data-dobra]').forEach(el => el.value = '');
 
-    POSICOES.forEach(([key]) => {
-      const box = $(`[data-photo-box="${key}"]`);
-      const img = $(`[data-photo-img="${key}"]`);
-      const input = $(`[data-photo-file="${key}"]`);
-      const status = $(`[data-photo-status="${key}"]`);
-      const canvas = $(`[data-photo-canvas="${key}"]`);
-
-      box?.classList.remove('has-img');
-      img?.removeAttribute('src');
-      if (input) input.value = '';
-      if (status) status.textContent = 'Pendente';
-      if (canvas) {
-        canvas.width = 1;
-        canvas.height = 1;
-      }
-    });
+    POSICOES.forEach(([key]) => limparFotoVisual(key));
 
     $('#cfOficialData').value = hoje();
     $('#cfOficialAIBox').innerHTML =
       '<strong>IA postural:</strong> selecione as fotos e clique em "Analisar todas as fotos".';
 
+    const btn = $('#cfOficialSalvar');
+    if (btn) {
+      btn.dataset.salvando = '0';
+      btn.disabled = false;
+      btn.textContent = 'Salvar avaliação';
+    }
+
     recalcular();
+  }
+
+  function aplicarValores(obj, attr, selector) {
+    $$(selector).forEach(el => {
+      const key = el.dataset[attr];
+      const valor = obj?.[key];
+      el.value = valor == null ? '' : valor;
+    });
+  }
+
+  async function carregarFotosPersistidas(avaliacaoId) {
+    state.fotosPersistidas.clear();
+
+    POSICOES.forEach(([key]) => limparFotoVisual(key));
+
+    const client = sb();
+
+    const fotosQ = await client
+      .from('avaliacao_fotos_oficiais')
+      .select('id,avaliacao_id,aluno_id,posicao,storage_bucket,storage_path,mime_type,file_size,width,height,released_to_student,created_by')
+      .eq('avaliacao_id', avaliacaoId);
+
+    if (fotosQ.error) {
+      throw new Error(`Falha ao carregar fotos salvas: ${fotosQ.error.message}`);
+    }
+
+    for (const foto of (fotosQ.data || [])) {
+      const signed = await client.storage
+        .from(foto.storage_bucket || BUCKET)
+        .createSignedUrl(foto.storage_path, 3600);
+
+      if (signed.error || !signed.data?.signedUrl) {
+        console.warn('[Foto salva]', signed.error);
+        continue;
+      }
+
+      state.fotosPersistidas.set(foto.posicao, {
+        ...foto,
+        url: signed.data.signedUrl
+      });
+
+      const img = $(`[data-photo-img="${foto.posicao}"]`);
+      const box = $(`[data-photo-box="${foto.posicao}"]`);
+      const status = $(`[data-photo-status="${foto.posicao}"]`);
+
+      if (img) img.src = signed.data.signedUrl;
+      box?.classList.add('has-img');
+      if (status) status.textContent = 'Salva';
+    }
+
+    recalcular();
+  }
+
+  async function carregarAvaliacao(avaliacaoId, silencioso = false) {
+    if (!avaliacaoId || !state.alunoId) return false;
+
+    const client = sb();
+
+    const q = await client
+      .from('avaliacoes_oficiais')
+      .select('*')
+      .eq('id', avaliacaoId)
+      .eq('aluno_id', state.alunoId)
+      .single();
+
+    if (q.error) {
+      if (!silencioso) toast(q.error.message || 'Falha ao carregar avaliação.', 'error');
+      return false;
+    }
+
+    const a = q.data;
+
+    state.avaliacaoAtualId = a.id;
+    state.registroAtual = a;
+    state.iaProfessorPersistida = a.ia_professor || null;
+    state.fotos.clear();
+    state.analises.clear();
+
+    $('#cfOficialData').value = a.data_avaliacao || hoje();
+    $('#cfOficialObjetivo').value = a.objetivo || '';
+    $('#cfOficialSexo').value = a.sexo || '';
+    $('#cfOficialIdade').value = a.idade == null ? '' : a.idade;
+    $('#cfOficialPeso').value = a.peso == null ? '' : a.peso;
+    $('#cfOficialAltura').value = a.altura == null ? '' : a.altura;
+    $('#cfOficialObs').value = a.observacoes || a.relatorio_professor || '';
+
+    aplicarValores(a.perimetria || {}, 'medida', '[data-medida]');
+    aplicarValores(a.dobras || {}, 'dobra', '[data-dobra]');
+
+    $('#cfOficialLiberarFotos').checked = !!a.liberar_fotos;
+    $('#cfOficialLiberarIA').checked = !!a.liberar_ia;
+    $('#cfOficialLiberarPDF').checked = !!a.liberar_pdf;
+
+    if (a.ia_professor) {
+      $('#cfOficialAIBox').innerHTML =
+        `<strong>Relatório postural salvo</strong><br><br>${txt(a.ia_professor).replace(/\n/g, '<br>')}`;
+    } else {
+      $('#cfOficialAIBox').innerHTML =
+        '<strong>IA postural:</strong> esta avaliação não possui relatório postural salvo.';
+    }
+
+    await carregarFotosPersistidas(a.id);
+
+    recalcular();
+
+    if (!$('#cfOficialGordura').value && a.gordura_percentual != null) {
+      $('#cfOficialGordura').value = a.gordura_percentual;
+    }
+
+    if (!$('#cfOficialMassaMagra').value && a.massa_magra != null) {
+      $('#cfOficialMassaMagra').value = a.massa_magra;
+    }
+
+    const btn = $('#cfOficialSalvar');
+    if (btn) {
+      btn.dataset.salvando = '0';
+      btn.disabled = false;
+      btn.textContent = 'Atualizar avaliação';
+    }
+
+    if (!silencioso) {
+      mudarAba('dados');
+      toast('Avaliação carregada.');
+    }
+
+    return true;
+  }
+
+  function novaAvaliacao() {
+    const alunoId = state.alunoId;
+    const alunoNome = state.alunoNome;
+
+    limpar();
+
+    state.alunoId = alunoId;
+    state.alunoNome = alunoNome;
+
+    $('#cfOficialAlunoNome').textContent = `Aluno(a): ${state.alunoNome}`;
+    $('#cfOficialData').value = hoje();
+    mudarAba('dados');
+
+    toast('Nova avaliação iniciada.');
   }
 
   async function abrir(alunoId, alunoNome) {
@@ -396,6 +571,12 @@
     mudarAba('dados');
 
     await carregarHistorico();
+
+    const avaliacaoHoje = state.historico.find(a => a.data_avaliacao === hoje());
+
+    if (avaliacaoHoje) {
+      await carregarAvaliacao(avaliacaoHoje.id, true);
+    }
   }
 
   function coletar(selector, attr) {
@@ -458,7 +639,7 @@
     $('#cfOficialIMC').textContent = imc ? imc.toFixed(2).replace('.', ',') : '0,00';
     $('#cfOficialIMCClass').textContent = classificarImc(imc);
     $('#cfOficialSomaDobras').textContent = somaDobras.toFixed(1).replace('.', ',');
-    $('#cfOficialStatusFotos').textContent = `${state.fotos.size}/4`;
+    $('#cfOficialStatusFotos').textContent = `${totalFotos()}/4`;
 
     $('#cfOficialGordura').value = gordura != null ? gordura.toFixed(1) : '';
     $('#cfOficialMassaMagra').value = massaMagra != null ? massaMagra.toFixed(1) : '';
@@ -827,7 +1008,7 @@
   }
 
   async function analisarFoto(key, mostrarResultado = false) {
-    const item = state.fotos.get(key);
+    const item = state.fotos.get(key) || state.fotosPersistidas.get(key);
 
     if (!item) {
       if (mostrarResultado) toast('Selecione a foto primeiro.', 'error');
@@ -895,7 +1076,7 @@
   }
 
   async function analisarTodas() {
-    if (state.fotos.size !== 4) {
+    if (totalFotos() !== 4) {
       toast('Selecione as quatro fotos antes de executar a analise completa.', 'error');
       return;
     }
@@ -1017,19 +1198,23 @@
     if (!btn || btn.dataset.salvando === '1') return;
 
     if (!state.alunoId) {
-      toast('Aluno nao localizado. Feche e abra novamente a avaliacao pelo cadastro do aluno.', 'error');
+      toast('Aluno não localizado. Feche e abra novamente a avaliação pelo cadastro do aluno.', 'error');
       return;
     }
 
+    const editando = !!state.avaliacaoAtualId;
+
     if (state.fotos.size > 0 && state.fotos.size < 4) {
-      toast('Para salvar com fotos, selecione as quatro imagens. Para salvar somente os dados, deixe as quatro vazias.', 'error');
+      toast('Para trocar as fotos, selecione novamente as quatro imagens. Para manter as fotos atuais, não selecione novas.', 'error');
       return;
     }
 
     const old = btn.textContent;
     const enviados = [];
-    let avaliacaoId = null;
+    const fotosAntigas = Array.from(state.fotosPersistidas.values());
+    let avaliacaoId = state.avaliacaoAtualId || crypto.randomUUID();
     let salvou = false;
+    let avaliacaoGravada = false;
 
     try {
       btn.dataset.salvando = '1';
@@ -1043,7 +1228,7 @@
       const { data: auth, error: authError } = await client.auth.getUser();
 
       if (authError) throw authError;
-      if (!auth?.user?.id) throw new Error('Sessao expirada. Entre novamente no painel.');
+      if (!auth?.user?.id) throw new Error('Sessão expirada. Entre novamente no painel.');
 
       const peso = num($('#cfOficialPeso').value);
       const altura = num($('#cfOficialAltura').value);
@@ -1055,9 +1240,10 @@
       const dobras = coletar('[data-dobra]', 'dobra');
       const perimetria = coletar('[data-medida]', 'medida');
 
-      const somaDobras = Object.values(dobras).reduce((s,v) => s + (Number(v) || 0), 0);
-
-      avaliacaoId = crypto.randomUUID();
+      const valoresDobras = Object.values(dobras).filter(v => v != null);
+      const somaDobras = valoresDobras.length
+        ? valoresDobras.reduce((s,v) => s + Number(v), 0)
+        : null;
 
       if (state.fotos.size === 4) {
         let indice = 0;
@@ -1093,13 +1279,11 @@
         }
       }
 
-      btn.textContent = 'Salvando avaliacao...';
+      btn.textContent = editando ? 'Atualizando avaliação...' : 'Salvando avaliação...';
 
-      const iaProfessor = relatorioIaTexto();
+      const iaProfessor = relatorioIaTexto() || state.iaProfessorPersistida || null;
 
-      const payload = {
-        id: avaliacaoId,
-        aluno_id: state.alunoId,
+      const dadosAvaliacao = {
         professor_id: auth.user.id,
         data_avaliacao: $('#cfOficialData').value || hoje(),
         objetivo: $('#cfOficialObjetivo').value || null,
@@ -1111,26 +1295,63 @@
         imc: imc != null ? Number(imc.toFixed(2)) : null,
         gordura_percentual: gordura,
         massa_magra: massaMagra,
-        soma_dobras: Number(somaDobras.toFixed(2)),
+        soma_dobras: somaDobras != null ? Number(somaDobras.toFixed(2)) : null,
         dobras,
         perimetria,
         ia_professor: iaProfessor,
         ia_aluno: resumoAluno({peso,imc,gordura,massaMagra,perimetria}),
-        relatorio_professor: $('#cfOficialObs').value.trim() || null,
-        liberado_aluno: false,
-        liberar_fotos: false,
-        liberar_ia: false,
-        liberar_pdf: false
+        relatorio_professor: $('#cfOficialObs').value.trim() || null
       };
 
-      const gravar = await client.from('avaliacoes_oficiais').insert(payload);
+      let gravar;
 
-      if (gravar.error) {
-        throw new Error(`Falha ao salvar avaliacao: ${gravar.error.message}`);
+      if (editando) {
+        gravar = await client
+          .from('avaliacoes_oficiais')
+          .update(dadosAvaliacao)
+          .eq('id', avaliacaoId)
+          .eq('aluno_id', state.alunoId)
+          .select('id')
+          .single();
+      } else {
+        gravar = await client
+          .from('avaliacoes_oficiais')
+          .insert({
+            id: avaliacaoId,
+            aluno_id: state.alunoId,
+            ...dadosAvaliacao,
+            liberado_aluno: false,
+            liberar_fotos: false,
+            liberar_ia: false,
+            liberar_pdf: false
+          })
+          .select('id')
+          .single();
       }
+
+      if (gravar.error || !gravar.data?.id) {
+        throw new Error(
+          `${editando ? 'Falha ao atualizar' : 'Falha ao salvar'} avaliação: ` +
+          `${gravar.error?.message || 'o banco não confirmou a gravação.'}`
+        );
+      }
+
+      avaliacaoGravada = true;
+      state.avaliacaoAtualId = gravar.data.id;
 
       if (enviados.length === 4) {
         btn.textContent = 'Registrando fotos...';
+
+        if (editando && fotosAntigas.length) {
+          const apagarMeta = await client
+            .from('avaliacao_fotos_oficiais')
+            .delete()
+            .eq('avaliacao_id', avaliacaoId);
+
+          if (apagarMeta.error) {
+            throw new Error(`Falha ao preparar troca das fotos: ${apagarMeta.error.message}`);
+          }
+        }
 
         const rows = enviados.map(f => ({
           avaliacao_id: avaliacaoId,
@@ -1149,25 +1370,43 @@
         const meta = await client.from('avaliacao_fotos_oficiais').insert(rows);
 
         if (meta.error) {
-          throw new Error(`A avaliacao foi gravada, mas houve erro ao registrar as fotos: ${meta.error.message}`);
+          throw new Error(`A avaliação foi gravada, mas houve erro ao registrar as fotos: ${meta.error.message}`);
+        }
+
+        if (editando && fotosAntigas.length) {
+          const pathsAntigos = fotosAntigas.map(f => f.storage_path).filter(Boolean);
+          if (pathsAntigos.length) {
+            const limpeza = await client.storage.from(BUCKET).remove(pathsAntigos);
+            if (limpeza.error) console.warn('[Limpeza fotos antigas]', limpeza.error);
+          }
         }
       }
 
+      const confirmar = await client
+        .from('avaliacoes_oficiais')
+        .select('id,data_avaliacao,peso,altura,idade,sexo,objetivo,updated_at')
+        .eq('id', avaliacaoId)
+        .single();
+
+      if (confirmar.error || !confirmar.data?.id) {
+        throw new Error('O banco não confirmou a avaliação após a gravação.');
+      }
+
+      state.iaProfessorPersistida = iaProfessor;
       salvou = true;
-      btn.textContent = 'Salvo \u2713';
-      toast('Avaliacao salva com sucesso!');
+      btn.textContent = 'Salvo ✓';
+      toast(editando ? 'Avaliação atualizada e confirmada no banco!' : 'Avaliação salva e confirmada no banco!');
 
       await carregarHistorico();
-      mudarAba('historico');
 
       setTimeout(() => {
         fechar();
       }, 900);
 
     } catch (err) {
-      console.error('[Salvar avaliacao]', err);
+      console.error('[Salvar avaliação]', err);
 
-      if (enviados.length) {
+      if (enviados.length && !salvou) {
         try {
           await sb().storage.from(BUCKET).remove(enviados.map(x => x.path));
         } catch (e) {
@@ -1178,7 +1417,11 @@
       $('#cfOficialAIBox').innerHTML =
         `<strong>Erro ao salvar:</strong> ${txt(err.message || 'Falha ao salvar.')}`;
 
-      toast(err.message || 'Erro ao salvar avaliacao.', 'error');
+      toast(err.message || 'Erro ao salvar avaliação.', 'error');
+
+      if (avaliacaoGravada) {
+        console.warn('[Salvar avaliação] Dados principais gravados; revise apenas o registro de fotos.');
+      }
 
     } finally {
       if (!salvou) {
@@ -1202,7 +1445,7 @@
 
       const q = await client
         .from('avaliacoes_oficiais')
-        .select('id,data_avaliacao,peso,imc,gordura_percentual,massa_magra,liberado_aluno,liberar_fotos,liberar_ia,created_at')
+        .select('id,data_avaliacao,peso,imc,gordura_percentual,massa_magra,liberado_aluno,liberar_fotos,liberar_ia,created_at,updated_at')
         .eq('aluno_id', state.alunoId)
         .order('data_avaliacao', { ascending:false })
         .order('created_at', { ascending:false });
@@ -1212,7 +1455,7 @@
       state.historico = q.data || [];
 
       if (!state.historico.length) {
-        box.innerHTML = '<div style="color:#94a3b8">Nenhuma avaliacao salva.</div>';
+        box.innerHTML = '<div style="color:#94a3b8">Nenhuma avaliação salva.</div>';
         return;
       }
 
@@ -1231,7 +1474,12 @@
       }
 
       box.innerHTML = state.historico.map(a => `
-        <div class="cfOficial-history-item">
+        <div class="cfOficial-history-item"
+             data-avaliacao-id="${a.id}"
+             role="button"
+             tabindex="0"
+             title="Clique para abrir esta avaliação"
+             style="cursor:pointer">
           <div>
             <strong>${new Date(a.data_avaliacao + 'T00:00:00').toLocaleDateString('pt-BR')}</strong>
             <div style="margin-top:5px">
@@ -1246,9 +1494,24 @@
         </div>
       `).join('');
 
+      $$('[data-avaliacao-id]', box).forEach(item => {
+        const abrirItem = async () => {
+          const id = item.dataset.avaliacaoId;
+          if (!id) return;
+          await carregarAvaliacao(id, false);
+        };
+
+        item.addEventListener('click', abrirItem);
+        item.addEventListener('keydown', async e => {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          e.preventDefault();
+          await abrirItem();
+        });
+      });
+
     } catch (err) {
-      console.error('[Historico]', err);
-      box.innerHTML = `<div style="color:#ef4444">${txt(err.message || 'Erro ao carregar historico.')}</div>`;
+      console.error('[Histórico]', err);
+      box.innerHTML = `<div style="color:#ef4444">${txt(err.message || 'Erro ao carregar histórico.')}</div>`;
     }
   }
 
@@ -1364,6 +1627,8 @@
 
     window.CorpoFitnessAvaliacao = {
       abrir,
+      novaAvaliacao,
+      carregarAvaliacao,
       analisarTodas,
       salvar,
       carregarHistorico

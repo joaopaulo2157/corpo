@@ -342,46 +342,312 @@
     recalc();
   }
 
-  function drawMarkers(key){
+  let poseLandmarkerPromise = null;
+
+  async function getPoseLandmarker(){
+    if(poseLandmarkerPromise) return poseLandmarkerPromise;
+
+    poseLandmarkerPromise = (async () => {
+      const visionModule = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/+esm");
+      const { FilesetResolver, PoseLandmarker } = visionModule;
+
+      const vision = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+      );
+
+      return await PoseLandmarker.createFromOptions(vision, {
+        baseOptions: {
+          modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/latest/pose_landmarker_full.task",
+          delegate: "GPU"
+        },
+        runningMode: "IMAGE",
+        numPoses: 1,
+        minPoseDetectionConfidence: 0.55,
+        minPosePresenceConfidence: 0.55,
+        minTrackingConfidence: 0.55,
+        outputSegmentationMasks: false
+      });
+    })().catch(err => {
+      poseLandmarkerPromise = null;
+      throw err;
+    });
+
+    return poseLandmarkerPromise;
+  }
+
+  function landmarkPoint(lm, index, minVisibility = 0.35){
+    const p = lm?.[index];
+    if(!p) return null;
+    const visibility = Number(p.visibility ?? p.presence ?? 1);
+    if(Number.isFinite(visibility) && visibility < minVisibility) return null;
+    return p;
+  }
+
+  function midpoint(a,b){
+    if(!a || !b) return null;
+    return {
+      x:(a.x+b.x)/2,
+      y:(a.y+b.y)/2,
+      z:((a.z||0)+(b.z||0))/2,
+      visibility:Math.min(Number(a.visibility ?? 1),Number(b.visibility ?? 1))
+    };
+  }
+
+  function dist(a,b){
+    if(!a || !b) return null;
+    return Math.hypot((a.x-b.x),(a.y-b.y));
+  }
+
+  function angleHorizontal(a,b){
+    if(!a || !b) return null;
+    return Math.atan2((b.y-a.y),(b.x-a.x))*180/Math.PI;
+  }
+
+  function angleVertical(a,b){
+    if(!a || !b) return null;
+    return Math.atan2((b.x-a.x),(b.y-a.y))*180/Math.PI;
+  }
+
+  function jointAngle(a,b,c){
+    if(!a || !b || !c) return null;
+    const ab={x:a.x-b.x,y:a.y-b.y};
+    const cb={x:c.x-b.x,y:c.y-b.y};
+    const dot=ab.x*cb.x+ab.y*cb.y;
+    const den=Math.hypot(ab.x,ab.y)*Math.hypot(cb.x,cb.y);
+    if(!den) return null;
+    const v=Math.max(-1,Math.min(1,dot/den));
+    return Math.acos(v)*180/Math.PI;
+  }
+
+  function signedPct(value, scale){
+    if(value == null || !scale) return null;
+    return (value/scale)*100;
+  }
+
+  function fmt(v,d=1){
+    return Number.isFinite(v) ? v.toFixed(d).replace('.',',') : 'â€”';
+  }
+
+  function absStatus(value, mild, moderate){
+    if(value == null) return 'indeterminado';
+    const a=Math.abs(value);
+    if(a < mild) return 'sem assimetria relevante nesta foto';
+    if(a < moderate) return 'assimetria discreta';
+    return 'assimetria perceptÃ­vel';
+  }
+
+  function visibleSide(lm){
+    const left=[7,11,13,15,23,25,27].reduce((s,i)=>s+Number(lm?.[i]?.visibility||0),0);
+    const right=[8,12,14,16,24,26,28].reduce((s,i)=>s+Number(lm?.[i]?.visibility||0),0);
+    return left >= right ? 'left' : 'right';
+  }
+
+  function drawLandmarkCanvas(key,lm){
     const img = $(`[data-photo-img="${key}"]`);
     const canvas = $(`[data-photo-canvas="${key}"]`);
-    if(!img?.src || !canvas) return;
+    if(!img || !canvas || !lm) return;
+
     const box = img.getBoundingClientRect();
-    canvas.width = Math.max(320, Math.round(box.width || 360));
-    canvas.height = Math.max(420, Math.round(box.height || 480));
+    const width = Math.max(320, Math.round(box.width || img.naturalWidth || 360));
+    const height = Math.max(420, Math.round(box.height || img.naturalHeight || 480));
+    canvas.width = width;
+    canvas.height = height;
+
     const ctx = canvas.getContext('2d');
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = 'rgba(96,165,250,.95)';
-    ctx.fillStyle = 'rgba(7,16,35,.88)';
-    ctx.font = '700 14px Arial';
+    ctx.clearRect(0,0,width,height);
 
-    const labels = key === 'frente'
-      ? [['Ombros',.50,.22],['AbdÃ´men',.50,.48],['Quadril',.50,.64],['Joelhos',.50,.80]]
-      : key === 'costas'
-        ? [['Dorsal',.50,.32],['Lombar',.50,.56],['Quadril',.50,.68]]
-        : [['Postura',.52,.25],['Core',.52,.50],['Quadril',.52,.66]];
+    const pairs = [
+      [11,12],[11,13],[13,15],[12,14],[14,16],
+      [11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28]
+    ];
 
-    labels.forEach(([txt,xp,yp]) => {
-      const x = canvas.width*xp, y = canvas.height*yp;
-      ctx.beginPath(); ctx.arc(x,y,12,0,Math.PI*2); ctx.stroke();
-      const w = ctx.measureText(txt).width + 18;
-      ctx.fillRect(Math.max(6,x-w/2), Math.max(6,y-35), w, 24);
-      ctx.fillStyle = '#fff'; ctx.fillText(txt, Math.max(12,x-w/2+9), Math.max(22,y-18));
-      ctx.fillStyle = 'rgba(7,16,35,.88)';
+    ctx.lineWidth = 2.2;
+    ctx.strokeStyle = 'rgba(96,165,250,.78)';
+    pairs.forEach(([a,b])=>{
+      const p1=landmarkPoint(lm,a), p2=landmarkPoint(lm,b);
+      if(!p1 || !p2) return;
+      ctx.beginPath();
+      ctx.moveTo(p1.x*width,p1.y*height);
+      ctx.lineTo(p2.x*width,p2.y*height);
+      ctx.stroke();
+    });
+
+    const important = [
+      [0,'CabeÃ§a'],[11,'Ombro E'],[12,'Ombro D'],
+      [23,'Quadril E'],[24,'Quadril D'],
+      [25,'Joelho E'],[26,'Joelho D'],
+      [27,'Tornozelo E'],[28,'Tornozelo D']
+    ];
+
+    important.forEach(([idx,label])=>{
+      const p=landmarkPoint(lm,idx);
+      if(!p) return;
+      const x=p.x*width, y=p.y*height;
+      ctx.beginPath();
+      ctx.arc(x,y,5.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(37,99,235,.96)';
+      ctx.fill();
+      ctx.lineWidth=2;
+      ctx.strokeStyle='#bfdbfe';
+      ctx.stroke();
+    });
+
+    const shoulders=midpoint(landmarkPoint(lm,11),landmarkPoint(lm,12));
+    const hips=midpoint(landmarkPoint(lm,23),landmarkPoint(lm,24));
+    const trunk=midpoint(shoulders,hips);
+
+    [
+      [shoulders,'Ombros'],
+      [trunk,'Tronco'],
+      [hips,'Quadril']
+    ].forEach(([p,label])=>{
+      if(!p) return;
+      const x=p.x*width, y=p.y*height;
+      ctx.beginPath();
+      ctx.arc(x,y,8,0,Math.PI*2);
+      ctx.fillStyle='rgba(15,23,42,.92)';
+      ctx.fill();
+      ctx.lineWidth=2.5;
+      ctx.strokeStyle='#60a5fa';
+      ctx.stroke();
+
+      ctx.font='700 12px Arial';
+      const tw=ctx.measureText(label).width+14;
+      ctx.fillStyle='rgba(15,23,42,.94)';
+      ctx.fillRect(Math.max(4,x-tw/2),Math.max(4,y-30),tw,21);
+      ctx.fillStyle='#fff';
+      ctx.fillText(label,Math.max(8,x-tw/2+7),Math.max(18,y-15));
     });
   }
 
-  function analyzePhoto(key){
+  function analyzeFrontBack(lm,key){
+    const ls=landmarkPoint(lm,11), rs=landmarkPoint(lm,12);
+    const lh=landmarkPoint(lm,23), rh=landmarkPoint(lm,24);
+    const lk=landmarkPoint(lm,25), rk=landmarkPoint(lm,26);
+    const la=landmarkPoint(lm,27), ra=landmarkPoint(lm,28);
+
+    const shoulderWidth=dist(ls,rs);
+    const hipWidth=dist(lh,rh);
+    const bodyScale=(shoulderWidth||hipWidth||0.2);
+
+    const shoulderTilt=angleHorizontal(ls,rs);
+    const hipTilt=angleHorizontal(lh,rh);
+
+    const shoulderMid=midpoint(ls,rs);
+    const hipMid=midpoint(lh,rh);
+    const trunkShift=signedPct(shoulderMid && hipMid ? shoulderMid.x-hipMid.x : null, bodyScale);
+
+    const kneeDiff=signedPct(lk && rk ? lk.y-rk.y : null, bodyScale);
+    const ankleDiff=signedPct(la && ra ? la.y-ra.y : null, bodyScale);
+
+    const lines=[];
+    lines.push(`<strong>Leitura postural por landmarks reais:</strong>`);
+    lines.push(`â€¢ InclinaÃ§Ã£o dos ombros: ${fmt(shoulderTilt)}Â° â€” ${absStatus(shoulderTilt,2.0,4.5)}.`);
+    lines.push(`â€¢ InclinaÃ§Ã£o da pelve/quadril: ${fmt(hipTilt)}Â° â€” ${absStatus(hipTilt,2.0,4.5)}.`);
+    lines.push(`â€¢ Deslocamento lateral do tronco em relaÃ§Ã£o ao quadril: ${fmt(trunkShift)}% da largura corporal.`);
+    if(kneeDiff!=null) lines.push(`â€¢ DiferenÃ§a vertical entre joelhos: ${fmt(kneeDiff)}% da largura corporal.`);
+    if(ankleDiff!=null) lines.push(`â€¢ DiferenÃ§a vertical entre tornozelos: ${fmt(ankleDiff)}% da largura corporal.`);
+
+    const attention=[];
+    if(Math.abs(shoulderTilt||0)>=4.5) attention.push('nivelamento dos ombros');
+    if(Math.abs(hipTilt||0)>=4.5) attention.push('nivelamento pÃ©lvico');
+    if(Math.abs(trunkShift||0)>=7) attention.push('centralizaÃ§Ã£o do tronco');
+    if(Math.abs(kneeDiff||0)>=8) attention.push('simetria de apoio dos membros inferiores');
+
+    lines.push(attention.length
+      ? `â€¢ Pontos para revisÃ£o do professor: ${attention.join(', ')}.`
+      : `â€¢ Nesta imagem, nÃ£o foram detectadas assimetrias grosseiras pelos parÃ¢metros 2D utilizados.`);
+
+    if(key==='costas'){
+      lines.push(`â€¢ Vista posterior: o modelo mede ombros, quadril e membros; posiÃ§Ã£o de escÃ¡pulas nÃ£o Ã© inferida como diagnÃ³stico porque nÃ£o hÃ¡ landmark anatÃ´mico direto para elas.`);
+    }
+
+    return lines;
+  }
+
+  function analyzeSide(lm,key){
+    const side=visibleSide(lm);
+    const idx = side==='left'
+      ? {ear:7,shoulder:11,hip:23,knee:25,ankle:27}
+      : {ear:8,shoulder:12,hip:24,knee:26,ankle:28};
+
+    const ear=landmarkPoint(lm,idx.ear);
+    const shoulder=landmarkPoint(lm,idx.shoulder);
+    const hip=landmarkPoint(lm,idx.hip);
+    const knee=landmarkPoint(lm,idx.knee);
+    const ankle=landmarkPoint(lm,idx.ankle);
+
+    const torso=dist(shoulder,hip) || 0.2;
+    const headForward=signedPct(ear && shoulder ? ear.x-shoulder.x : null, torso);
+    const trunkLean=angleVertical(shoulder,hip);
+    const hipKneeAngle=jointAngle(shoulder,hip,knee);
+    const kneeAngle=jointAngle(hip,knee,ankle);
+
+    const lines=[];
+    lines.push(`<strong>Leitura lateral por landmarks reais:</strong>`);
+    lines.push(`â€¢ Lado corporal com maior confianÃ§a detectado: ${side==='left'?'esquerdo':'direito'}.`);
+    lines.push(`â€¢ ProjeÃ§Ã£o horizontal orelhaâ€“ombro: ${fmt(headForward)}% do comprimento do tronco.`);
+    lines.push(`â€¢ InclinaÃ§Ã£o aparente do tronco: ${fmt(trunkLean)}Â° em relaÃ§Ã£o Ã  vertical.`);
+    if(hipKneeAngle!=null) lines.push(`â€¢ Ã‚ngulo troncoâ€“quadrilâ€“joelho: ${fmt(hipKneeAngle)}Â°.`);
+    if(kneeAngle!=null) lines.push(`â€¢ Ã‚ngulo do joelho: ${fmt(kneeAngle)}Â°.`);
+
+    const attention=[];
+    if(Math.abs(headForward||0)>=18) attention.push('projeÃ§Ã£o anterior/posterior da cabeÃ§a');
+    if(Math.abs(trunkLean||0)>=7) attention.push('inclinaÃ§Ã£o do tronco');
+    if(kneeAngle!=null && kneeAngle<168) attention.push('flexÃ£o do joelho durante a foto');
+
+    lines.push(attention.length
+      ? `â€¢ Pontos para revisÃ£o do professor: ${attention.join(', ')}.`
+      : `â€¢ NÃ£o foi detectado desvio lateral grosseiro nos parÃ¢metros mensurÃ¡veis desta foto.`);
+
+    return lines;
+  }
+
+  async function analyzePhoto(key){
     if(!state.selected.has(key)) return toast('Selecione a foto primeiro.','error');
-    drawMarkers(key);
-    const map = {
-      frente:'Verificar alinhamento aparente de ombros, abdÃ´men, quadril e joelhos.',
-      lado_direito:'Verificar projeÃ§Ã£o de cabeÃ§a/ombros, postura, core e alinhamento lateral.',
-      lado_esquerdo:'Comparar o lado esquerdo com o direito para observar assimetrias visuais.',
-      costas:'Verificar regiÃ£o dorsal, lombar, quadril e simetria posterior.'
-    };
-    $('#cfOficialAIBox').innerHTML = `<strong>IA visual â€” ${esc(labelPos(key))}:</strong><br>â€¢ ${esc(map[key])}<br>â€¢ Esta marcaÃ§Ã£o Ã© apoio visual para o professor, nÃ£o diagnÃ³stico.`;
+
+    const img = $(`[data-photo-img="${key}"]`);
+    if(!img?.src) return toast('Foto nÃ£o carregada.','error');
+
+    const box = $('#cfOficialAIBox');
+    const original = box?.innerHTML || '';
+
+    try{
+      if(box) box.innerHTML = '<strong>IA postural:</strong> carregando modelo e detectando pontos anatÃ´micos...';
+
+      if(!img.complete) await new Promise((resolve,reject)=>{
+        img.addEventListener('load',resolve,{once:true});
+        img.addEventListener('error',reject,{once:true});
+      });
+
+      const landmarker = await getPoseLandmarker();
+      const result = landmarker.detect(img);
+      const lm = result?.landmarks?.[0];
+
+      if(!lm || lm.length < 29){
+        throw new Error('NÃ£o foi possÃ­vel detectar o corpo com confianÃ§a suficiente. Use foto de corpo inteiro, boa iluminaÃ§Ã£o e cÃ¢mera nivelada.');
+      }
+
+      drawLandmarkCanvas(key,lm);
+
+      const lines = (key==='frente' || key==='costas')
+        ? analyzeFrontBack(lm,key)
+        : analyzeSide(lm,key);
+
+      const vis = lm
+        .map(p=>Number(p.visibility ?? 0))
+        .filter(Number.isFinite);
+      const confidence = vis.length ? (vis.reduce((s,v)=>s+v,0)/vis.length)*100 : 0;
+
+      lines.push(`â€¢ ConfianÃ§a mÃ©dia dos landmarks: ${fmt(confidence,0)}%.`);
+      lines.push(`â€¢ ConclusÃ£o: anÃ¡lise fotogrÃ¡fica 2D de apoio profissional; nÃ£o substitui avaliaÃ§Ã£o clÃ­nica, ortopÃ©dica ou fisioterapÃªutica.`);
+
+      if(box) box.innerHTML = lines.join('<br>');
+    }catch(err){
+      console.error('[IA postural]',err);
+      if(box) box.innerHTML = original;
+      toast(err.message || 'Falha na anÃ¡lise postural.','error');
+    }
   }
 
   function labelPos(k){

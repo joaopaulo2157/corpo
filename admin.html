@@ -803,6 +803,46 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Corpofitness">
     <link rel="stylesheet" href="css/admin/avaliacao-oficial.css?oficial=sim">
+
+    <style id="treino-identificacao-layout-fix">
+        .treino-identificacao{
+            display:grid;
+            grid-template-columns:90px 90px 150px minmax(320px,1fr);
+            gap:12px;
+            align-items:end;
+            margin-bottom:20px;
+            background:var(--dark-card);
+            padding:15px;
+            border:1px solid var(--border);
+            border-radius:12px;
+        }
+        .treino-identificacao .form-control{
+            min-width:0;
+        }
+        .treino-id-nome{
+            min-width:0;
+        }
+        #tr_nome{
+            width:100%;
+        }
+        @media(max-width:900px){
+            .treino-identificacao{
+                grid-template-columns:90px 90px minmax(150px,1fr);
+            }
+            .treino-id-nome{
+                grid-column:1 / -1;
+            }
+        }
+        @media(max-width:560px){
+            .treino-identificacao{
+                grid-template-columns:1fr 1fr;
+            }
+            .treino-id-data,
+            .treino-id-nome{
+                grid-column:1 / -1;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -2322,11 +2362,11 @@
                     
 
                     <!-- Informações do Aluno / Cabeçalho Técnico -->
-                    <div class="treino-identificacao" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; align-items: center; margin-bottom: 20px; background: var(--dark-card); padding: 15px; border: 1px solid var(--border); border-radius: 12px;">
-                        <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Cód</label><input type="text" id="tr_cod" value="1" class="form-control" readonly></div>
-                        <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">CódT</label><input type="text" id="tr_codt" value="1" class="form-control" readonly></div>
-                        <div><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Data Aplicação:</label><input type="text" id="tr_data" value="" class="form-control"></div>
-                        <div style="grid-column: 1 / -1; @media(min-width: 768px){grid-column: auto;}"><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Nome do Aluno:</label><input type="text" id="tr_nome" value="" class="form-control" readonly></div>
+                    <div class="treino-identificacao">
+                        <div class="treino-id-cod"><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Cód</label><input type="text" id="tr_cod" value="1" class="form-control" readonly></div>
+                        <div class="treino-id-codt"><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">CódT</label><input type="text" id="tr_codt" value="1" class="form-control" readonly></div>
+                        <div class="treino-id-data"><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Data Aplicação:</label><input type="text" id="tr_data" value="" class="form-control"></div>
+                        <div class="treino-id-nome"><label style="font-size:0.72rem; color:var(--gray); display:block; font-weight:600;">Nome do Aluno:</label><input type="text" id="tr_nome" value="" class="form-control" readonly></div>
                     </div>
 
                     <!-- GRID PRINCIPAL DUPLO OTIMIZADO E ALINHADO -->

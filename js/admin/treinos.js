@@ -141,18 +141,51 @@ window.removerExercicioDaFicha = function(index) {
                         }
                     }
 
-                    const { data: avalList } = await _supabase.from('avaliacoes_fisicas').select('*').eq('aluno_id', alunoId).order('created_at', { ascending: false }).limit(1);
-                    if (avalList && avalList.length > 0) {
-                        const aval = avalList[0];
-                        document.getElementById('fiel_peso').value = aval.peso || '';
-                        document.getElementById('fiel_altura').value = aval.altura || '';
-                        if(document.getElementById('fiel_gordura')) document.getElementById('fiel_gordura').value = aval.gordura || '';
-                        if(document.getElementById('fiel_massa')) document.getElementById('fiel_massa').value = aval.massa || '';
+                    const { data: avalList, error: avalError } = await _supabase
+                        .from('avaliacoes_oficiais')
+                        .select('peso,altura,gordura_percentual,massa_magra,data_avaliacao,created_at')
+                        .eq('aluno_id', alunoId)
+                        .order('data_avaliacao', { ascending: false })
+                        .order('created_at', { ascending: false })
+                        .limit(1);
+
+                    if (avalError) throw avalError;
+
+                    const aval = avalList && avalList.length ? avalList[0] : null;
+                    const campoPeso = document.getElementById('fiel_peso');
+                    const campoAltura = document.getElementById('fiel_altura');
+                    const campoGordura = document.getElementById('fiel_gordura');
+                    const campoMassa = document.getElementById('fiel_massa');
+                    const campoData = document.getElementById('fiel_avaliacao_data');
+
+                    const valorPositivo = valor => {
+                        const n = Number(valor);
+                        return Number.isFinite(n) && n > 0 ? n : null;
+                    };
+
+                    if (aval) {
+                        const peso = valorPositivo(aval.peso);
+                        const altura = valorPositivo(aval.altura);
+                        const gordura = valorPositivo(aval.gordura_percentual);
+                        const massaMagra = valorPositivo(aval.massa_magra);
+
+                        if (campoPeso) campoPeso.value = peso != null ? peso : '';
+                        if (campoAltura) campoAltura.value = altura != null ? altura : '';
+                        if (campoGordura) campoGordura.value = gordura != null ? gordura : '';
+                        if (campoMassa) campoMassa.value = massaMagra != null ? massaMagra : '';
+
+                        if (campoData) {
+                            const dataBase = aval.data_avaliacao
+                                ? new Date(aval.data_avaliacao + 'T12:00:00')
+                                : new Date(aval.created_at);
+                            campoData.textContent = 'Atualizado em ' + dataBase.toLocaleDateString('pt-BR');
+                        }
                     } else {
-                        document.getElementById('fiel_peso').value = '';
-                        document.getElementById('fiel_altura').value = '';
-                        if(document.getElementById('fiel_gordura')) document.getElementById('fiel_gordura').value = '';
-                        if(document.getElementById('fiel_massa')) document.getElementById('fiel_massa').value = '';
+                        if (campoPeso) campoPeso.value = '';
+                        if (campoAltura) campoAltura.value = '';
+                        if (campoGordura) campoGordura.value = '';
+                        if (campoMassa) campoMassa.value = '';
+                        if (campoData) campoData.textContent = 'Nenhuma avaliação oficial encontrada';
                     }
                 } catch (e) {
                     console.log("Erro ao carregar dados do aluno: ", e);

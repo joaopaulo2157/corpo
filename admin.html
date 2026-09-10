@@ -2319,12 +2319,7 @@
                     <input type="hidden" id="tr_aluno_id">
 
                     <div class="treino-editor-body">
-                    <div class="treino-fluxo" aria-label="Fluxo de montagem do treino">
-                        <div class="treino-fluxo-item"><span class="treino-fluxo-num">1</span><div><strong>Objetivo</strong><small>Meta e análise</small></div></div>
-                        <div class="treino-fluxo-item"><span class="treino-fluxo-num">2</span><div><strong>Estrutura</strong><small>Nível e divisão</small></div></div>
-                        <div class="treino-fluxo-item"><span class="treino-fluxo-num">3</span><div><strong>Montagem</strong><small>Exercícios e métodos</small></div></div>
-                        <div class="treino-fluxo-item"><span class="treino-fluxo-num">4</span><div><strong>Revisão</strong><small>Salvar ou imprimir</small></div></div>
-                    </div>
+                    
 
                     <!-- Informações do Aluno / Cabeçalho Técnico -->
                     <div class="treino-identificacao" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; align-items: center; margin-bottom: 20px; background: var(--dark-card); padding: 15px; border: 1px solid var(--border); border-radius: 12px;">
@@ -2391,30 +2386,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Bonecos Anatômicos com Altura Reduzida e Proporcional -->
-                                <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); padding: 8px; text-align: center; border-radius: 8px; margin-top: 12px; display: flex; justify-content: center; gap: 15px;">
-                                    <svg width="30" height="90" viewBox="0 0 100 250">
-                                        <circle cx="50" cy="20" r="15" fill="#4caf50"/>
-                                        <path id="map-deltoides" d="M30 40 Q50 35 70 40 L65 55 L35 55 Z" fill="#4caf50" opacity="0.9"/>
-                                        <path id="map-peitoral" d="M35 58 Q50 55 65 58 L63 85 Q50 90 37 85 Z" fill="#4caf50" opacity="0.9"/>
-                                        <path id="map-biceps" d="M22 58 L32 58 L30 85 L22 83 Z" fill="#4caf50" opacity="0.9"/>
-                                        <path id="map-biceps-r" d="M78 58 L68 58 L70 85 L78 83 Z" fill="#4caf50" opacity="0.9"/>
-                                        <path id="map-antebraco" d="M18 86 L30 88 L27 115 L18 112 Z" fill="#4caf50" opacity="0.9"/>
-                                        <path id="map-antebraco-r" d="M82 86 L70 88 L73 115 L82 112 Z" fill="#4caf50" opacity="0.9"/>
-                                        <path id="map-abdomen" d="M38 88 Q50 86 62 88 L60 125 Q50 130 40 125 Z" fill="#4caf50" opacity="0.9"/>
-                                        <path id="map-quadriceps" d="M40 132 L49 132 L47 185 L38 180 Z" fill="#4caf50" opacity="0.9"/>
-                                        <path id="map-quadriceps-r" d="M60 132 L51 132 L53 185 L62 180 Z" fill="#4caf50" opacity="0.9"/>
-                                    </svg>
-                                    <svg width="30" height="90" viewBox="0 0 100 250">
-                                        <circle cx="50" cy="20" r="15" fill="#4caf50"/>
-                                        <path id="map-trapezio" d="M35 38 Q50 35 65 38 L72 58 L28 58 Z" fill="#4caf50" opacity="0.3"/>
-                                        <path id="map-dorsal" d="M30 60 L70 60 L62 95 Q50 100 38 95 Z" fill="#4caf50" opacity="0.3"/>
-                                        <path id="map-triceps" d="M22 60 L30 60 L28 88 L22 85 Z" fill="#4caf50" opacity="0.3"/>
-                                        <path id="map-gluteos" d="M36 102 L64 102 L60 135 L40 135 Z" fill="#4caf50" opacity="0.3"/>
-                                        <path id="map-posterior" d="M39 138 L48 138 L46 185 L38 180 Z" fill="#4caf50" opacity="0.3"/>
-                                        <path id="map-panturrilhas" d="M38 190 L46 190 L44 230 L39 225 Z" fill="#4caf50" opacity="0.3"/>
-                                    </svg>
-                                </div>
+                                
                             </div>
 
                             <!-- Nível e Divisão (Lado a Lado Compacto) -->
@@ -2493,27 +2465,27 @@
 
                             <!-- Dados Rápidos de Bioimpedância no Treino -->
                             <div style="background: var(--dark-card); border: 1px solid var(--border); padding: 18px; border-radius: 12px;">
-                                <h4 style="font-size: 0.9rem; color: var(--text-color); margin-bottom: 12px;"><i class="fa-solid fa-scale-balanced"></i> Dados Antropométricos Rápidos</h4>
-                                <div class="treino-section-caption"><span class="step">Contexto da avaliação</span><span class="hint">Referência rápida para prescrição.</span></div>
+                                <h4 style="font-size: 0.9rem; color: var(--text-color); margin-bottom: 12px;"><i class="fa-solid fa-scale-balanced"></i> Última Avaliação Física</h4>
+                                <div class="treino-section-caption"><span class="step">Dados oficiais atualizados</span><span class="hint" id="fiel_avaliacao_data">Carregando última avaliação...</span></div>
                                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px;">
                                     <div>
                                         <label class="form-label">Peso (kg)</label>
-                                        <input type="number" step="0.1" id="fiel_peso" class="form-control" placeholder="75.5">
+                                        <input type="number" step="0.1" id="fiel_peso" class="form-control" placeholder="75.5" readonly aria-readonly="true">
                                     </div>
                                     <div>
                                         <label class="form-label">Altura (m)</label>
-                                        <input type="number" step="0.01" id="fiel_altura" class="form-control" placeholder="1.75">
+                                        <input type="number" step="0.01" id="fiel_altura" class="form-control" placeholder="1.75" readonly aria-readonly="true">
                                     </div>
                                     <div>
                                         <label class="form-label">% Gordura</label>
-                                        <input type="number" step="0.1" id="fiel_gordura" class="form-control" placeholder="14.5">
+                                        <input type="number" step="0.1" id="fiel_gordura" class="form-control" placeholder="14.5" readonly aria-readonly="true">
                                     </div>
                                     <div>
-                                        <label class="form-label">Massa (kg)</label>
-                                        <input type="number" step="0.1" id="fiel_massa" class="form-control" placeholder="62.0">
+                                        <label class="form-label">Massa magra (kg)</label>
+                                        <input type="number" step="0.1" id="fiel_massa" class="form-control" placeholder="62.0" readonly aria-readonly="true">
                                     </div>
                                 </div>
-                                <div class="treino-antropometria-note"><i class="fa-solid fa-circle-info"></i> Estes dados são um resumo técnico da avaliação. A ficha impressa mostra apenas os valores disponíveis e não substitui a avaliação corporal completa.</div>
+                                <div class="treino-antropometria-note"><i class="fa-solid fa-circle-info"></i> Dados carregados automaticamente da avaliação física oficial mais recente. Para alterar estes valores, atualize a avaliação do aluno.</div>
                             </div>
 
                         </div>

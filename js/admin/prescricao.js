@@ -151,48 +151,59 @@
         }
 
         async function carregarAvaliacaoParaSugestao(alunoId) {
-            const pesoTela = parseFloat(document.getElementById('fiel_peso')?.value) || null;
-            const alturaTela = parseFloat(document.getElementById('fiel_altura')?.value) || null;
-            const massaTela = parseFloat(document.getElementById('fiel_massa')?.value) || null;
+            const lerPositivo = valor => {
+                const n = Number(String(valor ?? '').replace(',', '.'));
+                return Number.isFinite(n) && n > 0 ? n : null;
+            };
+
+            const pesoTela = lerPositivo(document.getElementById('fiel_peso')?.value);
+            const alturaTela = lerPositivo(document.getElementById('fiel_altura')?.value);
+            const massaTela = lerPositivo(document.getElementById('fiel_massa')?.value);
+            const gorduraTela = lerPositivo(document.getElementById('fiel_gordura')?.value);
 
             let avaliacao = null;
+
             try {
                 const { data, error } = await _supabase
-                    .from('avaliacoes_fisicas')
-                    .select('*')
+                    .from('avaliacoes_oficiais')
+                    .select('id,peso,altura,imc,gordura_percentual,massa_magra,dobras,perimetria,data_avaliacao,created_at')
                     .eq('aluno_id', alunoId)
+                    .order('data_avaliacao', { ascending:false })
                     .order('created_at', { ascending:false })
                     .limit(1);
-                if (!error && data && data.length) avaliacao = data[0];
+
+                if (error) throw error;
+                if (data && data.length) avaliacao = data[0];
             } catch (e) {
-                console.warn('[Pré-prescrição] Não foi possível consultar avaliação:', e);
+                console.warn('[Pré-prescrição] Não foi possível consultar a avaliação oficial:', e);
             }
 
-            const peso = pesoTela || parseFloat(avaliacao?.peso) || null;
-            const altura = alturaTela || parseFloat(avaliacao?.altura) || null;
-            const massa = massaTela || parseFloat(avaliacao?.massa) || null;
-            const imc = peso && altura ? peso / (altura * altura) : null;
-
-            let detalhado = null;
-            if (avaliacao?.conteudo_detalhado) {
-                try {
-                    detalhado = typeof avaliacao.conteudo_detalhado === 'string'
-                        ? JSON.parse(avaliacao.conteudo_detalhado)
-                        : avaliacao.conteudo_detalhado;
-                } catch (_) {}
-            }
+            const peso = pesoTela || lerPositivo(avaliacao?.peso);
+            const altura = alturaTela || lerPositivo(avaliacao?.altura);
+            const massa = massaTela || lerPositivo(avaliacao?.massa_magra);
+            const gordura = gorduraTela || lerPositivo(avaliacao?.gordura_percentual);
+            const imc = peso && altura ? peso / (altura * altura) : lerPositivo(avaliacao?.imc);
 
             let medidasDetalhadas = 0;
-            if (detalhado && typeof detalhado === 'object') {
-                ['dobras','perimetria_dir','perimetria_esq'].forEach(chave => {
-                    const obj = detalhado[chave];
-                    if (obj && typeof obj === 'object') {
-                        medidasDetalhadas += Object.values(obj).filter(v => Number(v) > 0).length;
-                    }
-                });
-            }
 
-            return { avaliacao, peso, altura, massa, imc, medidasDetalhadas };
+            [avaliacao?.dobras, avaliacao?.perimetria].forEach(obj => {
+                if (obj && typeof obj === 'object') {
+                    medidasDetalhadas += Object.values(obj)
+                        .filter(v => Number(v) > 0)
+                        .length;
+                }
+            });
+
+            return {
+                avaliacao,
+                peso,
+                altura,
+                massa,
+                gordura,
+                imc,
+                medidasDetalhadas,
+                dataAvaliacao: avaliacao?.data_avaliacao || null
+            };
         }
 
         function analisarPerfil(objetivo, nivel, avaliacao) {
@@ -413,7 +424,7 @@
                 const imcTxt = avaliacao.imc ? avaliacao.imc.toFixed(1).replace('.', ',') : 'não calculado';
                 const pesoTxt = avaliacao.peso ? `${avaliacao.peso} kg` : 'não informado';
                 const alturaTxt = avaliacao.altura ? `${avaliacao.altura} m` : 'não informada';
-                const massaTxt = avaliacao.massa ? ` • Massa registrada: ${avaliacao.massa} kg` : '';
+                const massaTxt = avaliacao.massa ? ` • Massa magra: ${avaliacao.massa} kg` : '';
                 const medidasTxt = avaliacao.medidasDetalhadas > 0 ? ` • ${avaliacao.medidasDetalhadas} medida(s) detalhada(s) encontrada(s)` : '';
                 const alertas = [...perfil.alertas];
                 if (blocosSemExercicio.length) alertas.push(`Sem exercícios compatíveis na biblioteca para o(s) bloco(s): ${blocosSemExercicio.join(', ')}. Revise os grupos musculares marcados ou cadastre mais exercícios.`);

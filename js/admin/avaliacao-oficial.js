@@ -32,7 +32,11 @@
   }
 
   function hoje() {
-    return new Date().toISOString().slice(0, 10);
+    const d = new Date();
+    const ano = d.getFullYear();
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const dia = String(d.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
   }
 
   function toast(msg, tipo = '') {
@@ -1007,44 +1011,6 @@
       .join('\n\n');
   }
 
-  function valorDuplicado(a, b, tolerancia = 0.01) {
-    if (a == null && b == null) return true;
-    if (a == null || b == null) return false;
-
-    const na = Number(a);
-    const nb = Number(b);
-
-    if (Number.isFinite(na) && Number.isFinite(nb)) {
-      return Math.abs(na - nb) <= tolerancia;
-    }
-
-    return String(a).trim() === String(b).trim();
-  }
-
-  async function verificarDuplicidadeAvaliacao(client, dados) {
-    const q = await client
-      .from('avaliacoes_oficiais')
-      .select('id,peso,altura,imc,gordura_percentual,massa_magra,soma_dobras,objetivo,created_at')
-      .eq('aluno_id', dados.aluno_id)
-      .eq('data_avaliacao', dados.data_avaliacao)
-      .order('created_at', { ascending:false })
-      .limit(10);
-
-    if (q.error) {
-      throw new Error('Falha ao verificar duplicidade: ' + q.error.message);
-    }
-
-    return (q.data || []).some(a => (
-      valorDuplicado(a.peso, dados.peso, 0.05) &&
-      valorDuplicado(a.altura, dados.altura, 0.005) &&
-      valorDuplicado(a.imc, dados.imc, 0.02) &&
-      valorDuplicado(a.gordura_percentual, dados.gordura_percentual, 0.05) &&
-      valorDuplicado(a.massa_magra, dados.massa_magra, 0.05) &&
-      valorDuplicado(a.soma_dobras, dados.soma_dobras, 0.05) &&
-      String(a.objetivo || '').trim() === String(dados.objetivo || '').trim()
-    ));
-  }
-
   async function salvar() {
     const btn = $('#cfOficialSalvar');
 
@@ -1063,6 +1029,7 @@
     const old = btn.textContent;
     const enviados = [];
     let avaliacaoId = null;
+    let salvou = false;
 
     try {
       btn.dataset.salvando = '1';
@@ -1089,28 +1056,6 @@
       const perimetria = coletar('[data-medida]', 'medida');
 
       const somaDobras = Object.values(dobras).reduce((s,v) => s + (Number(v) || 0), 0);
-
-      const dadosDuplicidade = {
-        aluno_id: state.alunoId,
-        data_avaliacao: $('#cfOficialData').value || hoje(),
-        peso,
-        altura,
-        imc: imc != null ? Number(imc.toFixed(2)) : null,
-        gordura_percentual: gordura,
-        massa_magra: massaMagra,
-        soma_dobras: Number(somaDobras.toFixed(2)),
-        objetivo: $('#cfOficialObjetivo').value || null
-      };
-
-      btn.textContent = 'Verificando duplicidade...';
-
-      const duplicada = await verificarDuplicidadeAvaliacao(client, dadosDuplicidade);
-
-      if (duplicada) {
-        btn.textContent = 'Ja salva';
-        toast('Esta avaliacao ja foi salva com os mesmos dados nesta data.', 'error');
-        return;
-      }
 
       avaliacaoId = crypto.randomUUID();
 
@@ -1208,6 +1153,7 @@
         }
       }
 
+      salvou = true;
       btn.textContent = 'Salvo \u2713';
       toast('Avaliacao salva com sucesso!');
 
@@ -1216,7 +1162,7 @@
 
       setTimeout(() => {
         fechar();
-      }, 1200);
+      }, 900);
 
     } catch (err) {
       console.error('[Salvar avaliacao]', err);
@@ -1235,14 +1181,13 @@
       toast(err.message || 'Erro ao salvar avaliacao.', 'error');
 
     } finally {
-      setTimeout(() => {
-        btn.dataset.salvando = '0';
-        btn.disabled = false;
-
-        if (btn.textContent !== 'Salvo \u2713') {
+      if (!salvou) {
+        setTimeout(() => {
+          btn.dataset.salvando = '0';
+          btn.disabled = false;
           btn.textContent = old;
-        }
-      }, 500);
+        }, 300);
+      }
     }
   }
 

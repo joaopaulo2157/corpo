@@ -1,0 +1,11 @@
+{
+  "sistema": "CORPOFITNESS",
+  "pacote": "OFICIAL",
+  "data": "2026-09-09T21:04:32",
+  "ajustes": [
+    "gordura corporal automatica",
+    "massa magra automatica",
+    "foto selecionavel pelo quadrado inteiro",
+    "sem numeracao de versao no front"
+  ]
+}

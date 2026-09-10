@@ -154,7 +154,7 @@
             <button type="button" class="cfOficial-btn warn" id="cfOficialFechar2">Cancelar</button>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <button type="button" class="cfOficial-btn" id="cfOficialGerarIA">Gerar relatÃ³rio IA</button>
-              <button type="button" class="cfOficial-btn primary" id="cfOficialSalvar">Salvar avaliaÃ§Ã£o Oficial</button>
+              <button type="button" class="cfOficial-btn primary" id="cfOficialSalvar">Salvar avaliaÃ§Ã£o</button>
             </div>
           </div>
         </div>
@@ -348,16 +348,16 @@
     if(poseLandmarkerPromise) return poseLandmarkerPromise;
 
     poseLandmarkerPromise = (async () => {
-      const visionModule = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/+esm");
+      const visionModule = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/+esm");
       const { FilesetResolver, PoseLandmarker } = visionModule;
 
       const vision = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm"
       );
 
       return await PoseLandmarker.createFromOptions(vision, {
         baseOptions: {
-          modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/latest/pose_landmarker_full.task",
+          modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task",
           delegate: "GPU"
         },
         runningMode: "IMAGE",
@@ -442,14 +442,35 @@
     return left >= right ? 'left' : 'right';
   }
 
+  function mapLandmarkToCanvas(img, canvas, p){
+    if(!p) return null;
+
+    const sourceW = img.naturalWidth || 1;
+    const sourceH = img.naturalHeight || 1;
+    const targetW = canvas.width;
+    const targetH = canvas.height;
+
+    const scale = Math.max(targetW / sourceW, targetH / sourceH);
+    const renderedW = sourceW * scale;
+    const renderedH = sourceH * scale;
+    const offsetX = (targetW - renderedW) / 2;
+    const offsetY = (targetH - renderedH) / 2;
+
+    return {
+      x: offsetX + (p.x * sourceW * scale),
+      y: offsetY + (p.y * sourceH * scale)
+    };
+  }
+
   function drawLandmarkCanvas(key,lm){
     const img = $(`[data-photo-img="${key}"]`);
     const canvas = $(`[data-photo-canvas="${key}"]`);
     if(!img || !canvas || !lm) return;
 
     const box = img.getBoundingClientRect();
-    const width = Math.max(320, Math.round(box.width || img.naturalWidth || 360));
-    const height = Math.max(420, Math.round(box.height || img.naturalHeight || 480));
+    const width = Math.max(320, Math.round(box.width || 360));
+    const height = Math.max(420, Math.round(box.height || 480));
+
     canvas.width = width;
     canvas.height = height;
 
@@ -458,53 +479,66 @@
 
     const pairs = [
       [11,12],[11,13],[13,15],[12,14],[14,16],
-      [11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28]
+      [11,23],[12,24],[23,24],[23,25],[25,27],
+      [24,26],[26,28],[27,31],[28,32]
     ];
 
     ctx.lineWidth = 2.2;
-    ctx.strokeStyle = 'rgba(96,165,250,.78)';
+    ctx.strokeStyle = 'rgba(96,165,250,.82)';
+
     pairs.forEach(([a,b])=>{
-      const p1=landmarkPoint(lm,a), p2=landmarkPoint(lm,b);
+      const p1 = landmarkPoint(lm,a);
+      const p2 = landmarkPoint(lm,b);
       if(!p1 || !p2) return;
+
+      const d1 = mapLandmarkToCanvas(img,canvas,p1);
+      const d2 = mapLandmarkToCanvas(img,canvas,p2);
+      if(!d1 || !d2) return;
+
       ctx.beginPath();
-      ctx.moveTo(p1.x*width,p1.y*height);
-      ctx.lineTo(p2.x*width,p2.y*height);
+      ctx.moveTo(d1.x,d1.y);
+      ctx.lineTo(d2.x,d2.y);
       ctx.stroke();
     });
 
-    const important = [
+    const pontos = [
       [0,'CabeÃ§a'],[11,'Ombro E'],[12,'Ombro D'],
       [23,'Quadril E'],[24,'Quadril D'],
       [25,'Joelho E'],[26,'Joelho D'],
       [27,'Tornozelo E'],[28,'Tornozelo D']
     ];
 
-    important.forEach(([idx,label])=>{
-      const p=landmarkPoint(lm,idx);
+    pontos.forEach(([idx,label])=>{
+      const p = landmarkPoint(lm,idx);
       if(!p) return;
-      const x=p.x*width, y=p.y*height;
+
+      const d = mapLandmarkToCanvas(img,canvas,p);
+      if(!d) return;
+
       ctx.beginPath();
-      ctx.arc(x,y,5.5,0,Math.PI*2);
-      ctx.fillStyle='rgba(37,99,235,.96)';
+      ctx.arc(d.x,d.y,5.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(37,99,235,.98)';
       ctx.fill();
       ctx.lineWidth=2;
-      ctx.strokeStyle='#bfdbfe';
+      ctx.strokeStyle='#dbeafe';
       ctx.stroke();
     });
 
-    const shoulders=midpoint(landmarkPoint(lm,11),landmarkPoint(lm,12));
-    const hips=midpoint(landmarkPoint(lm,23),landmarkPoint(lm,24));
-    const trunk=midpoint(shoulders,hips);
+    const ombros = midpoint(landmarkPoint(lm,11),landmarkPoint(lm,12));
+    const quadril = midpoint(landmarkPoint(lm,23),landmarkPoint(lm,24));
+    const tronco = midpoint(ombros,quadril);
 
     [
-      [shoulders,'Ombros'],
-      [trunk,'Tronco'],
-      [hips,'Quadril']
+      [ombros,'Ombros'],
+      [tronco,'Tronco'],
+      [quadril,'Quadril']
     ].forEach(([p,label])=>{
       if(!p) return;
-      const x=p.x*width, y=p.y*height;
+      const d=mapLandmarkToCanvas(img,canvas,p);
+      if(!d) return;
+
       ctx.beginPath();
-      ctx.arc(x,y,8,0,Math.PI*2);
+      ctx.arc(d.x,d.y,9,0,Math.PI*2);
       ctx.fillStyle='rgba(15,23,42,.92)';
       ctx.fill();
       ctx.lineWidth=2.5;
@@ -513,10 +547,13 @@
 
       ctx.font='700 12px Arial';
       const tw=ctx.measureText(label).width+14;
-      ctx.fillStyle='rgba(15,23,42,.94)';
-      ctx.fillRect(Math.max(4,x-tw/2),Math.max(4,y-30),tw,21);
+      const lx=Math.max(4,Math.min(width-tw-4,d.x-tw/2));
+      const ly=Math.max(4,d.y-31);
+
+      ctx.fillStyle='rgba(15,23,42,.95)';
+      ctx.fillRect(lx,ly,tw,21);
       ctx.fillStyle='#fff';
-      ctx.fillText(label,Math.max(8,x-tw/2+7),Math.max(18,y-15));
+      ctx.fillText(label,lx+7,ly+15);
     });
   }
 
@@ -536,30 +573,47 @@
     const shoulderMid=midpoint(ls,rs);
     const hipMid=midpoint(lh,rh);
     const trunkShift=signedPct(shoulderMid && hipMid ? shoulderMid.x-hipMid.x : null, bodyScale);
-
     const kneeDiff=signedPct(lk && rk ? lk.y-rk.y : null, bodyScale);
     const ankleDiff=signedPct(la && ra ? la.y-ra.y : null, bodyScale);
 
     const lines=[];
-    lines.push(`<strong>Leitura postural por landmarks reais:</strong>`);
-    lines.push(`â€¢ InclinaÃ§Ã£o dos ombros: ${fmt(shoulderTilt)}Â° â€” ${absStatus(shoulderTilt,2.0,4.5)}.`);
-    lines.push(`â€¢ InclinaÃ§Ã£o da pelve/quadril: ${fmt(hipTilt)}Â° â€” ${absStatus(hipTilt,2.0,4.5)}.`);
-    lines.push(`â€¢ Deslocamento lateral do tronco em relaÃ§Ã£o ao quadril: ${fmt(trunkShift)}% da largura corporal.`);
-    if(kneeDiff!=null) lines.push(`â€¢ DiferenÃ§a vertical entre joelhos: ${fmt(kneeDiff)}% da largura corporal.`);
-    if(ankleDiff!=null) lines.push(`â€¢ DiferenÃ§a vertical entre tornozelos: ${fmt(ankleDiff)}% da largura corporal.`);
+    lines.push(`<strong>AnÃ¡lise postural da ${key==='costas'?'vista posterior':'vista frontal'}:</strong>`);
 
-    const attention=[];
-    if(Math.abs(shoulderTilt||0)>=4.5) attention.push('nivelamento dos ombros');
-    if(Math.abs(hipTilt||0)>=4.5) attention.push('nivelamento pÃ©lvico');
-    if(Math.abs(trunkShift||0)>=7) attention.push('centralizaÃ§Ã£o do tronco');
-    if(Math.abs(kneeDiff||0)>=8) attention.push('simetria de apoio dos membros inferiores');
+    if(shoulderTilt!=null){
+      const lado = shoulderTilt > 0 ? 'direito visualmente mais baixo' : 'esquerdo visualmente mais baixo';
+      lines.push(`â€¢ Ombros: diferenÃ§a angular de ${fmt(Math.abs(shoulderTilt))}Â°. ${Math.abs(shoulderTilt)<2 ? 'Alinhamento prÃ³ximo do horizontal.' : `HÃ¡ inclinaÃ§Ã£o aparente, com o lado ${lado}.`}`);
+    }
 
-    lines.push(attention.length
-      ? `â€¢ Pontos para revisÃ£o do professor: ${attention.join(', ')}.`
-      : `â€¢ Nesta imagem, nÃ£o foram detectadas assimetrias grosseiras pelos parÃ¢metros 2D utilizados.`);
+    if(hipTilt!=null){
+      const lado = hipTilt > 0 ? 'direito visualmente mais baixo' : 'esquerdo visualmente mais baixo';
+      lines.push(`â€¢ Pelve/quadril: diferenÃ§a angular de ${fmt(Math.abs(hipTilt))}Â°. ${Math.abs(hipTilt)<2 ? 'Nivelamento visual preservado nesta foto.' : `Existe inclinaÃ§Ã£o aparente, com o lado ${lado}.`}`);
+    }
+
+    if(trunkShift!=null){
+      const dir = trunkShift > 0 ? 'direita' : 'esquerda';
+      lines.push(`â€¢ Tronco: deslocamento de ${fmt(Math.abs(trunkShift))}% da largura corporal para a ${dir} em relaÃ§Ã£o ao centro do quadril.`);
+    }
+
+    if(kneeDiff!=null){
+      lines.push(`â€¢ Joelhos: diferenÃ§a vertical aproximada de ${fmt(Math.abs(kneeDiff))}% da largura corporal.`);
+    }
+
+    if(ankleDiff!=null){
+      lines.push(`â€¢ Tornozelos/apoio: diferenÃ§a vertical aproximada de ${fmt(Math.abs(ankleDiff))}% da largura corporal.`);
+    }
+
+    const prioridade=[];
+    if(Math.abs(shoulderTilt||0)>=4.5) prioridade.push('assimetria de ombros');
+    if(Math.abs(hipTilt||0)>=4.5) prioridade.push('inclinaÃ§Ã£o pÃ©lvica');
+    if(Math.abs(trunkShift||0)>=7) prioridade.push('deslocamento lateral do tronco');
+    if(Math.abs(kneeDiff||0)>=8) prioridade.push('diferenÃ§a no alinhamento dos joelhos');
+
+    lines.push(prioridade.length
+      ? `â€¢ ConclusÃ£o objetiva: revisar ${prioridade.join(', ')}. Recomenda-se repetir a foto com pÃ©s paralelos e cÃ¢mera nivelada para confirmar persistÃªncia.`
+      : `â€¢ ConclusÃ£o objetiva: os principais eixos 2D estÃ£o prÃ³ximos da simetria nesta imagem; manter comparaÃ§Ã£o com avaliaÃ§Ãµes futuras.`);
 
     if(key==='costas'){
-      lines.push(`â€¢ Vista posterior: o modelo mede ombros, quadril e membros; posiÃ§Ã£o de escÃ¡pulas nÃ£o Ã© inferida como diagnÃ³stico porque nÃ£o hÃ¡ landmark anatÃ´mico direto para elas.`);
+      lines.push('â€¢ ObservaÃ§Ã£o: escÃ¡pulas e curvaturas da coluna exigem avaliaÃ§Ã£o presencial; o modelo nÃ£o deve inferir diagnÃ³stico a partir de uma foto.');
     }
 
     return lines;
@@ -584,21 +638,34 @@
     const kneeAngle=jointAngle(hip,knee,ankle);
 
     const lines=[];
-    lines.push(`<strong>Leitura lateral por landmarks reais:</strong>`);
-    lines.push(`â€¢ Lado corporal com maior confianÃ§a detectado: ${side==='left'?'esquerdo':'direito'}.`);
-    lines.push(`â€¢ ProjeÃ§Ã£o horizontal orelhaâ€“ombro: ${fmt(headForward)}% do comprimento do tronco.`);
-    lines.push(`â€¢ InclinaÃ§Ã£o aparente do tronco: ${fmt(trunkLean)}Â° em relaÃ§Ã£o Ã  vertical.`);
-    if(hipKneeAngle!=null) lines.push(`â€¢ Ã‚ngulo troncoâ€“quadrilâ€“joelho: ${fmt(hipKneeAngle)}Â°.`);
-    if(kneeAngle!=null) lines.push(`â€¢ Ã‚ngulo do joelho: ${fmt(kneeAngle)}Â°.`);
+    lines.push(`<strong>AnÃ¡lise postural lateral:</strong>`);
+    lines.push(`â€¢ Lado utilizado pelo modelo: ${side==='left'?'esquerdo':'direito'}, por apresentar maior confianÃ§a de detecÃ§Ã£o.`);
 
-    const attention=[];
-    if(Math.abs(headForward||0)>=18) attention.push('projeÃ§Ã£o anterior/posterior da cabeÃ§a');
-    if(Math.abs(trunkLean||0)>=7) attention.push('inclinaÃ§Ã£o do tronco');
-    if(kneeAngle!=null && kneeAngle<168) attention.push('flexÃ£o do joelho durante a foto');
+    if(headForward!=null){
+      const direcao=headForward>0?'Ã  direita da imagem':'Ã  esquerda da imagem';
+      lines.push(`â€¢ CabeÃ§a/ombro: projeÃ§Ã£o horizontal equivalente a ${fmt(Math.abs(headForward))}% do comprimento do tronco ${direcao}. Valores maiores sugerem revisar posicionamento da cabeÃ§a e da cintura escapular.`);
+    }
 
-    lines.push(attention.length
-      ? `â€¢ Pontos para revisÃ£o do professor: ${attention.join(', ')}.`
-      : `â€¢ NÃ£o foi detectado desvio lateral grosseiro nos parÃ¢metros mensurÃ¡veis desta foto.`);
+    if(trunkLean!=null){
+      lines.push(`â€¢ Tronco: inclinaÃ§Ã£o aparente de ${fmt(Math.abs(trunkLean))}Â° em relaÃ§Ã£o Ã  vertical.`);
+    }
+
+    if(hipKneeAngle!=null){
+      lines.push(`â€¢ Quadril: Ã¢ngulo troncoâ€“quadrilâ€“joelho de ${fmt(hipKneeAngle)}Â°.`);
+    }
+
+    if(kneeAngle!=null){
+      lines.push(`â€¢ Joelho: Ã¢ngulo aproximado de ${fmt(kneeAngle)}Â°. ${kneeAngle<168?'HÃ¡ flexÃ£o perceptÃ­vel durante o registro, o que pode alterar a leitura postural.':'ExtensÃ£o prÃ³xima do esperado para fotografia estÃ¡tica.'}`);
+    }
+
+    const prioridade=[];
+    if(Math.abs(headForward||0)>=18) prioridade.push('projeÃ§Ã£o da cabeÃ§a em relaÃ§Ã£o ao ombro');
+    if(Math.abs(trunkLean||0)>=7) prioridade.push('inclinaÃ§Ã£o do tronco');
+    if(kneeAngle!=null && kneeAngle<168) prioridade.push('posiÃ§Ã£o do joelho');
+
+    lines.push(prioridade.length
+      ? `â€¢ ConclusÃ£o objetiva: revisar ${prioridade.join(', ')} e repetir a foto em postura neutra para comparaÃ§Ã£o.`
+      : `â€¢ ConclusÃ£o objetiva: nÃ£o hÃ¡ alteraÃ§Ã£o lateral grosseira nos landmarks mensurÃ¡veis desta foto.`);
 
     return lines;
   }
@@ -692,66 +759,156 @@
   }
 
   async function saveAvaliacao(){
-    if(!state.alunoId) return toast('Aluno nÃ£o localizado.','error');
-    if(state.selected.size && state.selected.size !== 4) return toast('Para salvar fotos, selecione as quatro posiÃ§Ãµes.','error');
+    if(!state.alunoId) return toast('Aluno nÃ£o localizado. Feche a avaliaÃ§Ã£o e abra novamente pelo cadastro do aluno.','error');
 
     const btn = $('#cfOficialSalvar');
-    const old = btn.innerHTML;
+    if(!btn || btn.dataset.salvando === '1') return;
+
+    const fotos = POS
+      .map(([pos]) => ({ pos, file:$(`[data-photo-file="${pos}"]`)?.files?.[0] || null }))
+      .filter(item => item.file);
+
+    if(fotos.length > 0 && fotos.length < 4){
+      return toast('Para salvar fotos, selecione as quatro posiÃ§Ãµes. Se desejar salvar apenas os dados, deixe as quatro fotos vazias.','error');
+    }
+
+    const textoOriginal = btn.textContent || 'Salvar avaliaÃ§Ã£o';
+    const enviados = [];
+    let avaliacaoId = null;
+
     try{
-      btn.disabled = true;
-      btn.innerHTML = 'Salvando...';
+      btn.dataset.salvando='1';
+      btn.disabled=true;
+      btn.textContent='Validando...';
 
       recalc();
-      generateAI();
 
-      const peso = n($('#cfOficialPeso')?.value);
-      const altura = n($('#cfOficialAltura')?.value);
-      const gordura = n($('#cfOficialGordura')?.value);
-      const imc = peso && altura ? peso/(altura*altura) : null;
-      const dobras = collectObj('[data-dobra]');
-      const perimetria = collectObj('[data-medida]');
-      const somaDobras = Object.values(dobras).reduce((s,v)=>s+(v||0),0);
-      const iaText = $('#cfOficialAIBox')?.innerText || '';
+      const client=supa();
+      const {data:auth,error:authError}=await client.auth.getUser();
+      if(authError) throw authError;
+      if(!auth?.user?.id) throw new Error('SessÃ£o expirada. Entre novamente no painel.');
 
-      const payload = {
-        aluno_id: state.alunoId,
-        data_avaliacao: $('#cfOficialData').value || today(),
-        objetivo: $('#cfOficialObjetivo').value || null,
-        observacoes: $('#cfOficialObs').value || null,
-        peso, altura,
-        idade: n($('#cfOficialIdade')?.value),
-        sexo: $('#cfOficialSexo').value || null,
-        imc: imc ? Number(imc.toFixed(2)) : null,
-        gordura_percentual: gordura,
-        massa_magra: n($('#cfOficialMassaMagra')?.value),
-        soma_dobras: Number(somaDobras.toFixed(2)),
+      const peso=n($('#cfOficialPeso')?.value);
+      const altura=n($('#cfOficialAltura')?.value);
+      const idade=n($('#cfOficialIdade')?.value);
+      const gordura=n($('#cfOficialGordura')?.value);
+      const massaMagra=n($('#cfOficialMassaMagra')?.value);
+      const imc=peso && altura ? peso/(altura*altura) : null;
+      const dobras=collectObj('[data-dobra]');
+      const perimetria=collectObj('[data-medida]');
+      const somaDobras=Object.values(dobras).reduce((s,v)=>s+(Number(v)||0),0);
+      const iaText=($('#cfOficialAIBox')?.innerText||'').trim();
+
+      if(!$('#cfOficialData')?.value) $('#cfOficialData').value=today();
+
+      avaliacaoId=crypto.randomUUID();
+
+      if(fotos.length===4){
+        let indice=0;
+        for(const item of fotos){
+          indice++;
+          btn.textContent=`Enviando foto ${indice}/4...`;
+          const processed=await compressImage(item.file);
+          const path=`${state.alunoId}/${avaliacaoId}/${item.pos}-${crypto.randomUUID()}.jpg`;
+
+          const up=await client.storage.from(BUCKET).upload(path,processed.blob,{
+            contentType:'image/jpeg',
+            cacheControl:'3600',
+            upsert:false
+          });
+          if(up.error) throw new Error(`Falha no upload (${labelPos(item.pos)}): ${up.error.message}`);
+
+          enviados.push({
+            posicao:item.pos,
+            path,
+            file_size:processed.blob.size,
+            width:processed.width,
+            height:processed.height
+          });
+        }
+      }
+
+      btn.textContent='Salvando avaliaÃ§Ã£o...';
+
+      const payload={
+        id:avaliacaoId,
+        aluno_id:state.alunoId,
+        professor_id:auth.user.id,
+        data_avaliacao:$('#cfOficialData').value,
+        objetivo:$('#cfOficialObjetivo').value||null,
+        observacoes:$('#cfOficialObs').value?.trim()||null,
+        peso,
+        altura,
+        idade,
+        sexo:$('#cfOficialSexo').value||null,
+        imc:imc ? Number(imc.toFixed(2)) : null,
+        gordura_percentual:gordura,
+        massa_magra:massaMagra,
+        soma_dobras:Number(somaDobras.toFixed(2)),
         dobras,
         perimetria,
-        ia_professor: iaText,
-        ia_aluno: resumoAluno({peso,imc,gordura,perimetria}),
-        relatorio_professor: $('#cfOficialObs').value || null,
+        ia_professor:iaText||null,
+        ia_aluno:resumoAluno({peso,imc,gordura,perimetria}),
+        relatorio_professor:$('#cfOficialObs').value?.trim()||null,
         liberado_aluno:false,
         liberar_fotos:false,
         liberar_ia:false,
         liberar_pdf:false
       };
 
-      const {data:avaliacao,error} = await supa().from('avaliacoes_oficiais').insert(payload).select('id').single();
-      if(error) throw error;
+      const ins=await client.from('avaliacoes_oficiais').insert(payload);
+      if(ins.error) throw new Error(`Falha ao salvar avaliaÃ§Ã£o: ${ins.error.message}`);
 
-      if(state.selected.size === 4) await uploadPhotos(avaliacao.id);
+      if(enviados.length===4){
+        btn.textContent='Registrando fotos...';
 
+        const rows=enviados.map(f=>({
+          avaliacao_id:avaliacaoId,
+          aluno_id:state.alunoId,
+          posicao:f.posicao,
+          storage_bucket:BUCKET,
+          storage_path:f.path,
+          mime_type:'image/jpeg',
+          file_size:f.file_size,
+          width:f.width,
+          height:f.height,
+          released_to_student:false,
+          created_by:auth.user.id
+        }));
+
+        const meta=await client.from('avaliacao_fotos_oficiais').insert(rows);
+        if(meta.error) throw new Error(`AvaliaÃ§Ã£o salva, mas as fotos nÃ£o foram registradas: ${meta.error.message}`);
+      }
+
+      btn.textContent='Salvo âœ“';
       toast('AvaliaÃ§Ã£o salva com sucesso!');
-      clearForm();
-      $('#cfOficialData').value = today();
+
       await loadHistory();
-      setTab('historico');
+
+      setTimeout(()=>{
+        $('#modalAvaliacaoOficial')?.classList.remove('active');
+      },900);
+
     }catch(err){
-      console.error('[Oficial salvar avaliaÃ§Ã£o]',err);
-      toast(err.message || 'Erro ao salvar avaliaÃ§Ã£o.','error');
+      console.error('[Salvar avaliaÃ§Ã£o]',err);
+
+      if(enviados.length){
+        try{
+          await supa().storage.from(BUCKET).remove(enviados.map(f=>f.path));
+        }catch(cleanupError){
+          console.warn('[Limpeza de fotos]',cleanupError);
+        }
+      }
+
+      toast(err.message||'Erro ao salvar avaliaÃ§Ã£o.','error');
+
     }finally{
-      btn.disabled = false;
-      btn.innerHTML = old;
+      setTimeout(()=>{
+        if(!btn) return;
+        btn.dataset.salvando='0';
+        btn.disabled=false;
+        if(btn.textContent!=='Salvo âœ“') btn.textContent=textoOriginal;
+      },400);
     }
   }
 

@@ -45,8 +45,11 @@
   }
 
   function sb() {
-    if (!window._supabase) throw new Error('Supabase nao carregado.');
-    return window._supabase;
+    if (window._supabase) return window._supabase;
+    try {
+      if (typeof _supabase !== 'undefined' && _supabase) return _supabase;
+    } catch (e) {}
+    throw new Error('Supabase nao carregado.');
   }
 
   function labelCampo(k) {

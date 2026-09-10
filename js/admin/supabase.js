@@ -13,3 +13,6 @@ const NEXT_PUBLIC_SUPABASE_URL = 'https://rylbznbtrrsuyzxgsivg.supabase.co';
                 }
             }
         );
+
+window._supabase = _supabase;
+window.CF_SUPABASE_ADMIN = { url: NEXT_PUBLIC_SUPABASE_URL, publishableKey: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY };
